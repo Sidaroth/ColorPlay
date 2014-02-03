@@ -26,9 +26,9 @@ void command(CURL *curl, char *body, int bulb){
 
 
 		char* json_struct = body;
-		char bulb1[] = "http://192.168.1.2/api/newdeveloper/lights/1/state";
-		char bulb2[] = "http://192.168.1.2/api/newdeveloper/lights/2/state";
-		char bulb3[] = "http://192.168.1.2/api/newdeveloper/lights/3/state";
+		char bulb1[] = "http://192.168.37.114/api/newdeveloper/lights/1/state";
+		char bulb2[] = "http://192.168.37.114/api/newdeveloper/lights/2/state";
+		char bulb3[] = "http://192.168.37.114/api/newdeveloper/lights/3/state";
 
 		headers = curl_slist_append(headers, "Accept: application/json");
 		headers = curl_slist_append(headers, "Content-Type: application/json");

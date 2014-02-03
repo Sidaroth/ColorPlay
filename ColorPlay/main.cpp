@@ -3,6 +3,7 @@
 #include <conio.h>
 #include <string>
 #include <iostream>
+#include <sstream>
 
 #include <curl/curl.h>
 
@@ -56,19 +57,18 @@ void command(CURL *curl, char *body, int bulb){
 
 int main(int argc, char* argv[])
 {
-	//colorCalibration();
-	//_getch();
-	CURL *curl;
-
-	curl = curl_easy_init();
-
-	command(curl, "{\"on\":false}", 1);
+	colorCalibration();
+	getch();
 
 	return 0;	
 }
 
 void colorCalibration(int low, int high, int step, int stepDelay)
 {
+	CURL *curl;
+
+	curl = curl_easy_init();
+
 	std::chrono::time_point<std::chrono::system_clock> start, end;
 	if(DEBUG > 0)
 	{
@@ -78,7 +78,15 @@ void colorCalibration(int low, int high, int step, int stepDelay)
 	for (int i = low; i <= high; i += step)
 	{
 		// Do the work.
-		std::cout << "Hue: " << i << "\n";
+		std::cout << "\nHue: " << i << "\n";
+		std::stringstream messageStream;
+		messageStream << "{\"on\":true, \"sat\":255, \"bri\":100, \"hue\":" << i << "}";
+
+		std::cout << "Message: " << messageStream.str() << "\n\n";
+
+		std::string message = messageStream.str();
+
+		command(curl, &message[0], 1);
 		std::this_thread::sleep_for(std::chrono::milliseconds(stepDelay)); // Sleep for the stepDelay. 
 	}
 

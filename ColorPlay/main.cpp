@@ -11,7 +11,7 @@
 #define CURL_STATICLIB
 
 void debugMessage(std::string message, int debugLevel);
-void colorCalibration(int low = 0, int high = 65535, int step = 10, int stepDelay = 0);
+void colorCalibration(int bulb = 1, int low = 0, int high = 65535, int step = 10, int stepDelay = 0);
 
 void command(CURL *curl, char *body, int bulb){
 
@@ -23,13 +23,14 @@ void command(CURL *curl, char *body, int bulb){
 	curl = curl_easy_init();
 
 	if (curl) {
-		printf("sending request \n");
+		printf("Sending request \n");
 
 
 		char* json_struct = body;
 		char bulb1[] = "http://192.168.37.114/api/newdeveloper/lights/1/state";
 		char bulb2[] = "http://192.168.37.114/api/newdeveloper/lights/2/state";
 		char bulb3[] = "http://192.168.37.114/api/newdeveloper/lights/3/state";
+		char bulb4[] = "http://192.168.37.114/api/newdeveloper/lights/4/state";
 
 		headers = curl_slist_append(headers, "Accept: application/json");
 		headers = curl_slist_append(headers, "Content-Type: application/json");
@@ -42,6 +43,8 @@ void command(CURL *curl, char *body, int bulb){
 			curl_easy_setopt(curl, CURLOPT_URL, bulb2);
 		else if (bulb == 3)
 			curl_easy_setopt(curl, CURLOPT_URL, bulb3);
+		else if (bulb == 4)
+			curl_easy_setopt(curl, CURLOPT_URL, bulb4);
 		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
 
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_struct);
@@ -57,13 +60,44 @@ void command(CURL *curl, char *body, int bulb){
 
 int main(int argc, char* argv[])
 {
-	colorCalibration();
-	getch();
+	int settings[5] = { -1, -1, -1, -1, -1 };
 
+
+	while (settings[0] < 1 || 4 < settings[0])
+	{
+		std::cout << "\nPlease enter the number of the bulb (1-4): ";
+		std::cin >> settings[0];
+	}
+	while (settings[1] < 0 || 65535 < settings[1])
+	{
+		std::cout << "\nPlease enter the low hue threshold (0-65535): ";
+		std::cin >> settings[1];
+	}
+	while (settings[2] < 0 || 65535 < settings[2])
+	{
+		std::cout << "\nPlease enter the high hue threshold (0-65535): ";
+		std::cin >> settings[2];
+	}
+	while (settings[3] < 1 || 10000 < settings[3])
+	{
+		std::cout << "\nPlease enter the step increment (1-10000): ";
+		std::cin >> settings[3];
+	}
+	while (settings[4] < 0 || 65535 < settings[4])
+	{
+		std::cout << "\nPlease enter the step delay in ms (0-1800000): ";
+		std::cin >> settings[4];
+	}
+
+	colorCalibration(settings[0], settings[1], settings[2], settings[3], settings[4]);
+
+	std::cout << "\nFinished, press any key to exit.";
+
+	_getch();
 	return 0;	
 }
 
-void colorCalibration(int low, int high, int step, int stepDelay)
+void colorCalibration(int bulb, int low, int high, int step, int stepDelay)
 {
 	CURL *curl;
 
@@ -86,7 +120,7 @@ void colorCalibration(int low, int high, int step, int stepDelay)
 
 		std::string message = messageStream.str();
 
-		command(curl, &message[0], 1);
+		command(curl, &message[0], bulb);
 		std::this_thread::sleep_for(std::chrono::milliseconds(stepDelay)); // Sleep for the stepDelay. 
 	}
 

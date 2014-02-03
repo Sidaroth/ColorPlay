@@ -41,7 +41,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)\lib\libcurl-7.19.3-win32-ssl-msvc\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\ar7ic\Desktop\COlor Play\ColorPlay\lib\libcurl-7.19.3-win32-ssl-msvc\include\curl;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\lib\libcurl-7.19.3-win32-ssl-msvc\lib\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -63,7 +63,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)\lib\libcurl-7.19.3-win32-ssl-msvc\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>curllib_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Users\ar7ic\Desktop\COlor Play\ColorPlay\lib\libcurl-7.19.3-win32-ssl-msvc\lib\Debug\curllib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

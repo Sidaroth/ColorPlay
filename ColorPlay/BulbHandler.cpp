@@ -119,20 +119,15 @@ void BulbHandler::runCalibration(int bulbId, int low, int high, int step, int st
 	std::chrono::time_point<std::chrono::system_clock> start, end;
 	start = std::chrono::system_clock::now();
 
-	while (1)
+	for (int i = low; i <= high; i += step)
 	{
-		for (int i = low; i <= high; i += step)
-		{
-			for (int j = 1; j <= 4; j++)
-			{
-				std::stringstream messageStream;
-				messageStream << "{\"on\":true, \"sat\":255, \"bri\":100, \"hue\":" << i << "}";
-			
-				command(messageStream.str(), "PUT", j);
-				std::this_thread::sleep_for(std::chrono::milliseconds(stepDelay));
-			}
-		}
+		std::stringstream messageStream;
+		messageStream << "{\"on\":true, \"sat\":255, \"bri\":100, \"hue\":" << i << "}";
+		
+		command(messageStream.str(), "PUT", bulbId);
+		std::this_thread::sleep_for(std::chrono::milliseconds(stepDelay));
 	}
+
 	end = std::chrono::system_clock::now();
 	std::chrono::duration<double> elapsed_seconds = end - start;
 	std::cout << "Calibration time: " << elapsed_seconds.count() << "s\n";

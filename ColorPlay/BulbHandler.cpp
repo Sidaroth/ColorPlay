@@ -16,17 +16,25 @@ void BulbHandler::addBulb(char id)
 	bulbList.push_back(id);
 }
 
-void BulbHandler::setBrightness(int brightness)
+void BulbHandler::setBrightness(int brightness, int bulbId)
 {
+	std::stringstream message;
+	message << "{\"on\":true, \"bri\":" << brightness << "}";
 
+	if (DEBUG >= 1)
+	{
+		std::cout << "Setting brightness to: " << brightness << "\n";
+	}
+
+	command(message.str(), "PUT", bulbId);
 }
 
-int BulbHandler::getBrightness()
+int BulbHandler::getBrightness(int bulbId)
 {
 	return 0;
 }
 
-void BulbHandler::setHue(int hue)
+void BulbHandler::setHue(int hue, int bulbId)
 {
 	std::stringstream message;
 	message << "{\"on\":true, \"hue\":" << hue << "}";
@@ -36,15 +44,10 @@ void BulbHandler::setHue(int hue)
 		std::cout << "Setting hue to: " << hue << "\n";
 	}
 
-	command(message.str(), "PUT");
+	command(message.str(), "PUT", bulbId);
 }
 
-void BulbHandler::setHueVariable(int nr)
-{
-	Hue = nr;
-}
-
-int BulbHandler::getHue()
+int BulbHandler::getHue(int bulbId)
 {
 	std::stringstream message;
 
@@ -54,24 +57,25 @@ int BulbHandler::getHue()
 }
 
 
-void BulbHandler::setSaturation(int saturation)
+void BulbHandler::setSaturation(int saturation, int bulbId)
 {
+	std::stringstream message;
+	message << "{\"on\":true, \"sat\":" << saturation << "}";
 	
+	if (DEBUG >= 1)
+	{
+		std::cout << "Setting saturation to: " << saturation << "\n";
+	}
+
+	command(message.str(), "PUT", bulbId);
 }
 
-int BulbHandler::getSaturation()
+int BulbHandler::getSaturation(int bulbId)
 {
 	return 0;
 }
 
-//char* BulbHandler::buildBody(std::string message)
-//{
-//	std::copy(message.begin(), message.end(), messageString);
-//
-//	return &messageString[0];
-//}
-
-void BulbHandler::command(std::string body, char* type)
+void BulbHandler::command(std::string body, char* type, int bulbId)
 {
 	CURLcode res;
 	struct curl_slist *headers = NULL;
@@ -92,7 +96,7 @@ void BulbHandler::command(std::string body, char* type)
 		headers = curl_slist_append(headers, "charsets. utf-8");
 		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
-		message << bulbAdress << bulbList[0];
+		message << bulbAdress << bulbList[bulbId - 1] << "/state";
 		
 		if (type == "PUT")
 		{
@@ -212,4 +216,23 @@ void BulbHandler::commandGet()
 	}
 
 	curl_global_cleanup();
+}
+
+void BulbHandler::runCalibration(int bulbId, int low, int high, int step, int stepDelay)
+{
+	std::chrono::time_point<std::chrono::system_clock> start, end;
+	start = std::chrono::system_clock::now();
+
+	for (int i = low; i <= high; i += step)
+	{
+		std::stringstream messageStream;
+		messageStream << "{\"on\":true, \"sat\":255, \"bri\":100, \"hue\":" << i << "}";
+		
+		command(messageStream.str(), "PUT", bulbId);
+		std::this_thread::sleep_for(std::chrono::milliseconds(stepDelay));
+	}
+
+	end = std::chrono::system_clock::now();
+	std::chrono::duration<double> elapsed_seconds = end - start;
+	std::cout << "Calibration time: " << elapsed_seconds.count() << "s\n";
 }

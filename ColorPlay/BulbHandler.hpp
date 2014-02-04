@@ -12,8 +12,11 @@
 #include <vector>
 #include <string.h>
 #include <sstream>
+#include <chrono>
+#include <thread>
 #include <iostream>
 #include <curl/curl.h>
+#include "StringQueue.hpp"
 
 #define DEBUG 1
 #define CURL_STATICLIB
@@ -25,26 +28,24 @@ public:
 	void setBulbAdress(char* bulbAdress);
 	void addBulb(char id);
 
-	void setBrightness(int brightness);
-	int  getBrightness();
-	void setHue(int hue);
-	void setHueVariable(int nr);
-	int  getHue();
-	void setSaturation(int saturation);
-	int  getSaturation(); 
-
+	void setBrightness(int brightness, int bulbId);
+	int  getBrightness(int bulbId);
+	void setHue(int hue, int bulbId);
+	int  getHue(int bulbId);
+	void setSaturation(int saturation, int bulbId);
+	int  getSaturation(int bulbId);
 	int callback_func(void *getInfo, size_t size, size_t count, void *stream);
-
+	void runCalibration(int bulbId, int low, int high, int step, int stepDelay);
+	
 private:
 	std::vector<char> bulbList;
 	std::vector<char>::iterator it;
-	std::vector<char> messageString;
 
 	CURL* curl;
 	char* bulbAdress;
 
 	char* buildBody(std::string message);
-	void command(std::string body, char* type);
+	void command(std::string body, char* type, int bulbId);
 	void commandGet();
 
 	int Hue;

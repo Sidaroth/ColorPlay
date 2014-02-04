@@ -6,11 +6,10 @@
 #include <sstream>
 
 #include <curl/curl.h>
+#include "BulbHandler.hpp"
 
 #define DEBUG 1
-#define CURL_STATICLIB
 
-void debugMessage(std::string message, int debugLevel);
 void colorCalibration(int bulb = 1, int low = 0, int high = 65535, int step = 10, int stepDelay = 0);
 int *testSettings();
 
@@ -18,8 +17,6 @@ void command(CURL *curl, char *body, int bulb){
 
 	CURLcode res;
 	struct curl_slist *headers = NULL;
-
-
 
 	curl = curl_easy_init();
 
@@ -61,50 +58,22 @@ void command(CURL *curl, char *body, int bulb){
 
 int main(int argc, char* argv[])
 {
-	int *settings = testSettings();
+	//int *settings = testSettings();
+	BulbHandler bulbHandler;
+	bulbHandler.setBulbAdress("http://192.168.37.114/api/newdeveloper/lights/");
 
-	colorCalibration(settings[0], settings[1], settings[2], settings[3], settings[4]);
+	bulbHandler.addBulb('1');
+	bulbHandler.addBulb('2');
+	bulbHandler.addBulb('3');
+	bulbHandler.addBulb('4');
 
+	bulbHandler.setHue(65000);
+
+	//colorCalibration(settings[0], settings[1], settings[2], settings[3], settings[4]);
+	
 	std::cout << "\nFinished, press any key to exit.";
-
 	_getch();
 	return 0;	
-}
-
-void colorCalibration(int bulb, int low, int high, int step, int stepDelay)
-{
-	CURL *curl;
-
-	curl = curl_easy_init();
-
-	std::chrono::time_point<std::chrono::system_clock> start, end;
-	if(DEBUG > 0)
-	{
-		start = std::chrono::system_clock::now();
-	}
-
-	for (int i = low; i <= high; i += step)
-	{
-		// Do the work.
-		std::cout << "\nHue: " << i << "\n";
-		std::stringstream messageStream;
-		messageStream << "{\"on\":true, \"sat\":255, \"bri\":100, \"hue\":" << i << "}";
-
-		std::cout << "Message: " << messageStream.str() << "\n\n";
-
-		std::string message = messageStream.str();
-
-		command(curl, &message[0], bulb);
-		std::this_thread::sleep_for(std::chrono::milliseconds(stepDelay)); // Sleep for the stepDelay. 
-	}
-
-	if (DEBUG > 0)
-	{
-		end = std::chrono::system_clock::now();
-		std::chrono::duration<double> elapsed_seconds = end - start;
-
-		std::cout << "Calibration time: " << elapsed_seconds.count() << "s\n";
-	}
 }
 
 int *testSettings()
@@ -139,3 +108,40 @@ int *testSettings()
 
 	return settings;
 }
+
+
+//void colorCalibration(int bulb, int low, int high, int step, int stepDelay)
+//{
+//	CURL *curl;
+//
+//	curl = curl_easy_init();
+//
+//	std::chrono::time_point<std::chrono::system_clock> start, end;
+//	if (DEBUG > 0)
+//	{
+//		start = std::chrono::system_clock::now();
+//	}
+//
+//	for (int i = low; i <= high; i += step)
+//	{
+//		// Do the work.
+//		std::cout << "\nHue: " << i << "\n";
+//		std::stringstream messageStream;
+//		messageStream << "{\"on\":true, \"sat\":255, \"bri\":100, \"hue\":" << i << "}";
+//
+//		std::cout << "Message: " << messageStream.str() << "\n\n";
+//
+//		std::string message = messageStream.str();
+//
+//		command(curl, &message[0], bulb);
+//		std::this_thread::sleep_for(std::chrono::milliseconds(stepDelay)); // Sleep for the stepDelay. 
+//	}
+//
+//	if (DEBUG > 0)
+//	{
+//		end = std::chrono::system_clock::now();
+//		std::chrono::duration<double> elapsed_seconds = end - start;
+//
+//		std::cout << "Calibration time: " << elapsed_seconds.count() << "s\n";
+//	}
+//}

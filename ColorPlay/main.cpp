@@ -12,7 +12,7 @@
 
 void debugMessage(std::string message, int debugLevel);
 void colorCalibration(int bulb = 1, int low = 0, int high = 65535, int step = 10, int stepDelay = 0);
-int *testSettings();
+int *getTestSettings();//Asks the user for the test parameters
 
 void command(CURL *curl, char *body, int bulb){
 
@@ -61,7 +61,7 @@ void command(CURL *curl, char *body, int bulb){
 
 int main(int argc, char* argv[])
 {
-	int *settings = testSettings();
+	int *settings = getTestSettings();
 
 	colorCalibration(settings[0], settings[1], settings[2], settings[3], settings[4]);
 
@@ -107,7 +107,8 @@ void colorCalibration(int bulb, int low, int high, int step, int stepDelay)
 	}
 }
 
-int *testSettings()
+//Asks the user for the test parameters
+int *getTestSettings()
 {
 	int *settings = new int[5];
 
@@ -133,7 +134,7 @@ int *testSettings()
 	}
 	while (settings[4] < 0 || 65535 < settings[4])
 	{
-		std::cout << "\nPlease enter the step delay in ms (0-1800000): ";
+		std::cout << "\nPlease enter the step delay in ms (0-1800000): "; //0ms to 30min
 		std::cin >> settings[4];
 	}
 

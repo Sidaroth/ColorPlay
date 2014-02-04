@@ -28,10 +28,12 @@ public:
 	void setBrightness(int brightness);
 	int  getBrightness();
 	void setHue(int hue);
+	void setHueVariable(int nr);
 	int  getHue();
 	void setSaturation(int saturation);
-	int  getSaturation();
+	int  getSaturation(); 
 
+	int callback_func(void *getInfo, size_t size, size_t count, void *stream);
 
 private:
 	std::vector<char> bulbList;
@@ -43,4 +45,7 @@ private:
 
 	char* buildBody(std::string message);
 	void command(std::string body, char* type);
+	void commandGet();
+
+	int Hue;
 };

@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
 	bulbHandler.addBulb('3');
 	bulbHandler.addBulb('4');
 
-	bulbHandler.setHue(65000);
+	bulbHandler.setHue(20000);
 
 	//colorCalibration(settings[0], settings[1], settings[2], settings[3], settings[4]);
 	

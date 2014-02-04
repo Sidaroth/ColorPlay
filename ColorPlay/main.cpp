@@ -7,12 +7,14 @@
 
 #include <curl/curl.h>
 #include "BulbHandler.hpp"
+#include "LogModule.hpp"
 
 #define DEBUG 1
 
 void colorCalibration(int bulb = 1, int low = 0, int high = 65535, int step = 10, int stepDelay = 0);
 int *testSettings();
 BulbHandler bulbHandler;
+LogModule logger;
 
 int main(int argc, char* argv[])
 {
@@ -24,9 +26,13 @@ int main(int argc, char* argv[])
 	bulbHandler.addBulb('3');
 	bulbHandler.addBulb('4');
 
+	std::thread loggerThread(&LogModule::run, &logger);	// Run the logger module in a background thread.
+	//std::thread inputControlThread(&inputHandler::run, &inputHandler); // Something like this...
+
 	bulbHandler.runCalibration(settings[0], settings[1], settings[2], settings[3], settings[4]);
-	//colorCalibration(settings[0], settings[1], settings[2], settings[3], settings[4]);
 	
+	loggerThread.join(); // Wait for the background thread(s) to finish. 
+	// inputControlThread.join();
 	std::cout << "\nFinished, press any key to exit.";
 	_getch();
 	return 0;	

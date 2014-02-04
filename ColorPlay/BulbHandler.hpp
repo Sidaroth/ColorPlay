@@ -16,6 +16,7 @@
 #include <thread>
 #include <iostream>
 #include <curl/curl.h>
+#include "StringQueue.hpp"
 
 #define DEBUG 1
 #define CURL_STATICLIB

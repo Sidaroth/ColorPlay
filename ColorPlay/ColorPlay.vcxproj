@@ -91,10 +91,12 @@
     <ClCompile Include="BulbHandler.cpp" />
     <ClCompile Include="LogModule.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Queue.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BulbHandler.hpp" />
     <ClInclude Include="LogModule.hpp" />
+    <ClInclude Include="Queue.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

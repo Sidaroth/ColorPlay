@@ -13,9 +13,10 @@
 #include <mutex>
 #include <queue>
 
-class Queue
+class StringQueue
 {
 public:
+	StringQueue();
 	void push(std::string message);
 	bool empty();
 	int  size();

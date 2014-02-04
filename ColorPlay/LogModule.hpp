@@ -12,13 +12,14 @@
 #pragma once
 #include <mutex>
 #include <iostream>
+#include "StringQueue.hpp"
 
 class LogModule
 {
 public:
 	LogModule();
 	void LogEvent(std::string message);
-	void run();
+	void run(StringQueue* queue);
 
 private:
 	std::mutex mutex;

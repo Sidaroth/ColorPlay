@@ -1,30 +1,30 @@
-#include "Queue.hpp"
+#include "StringQueue.hpp"
 
-Queue::Queue()
+StringQueue::StringQueue()
 {
 
 }
 
-void Queue::push(std::string message)
+void StringQueue::push(std::string message)
 {
 	std::lock_guard<std::mutex> lock(mutex); // RAII style lock
 
 	data.push(message);
 }
 
-int Queue::size()
+int StringQueue::size()
 {
 	std::lock_guard<std::mutex> lock(mutex);
 	return data.size();
 }
 
-bool Queue::empty()
+bool StringQueue::empty()
 {
 	std::lock_guard<std::mutex> lock(mutex);
 	return data.empty();
 }
 
-std::string Queue::pop()
+std::string StringQueue::pop()
 {
 	std::lock_guard<std::mutex> lock(mutex);
 

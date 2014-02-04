@@ -24,12 +24,18 @@
     <ClCompile Include="LogModule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Queue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BulbHandler.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LogModule.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Queue.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

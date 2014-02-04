@@ -121,7 +121,7 @@ void BulbHandler::command(std::string body, char* type)
 }
 
 
-static int BulbHandler::callback_func(void *getInfo, size_t size, size_t count, void *stream)
+int BulbHandler::callback_func(void *getInfo, size_t size, size_t count, void *stream)
 {
 	char* tempString;
 	char search = 'x';

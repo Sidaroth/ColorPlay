@@ -84,11 +84,19 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)\lib\libcurl-7.19.3-win32-ssl-msvc\lib\Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>curllib_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)\lib\libcurl-7.19.3-win32-ssl-msvc\lib\Release\curllib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BulbHandler.cpp" />
+    <ClCompile Include="LogModule.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="StringQueue.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BulbHandler.hpp" />
+    <ClInclude Include="LogModule.hpp" />
+    <ClInclude Include="StringQueue.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

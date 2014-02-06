@@ -34,7 +34,7 @@ public:
 	int  getHue(int bulbId);
 	void setSaturation(int saturation, int bulbId);
 	int  getSaturation(int bulbId);
-	int callback_func(void *getInfo, size_t size, size_t count, void *stream);
+	static int callback_func(void *getInfo, size_t size, size_t count, void *stream);
 	void runCalibration(int bulbId, int low, int high, int step, int stepDelay);
 	
 private:

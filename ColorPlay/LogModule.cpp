@@ -23,8 +23,8 @@ void LogModule::run()
 			now = std::chrono::system_clock::now();
 			std::time_t logTime = std::chrono::system_clock::to_time_t(now);
 
-			char buffer[BUFFERSIZE];
-			ctime_s(buffer, BUFFERSIZE, &logTime);
+		//	char buffer[BUFFERSIZE];
+		//	ctime_s(buffer, BUFFERSIZE, &logTime);
 
 			if (eventDesc == "quit")
 			{
@@ -32,7 +32,7 @@ void LogModule::run()
 			}
 
 			std::cout << "Log event: " << eventDesc << "\n";
-			ofs << "Log event(" << buffer << "): " << eventDesc << "\n";
+			ofs << "Log event(" << ctime(&logTime) << "): " << eventDesc << "\n";
 		}
 
 		// Avoid busy wait while polling. 

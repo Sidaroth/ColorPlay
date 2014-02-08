@@ -15,7 +15,7 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
-#include <curl/curl.h>
+#include <Poco/Net/HTTPRequest.h>
 #include "StringQueue.hpp"
 
 #define DEBUG 1
@@ -25,7 +25,7 @@ class BulbHandler
 {
 public:
 	BulbHandler();
-	void setBulbAdress(char* bulbAdress);
+	void setBulbAdress(std::string bulbAdress);
 	void addBulb(char id);
 
 	void setBrightness(int brightness, int bulbId);
@@ -41,11 +41,10 @@ private:
 	std::vector<char> bulbList;
 	std::vector<char>::iterator it;
 
-	CURL* curl;
-	char* bulbAdress;
+	//CURL* curl;
+	std::string bulbAdress;
 
-	char* buildBody(std::string message);
-	void command(std::string body, char* type, int bulbId);
+	void command(std::string body, std::string type, int bulbId);
 	void commandGet();
 
 	int Hue;

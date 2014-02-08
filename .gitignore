@@ -6,6 +6,9 @@
 # Library path
 lib/
 
+# CSV files
+*.csv
+
 # Compiled Dynamic libraries
 *.so
 *.dylib

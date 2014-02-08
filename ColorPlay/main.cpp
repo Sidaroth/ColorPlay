@@ -6,7 +6,7 @@
 #include <sstream>
 
 
-#include <curl/curl.h>
+#include <Poco/Net/HTTPRequest.h>
 #include "BulbHandler.hpp"
 #include "LogModule.hpp"
 #include "StringQueue.hpp"
@@ -18,7 +18,7 @@ int *getTestSettings(); //Asks the user for the test parameters
 
 
 int main(int argc, char* argv[])
-{/*
+{
 	BulbHandler bulbHandler;
 	LogModule logger;
 
@@ -40,16 +40,16 @@ int main(int argc, char* argv[])
 	//std::thread inputControlThread(&inputHandler::run, &inputHandler); // Something like this...
 
 	//bulbHandler.runCalibration(settings[0], settings[1], settings[2], settings[3], settings[4]);
-	bulbHandler.getHue(1);
-	//loggerThread.join(); // Wait for the background thread(s) to finish. 
+	//bulbHandler.getHue(1);
 	// inputControlThread.join();
-	std::cout << "\nFinished, press any key to exit.";
-*/
-	MoveHandler moveHandler;
+	
+	loggerThread.join(); // Wait for the background thread(s) to finish. 
 
+	MoveHandler moveHandler;
 	moveHandler.connect();
 
-	getc();
+	std::cout << "\nFinished, press any key to exit.";
+	getchar();
 	return 0;	
 }
 

@@ -11,26 +11,26 @@
 
 MoveHandler::MoveHandler()
 {
-	this->move = nullptr;
+	//this->move = nullptr;
 }
 
 bool MoveHandler::connect()
 {
-	this->move = psmove_connect();
-	INFO("THE MOVE CONTROLLER IS GOING TO LIGHT UP");
+	// this->move = psmove_connect();
+	// INFO("THE MOVE CONTROLLER IS GOING TO LIGHT UP");
 
-	BEGIN_TEXT("color test (lighting up)");
-	for (int i = 0; i<255; i++) {
-		psmove_set_leds(this->move, i, i, 0);
-		assert(psmove_update_leds(move) == Update_Success);
-	}
-	END_TEXT();
+	// BEGIN_TEXT("color test (lighting up)");
+	// for (int i = 0; i<255; i++) {
+	// 	psmove_set_leds(this->move, i, i, 0);
+	// 	assert(psmove_update_leds(move) == Update_Success);
+	// }
+	// END_TEXT();
 
-	if (move == nullptr) {
-		printf("Could not connect to default Move controller.\n"
-			"Please connect one via USB or Bluetooth.\n");
-		return false;
-	}
+	// if (move == nullptr) {
+	// 	printf("Could not connect to default Move controller.\n"
+	// 		"Please connect one via USB or Bluetooth.\n");
+	// 	return false;
+	// }
 
 	return true;
 }

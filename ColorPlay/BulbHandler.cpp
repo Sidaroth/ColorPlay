@@ -3,10 +3,10 @@
 
 BulbHandler::BulbHandler()
 {
-	curl = curl_easy_init();
+	//curl = curl_easy_init();
 }
 
-void BulbHandler::setBulbAdress(char* bulbAdress)
+void BulbHandler::setBulbAdress(std::string bulbAdress)
 {
 	this -> bulbAdress = bulbAdress;
 }
@@ -75,53 +75,53 @@ int BulbHandler::getSaturation(int bulbId)
 	return 0;
 }
 
-void BulbHandler::command(std::string body, char* type, int bulbId)
+void BulbHandler::command(std::string body, std::string type, int bulbId)
 {
-	CURLcode res;
-	struct curl_slist *headers = NULL;
-	curl = curl_easy_init();
+	// CURLcode res;
+	// struct curl_slist *headers = NULL;
+	// curl = curl_easy_init();
 
-	std::stringstream message;
+	// std::stringstream message;
 
-	if (curl)
-	{
-		if (DEBUG >= 1)
-		{
-			printf("Sending request \n");
-		}
+	// if (curl)
+	// {
+	// 	if (DEBUG >= 1)
+	// 	{
+	// 		printf("Sending request \n");
+	// 	}
 	
-		// Set headers. 
-		headers = curl_slist_append(headers, "Accept: application/json");
-		headers = curl_slist_append(headers, "Content-Type: application/json");
-		headers = curl_slist_append(headers, "charsets. utf-8");
-		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+	// 	// Set headers. 
+	// 	headers = curl_slist_append(headers, "Accept: application/json");
+	// 	headers = curl_slist_append(headers, "Content-Type: application/json");
+	// 	headers = curl_slist_append(headers, "charsets. utf-8");
+	// 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
-		message << bulbAdress << bulbList[bulbId - 1] << "/state";
+	// 	message << bulbAdress << bulbList[bulbId - 1] << "/state";
 		
-		if (type == "PUT")
-		{
-			message << "/state";
-		}
+	// 	if (type == "PUT")
+	// 	{
+	// 		message << "/state";
+	// 	}
 
-		if (DEBUG >= 1)
-		{
-			std::cout << "Received body is: " << &body[0] << "\n";
-			std::cout << "Bulb adress: " << &message.str()[0] << "\n";
-			std::cout << "Message type is: " << type << "\n";
-		}
+	// 	if (DEBUG >= 1)
+	// 	{
+	// 		std::cout << "Received body is: " << &body[0] << "\n";
+	// 		std::cout << "Bulb adress: " << &message.str()[0] << "\n";
+	// 		std::cout << "Message type is: " << type << "\n";
+	// 	}
 
-		curl_easy_setopt(curl, CURLOPT_URL, &message.str()[0]);
+	// 	curl_easy_setopt(curl, CURLOPT_URL, &message.str()[0]);
 
-		//TODO: This should be customizable I think...
-		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, type);
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, &body[0]);
+	// 	//TODO: This should be customizable I think...
+	// 	curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, &type[0]);
+	// 	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, &body[0]);
 
-		res = curl_easy_perform(curl);
-		curl_slist_free_all(headers);
-		curl_easy_cleanup(curl);
-	}
+	// 	res = curl_easy_perform(curl);
+	// 	curl_slist_free_all(headers);
+	// 	curl_easy_cleanup(curl);
+	// }
 
-	curl_global_cleanup();
+	// curl_global_cleanup();
 }
 
 
@@ -162,62 +162,62 @@ int BulbHandler::callback_func(void *getInfo, size_t size, size_t count, void *s
 
 void BulbHandler::commandGet()
 {
-	CURLcode res;
-	CURLcode res2;
-	struct curl_slist *headers = NULL;
-	curl = curl_easy_init();
-	char* getInfo;
+	// CURLcode res;
+	// CURLcode res2;
+	// struct curl_slist *headers = NULL;
+	// curl = curl_easy_init();
+	// char* getInfo;
 
-	std::stringstream message;
+	// std::stringstream message;
 
-	if (curl)
-	{
-		if (DEBUG >= 1)
-		{
-			printf("Sending request \n");
-		}
+	// if (curl)
+	// {
+	// 	if (DEBUG >= 1)
+	// 	{
+	// 		printf("Sending request \n");
+	// 	}
 
-		// Set headers. 
-		headers = curl_slist_append(headers, "Accept: application/json");
-		headers = curl_slist_append(headers, "Content-Type: application/json");
-		headers = curl_slist_append(headers, "charsets. utf-8");
-		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+	// 	// Set headers. 
+	// 	headers = curl_slist_append(headers, "Accept: application/json");
+	// 	headers = curl_slist_append(headers, "Content-Type: application/json");
+	// 	headers = curl_slist_append(headers, "charsets. utf-8");
+	// 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
-		message << bulbAdress << bulbList[0];
+	// 	message << bulbAdress << bulbList[0];
 
-		/*
-		if (DEBUG >= 1)
-		{
-			std::cout << "Received body is: " << &body[0] << "\n";
-			std::cout << "Bulb adress: " << &message.str()[0] << "\n";
-			std::cout << "Message type is: " << type << "\n";
-		}*/
+	// 	/*
+	// 	if (DEBUG >= 1)
+	// 	{
+	// 		std::cout << "Received body is: " << &body[0] << "\n";
+	// 		std::cout << "Bulb adress: " << &message.str()[0] << "\n";
+	// 		std::cout << "Message type is: " << type << "\n";
+	// 	}*/
 
-		curl_easy_setopt(curl, CURLOPT_URL, &message.str()[0]);
+	// 	curl_easy_setopt(curl, CURLOPT_URL, &message.str()[0]);
 
-		//TODO: This should be customizable I think...
-		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
-		//curl_easy_setopt(curl, CURLOPT_POSTFIELDS, &body[0]);
+	// 	//TODO: This should be customizable I think...
+	// 	curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
+	// 	//curl_easy_setopt(curl, CURLOPT_POSTFIELDS, &body[0]);
 
-		std::cout << "Før: " << &getInfo << std::endl;
-		//curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback_func);
-		//curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, std::bind(&BulbHandler::callback_func, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &BulbHandler::callback_func);
+	// 	std::cout << "Før: " << &getInfo << std::endl;
+	// 	//curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback_func);
+	// 	//curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, std::bind(&BulbHandler::callback_func, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+	// 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &BulbHandler::callback_func);
 
 
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &getInfo);
-		std::cout << "Etter: " << &getInfo << std::endl;
+	// 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &getInfo);
+	// 	std::cout << "Etter: " << &getInfo << std::endl;
 
-		res = curl_easy_perform(curl);
-		std::cout << "EtterETER: " << &getInfo << std::endl;
+	// 	res = curl_easy_perform(curl);
+	// 	std::cout << "EtterETER: " << &getInfo << std::endl;
 
-		//std::cout << " HER :    " << res;
-		curl_slist_free_all(headers);
+	// 	//std::cout << " HER :    " << res;
+	// 	curl_slist_free_all(headers);
 
-		curl_easy_cleanup(curl);
-	}
+	// 	curl_easy_cleanup(curl);
+	// }
 
-	curl_global_cleanup();
+	// curl_global_cleanup();
 }
 
 void BulbHandler::runCalibration(int bulbId, int low, int high, int step, int stepDelay)

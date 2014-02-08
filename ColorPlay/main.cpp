@@ -12,25 +12,28 @@
 
 #define DEBUG 1
 
-void colorCalibration(int bulb = 1, int low = 0, int high = 65535, int step = 10, int stepDelay = 0);
-int *getTestSettings();//Asks the user for the test parameters
+int *getTestSettings(); //Asks the user for the test parameters
 
 int main(int argc, char* argv[])
 {
 	BulbHandler bulbHandler;
 	LogModule logger;
-	StringQueue logEvents;
-
 
 	int *settings = getTestSettings();
-	bulbHandler.setBulbAdress("http://192.168.37.114/api/newdeveloper/lights/");
+	bulbHandler.setBulbAdress("http://192.168.1.172/api/newdeveloper/lights/");
 
 	bulbHandler.addBulb('1');
 	bulbHandler.addBulb('2');
 	bulbHandler.addBulb('3');
 	bulbHandler.addBulb('4');
 
-	std::thread loggerThread(&LogModule::run, &logger, &logEvents);	// Run the logger module in a background thread.
+	logger.LogEvent("Adding lightBulb 1");
+	logger.LogEvent("Adding lightBulb 2");
+	logger.LogEvent("Adding lightBulb 3");
+	logger.LogEvent("Adding lightBulb 4");
+	logger.LogEvent("quit");
+
+	std::thread loggerThread(&LogModule::run, &logger);	// Run the logger module in a background thread.
 	//std::thread inputControlThread(&inputHandler::run, &inputHandler); // Something like this...
 
 	bulbHandler.runCalibration(settings[0], settings[1], settings[2], settings[3], settings[4]);

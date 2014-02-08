@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 	BulbHandler bulbHandler;
 	LogModule logger;
 
-	int *settings = getTestSettings();
+	//int *settings = getTestSettings();
 	bulbHandler.setBulbAdress("http://192.168.1.172/api/newdeveloper/lights/");
 
 	bulbHandler.addBulb('1');
@@ -36,9 +36,9 @@ int main(int argc, char* argv[])
 	std::thread loggerThread(&LogModule::run, &logger);	// Run the logger module in a background thread.
 	//std::thread inputControlThread(&inputHandler::run, &inputHandler); // Something like this...
 
-	bulbHandler.runCalibration(settings[0], settings[1], settings[2], settings[3], settings[4]);
-	
-	loggerThread.join(); // Wait for the background thread(s) to finish. 
+	//bulbHandler.runCalibration(settings[0], settings[1], settings[2], settings[3], settings[4]);
+	bulbHandler.getHue(1);
+	//loggerThread.join(); // Wait for the background thread(s) to finish. 
 	// inputControlThread.join();
 	std::cout << "\nFinished, press any key to exit.";
 	_getch();

@@ -201,7 +201,9 @@ void BulbHandler::commandGet()
 
 		std::cout << "Før: " << &getInfo << std::endl;
 		//curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback_func);
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, std::bind(&BulbHandler::callback_func, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+		//curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, std::bind(&BulbHandler::callback_func, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &BulbHandler::callback_func);
+
 
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &getInfo);
 		std::cout << "Etter: " << &getInfo << std::endl;

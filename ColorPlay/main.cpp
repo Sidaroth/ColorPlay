@@ -1,6 +1,6 @@
 #include <chrono>
 #include <thread>
-#include <conio.h>
+#include <cstdio>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 	//loggerThread.join(); // Wait for the background thread(s) to finish. 
 	// inputControlThread.join();
 	std::cout << "\nFinished, press any key to exit.";
-	_getch();
+	getc();
 	return 0;	
 }
 

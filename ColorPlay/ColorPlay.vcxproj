@@ -46,8 +46,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)\lib\libcurl-7.19.3-win32-ssl-msvc\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\lib\libcurl-7.19.3-win32-ssl-msvc\lib\Release/;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\lib\psmoveapi_3.0.0_win32\include;$(SolutionDir)\lib\libcurl-7.19.3-win32-ssl-msvc\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SoulutionDir)\lib\psmoveapi_3.0.0_win32\bin;$(SolutionDir)\lib\libcurl-7.19.3-win32-ssl-msvc\lib\Release/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -76,14 +76,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)\lib\libcurl-7.19.3-win32-ssl-msvc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\lib\psmoveapi_3.0.0_win32\include;$(SolutionDir)\lib\libcurl-7.19.3-win32-ssl-msvc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)\lib\libcurl-7.19.3-win32-ssl-msvc\lib\Release</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionsDir)\lib\psmoveapi_3.0.0_win32\bin;$(SolutionDir)\lib\libcurl-7.19.3-win32-ssl-msvc\lib\Release</AdditionalLibraryDirectories>
       <AdditionalDependencies>$(SolutionDir)\lib\libcurl-7.19.3-win32-ssl-msvc\lib\Release\curllib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -91,11 +91,13 @@
     <ClCompile Include="BulbHandler.cpp" />
     <ClCompile Include="LogModule.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MoveHandler.cpp" />
     <ClCompile Include="StringQueue.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BulbHandler.hpp" />
     <ClInclude Include="LogModule.hpp" />
+    <ClInclude Include="MoveHandler.hpp" />
     <ClInclude Include="StringQueue.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

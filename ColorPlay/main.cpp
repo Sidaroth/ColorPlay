@@ -6,7 +6,6 @@
 #include <sstream>
 
 
-#include <Poco/Net/HTTPRequest.h>
 #include "BulbHandler.hpp"
 #include "LogModule.hpp"
 #include "StringQueue.hpp"
@@ -14,15 +13,11 @@
 
 #define DEBUG 1
 
-int *getTestSettings(); //Asks the user for the test parameters
-
-
 int main(int argc, char* argv[])
 {
 	BulbHandler bulbHandler;
 	LogModule logger;
 
-	//int *settings = getTestSettings();
 	bulbHandler.setBulbAdress("http://192.168.1.172/api/newdeveloper/lights/");
 
 	bulbHandler.addBulb('1');
@@ -51,40 +46,4 @@ int main(int argc, char* argv[])
 	std::cout << "\nFinished, press any key to exit.";
 	getchar();
 	return 0;	
-}
-
-
-
-//Asks the user for the test parameters
-int *getTestSettings()
-{
-	int *settings = new int[5];
-
-	while (settings[0] < 1 || 4 < settings[0])
-	{
-		std::cout << "\nPlease enter the number of the bulb (1-4): ";
-		std::cin >> settings[0];
-	}
-	while (settings[1] < 0 || 65535 < settings[1])
-	{
-		std::cout << "\nPlease enter the low hue threshold (0-65535): ";
-		std::cin >> settings[1];
-	}
-	while (settings[2] < 0 || 65535 < settings[2])
-	{
-		std::cout << "\nPlease enter the high hue threshold (0-65535): ";
-		std::cin >> settings[2];
-	}
-	while (settings[3] < 1 || 10000 < settings[3])
-	{
-		std::cout << "\nPlease enter the step increment (1-10000): ";
-		std::cin >> settings[3];
-	}
-	while (settings[4] < 0 || 65535 < settings[4])
-	{
-		std::cout << "\nPlease enter the step delay in ms (0-1800000): "; //0ms to 30min
-		std::cin >> settings[4];
-	}
-
-	return settings;
 }

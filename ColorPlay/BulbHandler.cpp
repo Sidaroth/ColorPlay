@@ -77,6 +77,25 @@ int BulbHandler::getSaturation(int bulbId)
 
 void BulbHandler::command(std::string body, std::string type, int bulbId)
 {
+	try {
+		Poco::Net::HTTPClientSession session("192.168.1.172");
+		Poco::Net::HTTPRequest request(Poco::Net::HTTPRequest::HTTP_PUT, "/lights/api/newdeveloper/1/state");
+
+		std::ostream& os = session.sendRequest(request);
+
+		// Potential program killer... Testing. 
+		os << "Testing";
+
+		Poco::Net::HTTPResponse response;
+		std::istream& rs = session.receiveResponse(response);
+
+		// Do something with the response?
+
+	} catch (Poco::Exception& e) {
+		std::cerr << e.displayText() << std::endl;
+	}
+
+
 	// CURLcode res;
 	// struct curl_slist *headers = NULL;
 	// curl = curl_easy_init();

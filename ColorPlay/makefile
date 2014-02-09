@@ -1,22 +1,31 @@
 # The compiler
 CC=g++
 # Flags for the compiler
-CFLAGS=-c -std=gnu++11 -pthread -Wall
+CFLAGS=-c -std=gnu++11 -Wall
 # Flags for the linker. 
-LFLAGS=-pthread
+LFLAGS=-lpthread -lPocoFoundation -lPocoNet
 # Name of the executable
-EXECUTABLE=ColorPlay
+EXECUTABLE=ColorPlay.exe
+# Output files from the executable
+OUTPUT=test.csv
 # Source files
 SOURCES=main.cpp LogModule.cpp StringQueue.cpp BulbHandler.cpp MoveHandler.cpp
 # The objects
 OBJECTS=$(SOURCES:.cpp=.o)
-LIB=-L ../lib/poco/lib
-INC=-I ../lib/poco/include
+# Libraries to include
+LIB=-L../lib/poco/lib
+# Files to include (from libraries)
+INC=-I../lib/poco/include
 
-all: $(SOURCES) $(EXECUTABLE)
+
+build: $(SOURCES) $(EXECUTABLE)
+
+all: 
+	export LD_LIBRARY_PATH=/home/Sid/
+	build
 
 $(EXECUTABLE): $(OBJECTS)
-	$(CC) $(LIB) $(LFLAGS) $(OBJECTS) -o $@
+	$(CC) $(OBJECTS) $(LIB) $(LFLAGS) -o $@
 
 .cpp.o:
 	$(CC) $(INC) $(CFLAGS) $< -o $@
@@ -26,3 +35,4 @@ $(EXECUTABLE): $(OBJECTS)
 clean:
 	rm -f *.o
 	rm -f $(EXECUTABLE)
+	rm -f $(OUTPUT)

@@ -3,7 +3,7 @@ CC=g++
 # Flags for the compiler
 CFLAGS=-c -std=gnu++11 -Wall
 # Flags for the linker. 
-LFLAGS=-lpthread -lPocoFoundation -lPocoNet -lsfml-graphics -lsfml-window -lsfml-system
+LFLAGS=-lpthread -lPocoFoundation -lPocoNet -lsfml-graphics -lsfml-window -lsfml-system -lpsmoveapi -lpsmoveapi_tracker
 # Name of the executable
 EXECUTABLE=ColorPlay.exe
 # Output files from the executable
@@ -13,9 +13,9 @@ SOURCES=main.cpp LogModule.cpp StringQueue.cpp BulbHandler.cpp MoveHandler.cpp W
 # The objects
 OBJECTS=$(SOURCES:.cpp=.o)
 # Libraries to include
-LIB=-L../lib/poco/lib -L../lib/SFML/lib
+LIB=-L../lib/poco/lib -L../lib/SFML/lib -L../lib/psmoveapi/build
 # Files to include (from libraries)
-INC=-I../lib/poco/include -I../lib/SFML/include
+INC=-I../lib/poco/include -I../lib/SFML/include -I../lib/psmoveapi/include
 
 
 build: $(SOURCES) $(EXECUTABLE)

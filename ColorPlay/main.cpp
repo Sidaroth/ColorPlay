@@ -5,7 +5,7 @@
 #include <iostream>
 #include <sstream>
 
-
+#include <SFML/Graphics.hpp>
 #include "BulbHandler.hpp"
 #include "LogModule.hpp"
 #include "StringQueue.hpp"
@@ -15,6 +15,10 @@
 
 int main(int argc, char* argv[])
 {
+	sf::RenderWindow window(sf::VideoMode(800, 600), "ColorPlay");
+	sf::CircleShape shape(100.f);
+	shape.setFillColor(sf::Color::Green);
+
 	BulbHandler bulbHandler;
 	LogModule logger;
 
@@ -37,6 +41,25 @@ int main(int argc, char* argv[])
 	//bulbHandler.runCalibration(settings[0], settings[1], settings[2], settings[3], settings[4]);
 	//bulbHandler.getHue(1);
 	// inputControlThread.join();
+
+	while(window.isOpen())
+	{
+		sf::Event event;
+		while(window.pollEvent(event))
+		{
+			if(event.type == sf::Event::Closed)
+			{
+				window.close();
+			}
+		}
+
+		window.clear(sf::Color::Black);
+		window.draw(shape);
+		window.display();
+	}
+
+
+
 	
 	loggerThread.join(); // Wait for the background thread(s) to finish. 
 

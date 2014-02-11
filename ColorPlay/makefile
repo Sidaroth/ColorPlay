@@ -9,7 +9,7 @@ EXECUTABLE=ColorPlay.exe
 # Output files from the executable
 OUTPUT=test.csv
 # Source files
-SOURCES=main.cpp LogModule.cpp StringQueue.cpp BulbHandler.cpp MoveHandler.cpp
+SOURCES=main.cpp LogModule.cpp StringQueue.cpp BulbHandler.cpp MoveHandler.cpp WindowHandler.cpp
 # The objects
 OBJECTS=$(SOURCES:.cpp=.o)
 # Libraries to include

@@ -33,6 +33,7 @@ PSMove_Connection_Type MoveHandler::getConnectionType()
 void MoveHandler::run()
 {
 	this->connect();
+	this->setColor(255,255,255);
 
 	while(getConnectionType() == Conn_Bluetooth && !(buttons & Btn_MOVE))
 	{

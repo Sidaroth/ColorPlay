@@ -3,6 +3,8 @@
 //define NDEBUG
 
 #include <assert.h>
+#include <sstream>
+//#include <mutex>
 
 #include "psmove.h"
 
@@ -27,7 +29,7 @@ private:
 	PSMove *move;
 	LogModule *logger;
 	enum PSMove_Connection_Type connectionType;
-	char r,g,b;
+	unsigned char r,g,b;
 	unsigned int buttons;
 
 	void updateColor();

@@ -38,6 +38,7 @@ int main(int argc, char* argv[])
 	std::thread moveHandlerThread(&MoveHandler::run, &moveHandler);
 
 	///////////////// START WORK IN THE MAIN THREAD //////////////////
+	std::cout << "Main thread: " << std::this_thread::get_id() << std::endl;
 	windowHandler.run();
 
 	//bulbHandler.runCalibration(settings[0], settings[1], settings[2], settings[3], settings[4]);

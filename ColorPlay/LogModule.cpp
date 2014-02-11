@@ -16,6 +16,7 @@ void LogModule::run()
 	// Polling the queue, sleeping to avoid CPU Drain (busy wait). 
 	while (running)
 	{
+		//std::cout << "Logger thread: " << std::this_thread::get_id() << std::endl;
 		if (!logEvents.empty()) // Is there a log event to pop off. 
 		{
 			eventDesc = logEvents.pop();

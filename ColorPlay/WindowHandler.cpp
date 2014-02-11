@@ -39,7 +39,11 @@ void WindowHandler::run()
 	{
 		sf::Event event;
 		while(window.pollEvent(event))
-		{
+		{	
+			if(event.type != 13 && event.type != 14)
+			{
+				std::cout << event.type << std::endl;
+			} 
 			// If either the "cross" is clicked, or the escape button is pressed. 
 			if(event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
 			{

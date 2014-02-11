@@ -12,14 +12,17 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include "LogModule.hpp"
 
 
 class WindowHandler
 {
 public:
 	WindowHandler();
+	WindowHandler(std::string windowName, LogModule* logger, int width=800, int height=600, bool verticalSync=true, int frameRateLimit=60 );
 	void run();
 
 private:
 	sf::RenderWindow window;
+	LogModule* logger;
 };

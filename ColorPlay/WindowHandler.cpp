@@ -2,14 +2,39 @@
 
 WindowHandler::WindowHandler()
 {
-	window.create(sf::VideoMode(800, 600), "Color Play Game v.0.1");
+	window.create(sf::VideoMode(800, 600), "Default Name huehue");
+	window.setVerticalSyncEnabled(true);
+	window.setFramerateLimit(60);
 }
 
+WindowHandler::WindowHandler(std::string windowName,
+							 LogModule* logger, 
+							 int width,          /* 800  */ 
+							 int height, 		 /* 600  */
+							 bool verticalSync , /* true */ 
+							 int frameRateLimit) /* 60   */
+{
+	window.create(sf::VideoMode(width, height), windowName);
+	window.setVerticalSyncEnabled(verticalSync);
+	
+	this -> logger = logger;
+
+	if(verticalSync != true)			// VSync and forced framerate should not be used at the same time. It can make the screen do weird things... - SFML Docs.
+	{
+		window.setFramerateLimit(frameRateLimit);
+	}
+
+	logger -> LogEvent("Window created");
+	
+}
+
+// The window handler / render loop of the game.  
 void WindowHandler::run()
 {
 	sf::CircleShape shape(250.f);
 	shape.setFillColor(sf::Color::Green);
 
+	logger -> LogEvent("WindowHandler running");
 	while(window.isOpen())
 	{
 		sf::Event event;

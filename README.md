@@ -4,11 +4,13 @@ ColorPlay
 Color play project for vitensenteret Gjøvik, through the Serious Games course at Gjøvik University College. 
 
 
-This project requires libcurl. http://curl.haxx.se/latest.cgi?curl=win32-ssl-devel-msvc
+This project requires:
+- SFML (2.1): http://www.sfml-dev.org/download.php
+- Poco: http://pocoproject.org/download/index.html
+- PSMoveAPI: https://thp.io/2010/psmove/#downloads
 
-The project looks for the library at
-Debug:   $(SolutionDir)\lib\libcurl-7.19.3-win32-ssl-msvc\lib\Debug
-Release: $(SolutionDir)\lib\libcurl-7.19.3-win32-ssl-msvc\lib\Release
 
-Include at
-$(SolutionDir)\lib\libcurl-7.19.3-win32-ssl-msvc\include
+For include paths consult the makefile. 
+
+
+run.sh adds the correct paths to the runtime linker. (This is needed unless the libraries are installed on the system)

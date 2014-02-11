@@ -1,6 +1,5 @@
 #include <chrono>
 #include <thread>
-#include <cstdio>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -18,6 +17,7 @@ int main(int argc, char* argv[])
 {
 	BulbHandler bulbHandler;
 	LogModule logger;
+	MoveHandler moveHandler(&logger);
 	WindowHandler windowHandler("Color Play Game v.0.1", &logger);
 
 	bulbHandler.setBulbAdress("http://192.168.1.172/api/newdeveloper/lights/");
@@ -35,8 +35,7 @@ int main(int argc, char* argv[])
 
 	///////////////// START THREADS /////////////////
 	std::thread loggerThread(&LogModule::run, &logger);	// Run the logger module in a background thread.
-	//std::thread inputControlThread(&inputHandler::run, &inputHandler); // Something like this...
-
+	std::thread moveHandlerThread(&MoveHandler::run, &moveHandler);
 
 	///////////////// START WORK IN THE MAIN THREAD //////////////////
 	windowHandler.run();
@@ -45,18 +44,14 @@ int main(int argc, char* argv[])
 	//bulbHandler.getHue(1);
 
 
-	// UNCOMMENT BEFORE GIT COMMIT. IN MOVEHANDLER AND MAKEFILE
-	//MoveHandler moveHandler;
-	//moveHandler.connect();
 
 	logger.LogEvent("quit"); // logger.quit(); perhaps...
 	///////////////// END WORK IN MAIN THREAD //////////////////////
 
 
 	///////////////// JOIN / WAIT FOR THREADS - NO MORE WORK AFTER THIS/////////////////////
-	// inputControlThread.join();
+	moveHandlerThread.join();
 	loggerThread.join(); // Wait for the background thread(s) to finish. 
-
 	std::cout << "\nFinished, press any key to exit.";
 	getchar();
 	return 0;	

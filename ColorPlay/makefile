@@ -22,7 +22,7 @@ POCOFLAGS=   -lPocoFoundation -lPocoNet
 SFMLFLAGS=   -lsfml-graphics -lsfml-window -lsfml-system
 PSMOVEFLAGS= -lpsmoveapi -lpsmoveapi_tracker
 
-LFLAGS=-lpthread $(POCOFLAGS) $(SFMLFLAGS) #$(PSMOVEFLAGS)
+LFLAGS=-lpthread $(POCOFLAGS) $(SFMLFLAGS) $(PSMOVEFLAGS)
 
 ### !!!! DO NOT TOUCH ANYTHING BELOW THIS LINE EXCEPT CLEAN!!!! ###
 

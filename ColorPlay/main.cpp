@@ -36,10 +36,10 @@ int main(int argc, char* argv[])
 	///////////////// START THREADS /////////////////
 	std::thread loggerThread(&LogModule::run, &logger);	// Run the logger module in a background thread.
 	std::thread moveHandlerThread(&MoveHandler::run, &moveHandler);
-
+	
 	///////////////// START WORK IN THE MAIN THREAD //////////////////
 	windowHandler.run();
-
+	
 	//bulbHandler.runCalibration(settings[0], settings[1], settings[2], settings[3], settings[4]);
 	//bulbHandler.getHue(1);
 
@@ -52,6 +52,7 @@ int main(int argc, char* argv[])
 	///////////////// JOIN / WAIT FOR THREADS - NO MORE WORK AFTER THIS/////////////////////
 	moveHandlerThread.join();
 	loggerThread.join(); // Wait for the background thread(s) to finish. 
+	
 	std::cout << "\nFinished, press any key to exit.";
 	getchar();
 	return 0;	

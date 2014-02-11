@@ -1,6 +1,5 @@
 #include <chrono>
 #include <thread>
-#include <cstdio>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -17,6 +16,7 @@ int main(int argc, char* argv[])
 {
 	BulbHandler bulbHandler;
 	LogModule logger;
+	MoveHandler moveHandler(&logger);
 
 	bulbHandler.setBulbAdress("http://192.168.1.172/api/newdeveloper/lights/");
 
@@ -29,19 +29,16 @@ int main(int argc, char* argv[])
 	logger.LogEvent("Adding lightBulb 2");
 	logger.LogEvent("Adding lightBulb 3");
 	logger.LogEvent("Adding lightBulb 4");
-	logger.LogEvent("quit");
 
 	std::thread loggerThread(&LogModule::run, &logger);	// Run the logger module in a background thread.
-	//std::thread inputControlThread(&inputHandler::run, &inputHandler); // Something like this...
+	std::thread moveHandlerThread(&MoveHandler::run, &moveHandler); // Something like this...
 
 	//bulbHandler.runCalibration(settings[0], settings[1], settings[2], settings[3], settings[4]);
 	//bulbHandler.getHue(1);
-	// inputControlThread.join();
 	
+	moveHandlerThread.join();
+	logger.LogEvent("quit");
 	loggerThread.join(); // Wait for the background thread(s) to finish. 
-
-	MoveHandler moveHandler;
-	moveHandler.connect();
 
 	std::cout << "\nFinished, press any key to exit.";
 	getchar();

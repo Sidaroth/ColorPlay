@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 		// Event processing
 
 		windowHandler.processEvents();
-
+		
 		// Updates
 		windowHandler.update();
 		

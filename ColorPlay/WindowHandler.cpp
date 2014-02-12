@@ -30,18 +30,16 @@ WindowHandler::WindowHandler(std::string windowName,
 	
 }
 
-bool WindowHandler::processEvents()
+void WindowHandler::processEvents()
 {
 	while(window.pollEvent(event))
 	{
 		if(event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
 		{
 			window.close();
-			return true;
+			*running = false;
 		}
 	}
-
-	return false;
 }
 
 void WindowHandler::update()
@@ -62,4 +60,9 @@ void WindowHandler::render()
 void WindowHandler::close()
 {
 	window.close();
+}
+
+void WindowHandler::setWindowType(short type)
+{
+
 }

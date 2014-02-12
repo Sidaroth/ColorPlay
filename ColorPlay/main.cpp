@@ -6,6 +6,7 @@
 
 
 #include "BulbHandler.hpp"
+#include "BulbMath.hpp"
 #include "LogModule.hpp"
 #include "StringQueue.hpp"
 #include "MoveHandler.hpp"
@@ -16,9 +17,11 @@
 int main(int argc, char* argv[])
 {
 	bool running = false;
+
 	BulbHandler bulbHandler;
+	BulbMath bulbMath;
 	LogModule logger;
-	MoveHandler moveHandler(&logger);
+	MoveHandler moveHandler(&logger, &running);
 	WindowHandler windowHandler("Color Play Game v.0.1", &logger, &running);
 
 
@@ -34,6 +37,7 @@ int main(int argc, char* argv[])
 	logger.LogEvent("Adding lightBulb 3");
 	logger.LogEvent("Adding lightBulb 4");
 	
+	bulbMath.lab2xyz(1,1,1);
 
 	///////////////// START THREADS /////////////////
 	std::thread loggerThread(&LogModule::run, &logger);	// Run the logger module in a background thread.

@@ -7,30 +7,38 @@
 //#include <mutex>
 
 #include "psmove.h"
+#include "psmove_tracker.h"
 
+#include "struct.hpp"
 #include "LogModule.hpp"
 
-#define BEGIN_TEXT(x) fprintf(stderr, "Message: %s\n", x)
-#define END_TEXT()    fprintf(stderr, " ... OK\n")
-#define INFO(x)       fprintf(stderr, "Info: %s\n", x)
+#define MEASUREMENTS 50
 
 class MoveHandler
 {
 public:
-	MoveHandler(LogModule *logger);
+	MoveHandler(LogModule *logger, bool *running);
 	bool connect();
-	PSMove_Connection_Type getConnectionType();
 	void run();
+	void run2();
 
 	//Setters and getters
 	void setColor(unsigned char r, unsigned char g, unsigned char b);
 	char* getColor();
 private:
+	bool *running;
+	
 	PSMove *move;
-	LogModule *logger;
 	enum PSMove_Connection_Type connectionType;
 	unsigned char r,g,b;
 	unsigned int buttons;
+
+	PSMoveTracker *tracker;
+	measurement *measurements;
+
+	LogModule *logger;
+
+
 
 	void updateColor();
 };

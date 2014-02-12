@@ -6,14 +6,19 @@ MoveHandler::MoveHandler(LogModule *logger, bool *running)
 	this->running = running;
 
 	this->move = nullptr;
-	this->tracker = nullptr;
-	this->measurements = new measurement[MEASUREMENTS];
-	this->logger = logger;
-	
 	r = 0;
 	g = 0;
 	b = 0;
 	buttons = 0;
+
+	this->tracker = nullptr;
+	this->frame = nullptr;
+	this->x = nullptr;
+	this->y = nullptr;
+	this->z = nullptr;
+	this->measurements = new measurement[MEASUREMENTS];
+	this->logger = logger;
+	
 }
 
 bool MoveHandler::connect()
@@ -53,14 +58,23 @@ bool MoveHandler::connect()
 	while (psmove_tracker_enable(this->tracker, this->move) != Tracker_CALIBRATED);
 	logger->LogEvent("Calibration finished.");
 
+	logger->LogEvent("Enable tracker mirroring");
+    psmove_tracker_set_mirror(tracker, PSMove_True);
 
 	return true;
+}
+
+void MoveHandler::disconnect()
+{
+	cvDestroyAllWindows();
+	psmove_disconnect(this->move);
+	psmove_tracker_free(this->tracker);
 }
 
 void MoveHandler::run()
 {
 	if(this->connect())
-	{
+	{		
 		while(this->running && (cvWaitKey(1) & 0xFF) != 27)
 		{	
 			psmove_poll(this->move);
@@ -75,11 +89,18 @@ void MoveHandler::run()
         	psmove_tracker_update(tracker, NULL);
         	psmove_tracker_annotate(tracker);
 
+        	frame = psmove_tracker_get_frame(tracker);
+        	if (frame) {
+        	    cvShowImage("live camera feed", frame);
+        	}
+
+            psmove_tracker_get_position(this->tracker, this->move, this->x, this->y, this->z);
+            printf("x: %10.2f, y: %10.2f, r: %10.2f\n", x, y, z);
 
 			std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		}
 
-		psmove_disconnect(this->move);
+		disconnect();
 	}	
 }
 

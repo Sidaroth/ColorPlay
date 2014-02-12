@@ -1,10 +1,15 @@
 #include "MoveHandler.hpp"
 
 //PUBLIC###########################################################################################
-MoveHandler::MoveHandler(LogModule *logger)
+MoveHandler::MoveHandler(LogModule *logger, bool *running)
 {
+	this->running = running;
+
 	this->move = nullptr;
+	this->tracker = nullptr;
+	this->measurements = new measurement[MEASUREMENTS];
 	this->logger = logger;
+	
 	r = 0;
 	g = 0;
 	b = 0;
@@ -23,49 +28,61 @@ bool MoveHandler::connect()
 	
 	connectionType = psmove_connection_type(this->move);
 	logger->LogEvent("Default move controller connected.");
-	return true;
-}
 
-PSMove_Connection_Type MoveHandler::getConnectionType()
-{
-	return this->connectionType;
+	if(connectionType==Conn_Bluetooth)
+	{
+		logger->LogEvent("Connection type: Bluetooth");
+	}
+	else
+	{
+		logger->LogEvent("Connection type: USB");
+	}
+
+	this->tracker = psmove_tracker_new();
+
+	if(this->tracker == nullptr || this->tracker == NULL)
+	{
+		logger->LogEvent("Could not create tracker.");
+		return false;
+	}
+	
+	logger->LogEvent("Calibrating controller...");
+	while (psmove_tracker_enable(this->tracker, this->move) != Tracker_CALIBRATED);
+	logger->LogEvent("Calibration finished.");
+
+
+	return true;
 }
 
 void MoveHandler::run()
 {
-	//std::cout << "MoveHandler::run: Start" << std::endl;
 	this->connect();
-	this->setColor(255,255,255);
-	//psmove_set_rate_limiting(this->move, PSMove_False);
+	psmove_set_rumble(this->move, 0);
+	this->setColor(0, 0, 255);
 
-	// if(getConnectionType() == Conn_Unknown)
-	// {
-	// 	std::cout << "MoveHandler::run: Connection type unknown." << std::endl;
-	// }
-	// else if (getConnectionType() == Conn_Bluetooth)
-	// {
-	// 	std::cout << "MoveHandler::run: Connection type Bluetooth." << std::endl;
-	// }
-	// else if (getConnectionType() == Conn_USB)
-	// {
-	// 	std::cout << "MoveHandler::run: Connection type USB." << std::endl;
-	// }
-	// else
-	// {
-	// 	std::cout << "MoveHandler::run: Connection type WAT?!." << std::endl;
-	// }
-
-	while(getConnectionType() == Conn_Bluetooth && !(buttons & Btn_MOVE))
+	while(this->running)
 	{	
-		//std::cout << "MoveHandler::run: While start" << std::endl;
+		psmove_poll(this->move);
+		this->updateColor();
+		std::this_thread::sleep_for(std::chrono::milliseconds(5));
+	}
+		
+}
+
+void MoveHandler::run2()
+{
+	this->connect();
+	this->setColor(255, 0, 0);
+
+	while(this->connectionType == Conn_Bluetooth && !(buttons & Btn_MOVE))
+	{	
 		if(psmove_poll(this->move))
 		{
 			buttons = psmove_get_buttons(this->move);
 
 			if(buttons & Btn_CIRCLE)
 			{
-				this->r = 82;
-				//std::cout << "MoveHandler: Btn_CIRCLE" << std::endl;
+				this->r = 255;
 			}
 			else
 			{
@@ -74,8 +91,7 @@ void MoveHandler::run()
 
 			if(buttons & Btn_TRIANGLE)
 			{
-				this->g = 71;
-				//std::cout << "MoveHandler: Btn_TRIANGLE" << std::endl;
+				this->g =255;
 			}
 			else
 			{
@@ -84,8 +100,7 @@ void MoveHandler::run()
 
 			if(buttons & Btn_CROSS)
 			{
-				this->b = 66;
-				//std::cout << "MoveHandler: Btn_CROSS" << std::endl;
+				this->b = 255;
 			}
 			else
 			{
@@ -96,10 +111,9 @@ void MoveHandler::run()
 
 		this->updateColor();
 		std::this_thread::sleep_for(std::chrono::milliseconds(5));
-		//std::cout << "MoveHandler::run: While End" << std::endl;
 	}
 	this->setColor(0, 0, 0);
-	//std::cout << "MoveHandler::run: End" << std::endl;
+	this->running = false;
 }
 
 void MoveHandler::setColor(unsigned char r, unsigned char g, unsigned char b)
@@ -107,10 +121,6 @@ void MoveHandler::setColor(unsigned char r, unsigned char g, unsigned char b)
 	this->r = r;
 	this->g = g;
 	this->b = b;
-
-	//std::stringstream string;
-	//string << "Setting Color: " << (int)this->r << ", " << (int)this->g << ", " << (int)this->b;
-	//std::cout << string.str() << std::endl;			
 	
 	this->updateColor();
 }
@@ -124,10 +134,26 @@ char* MoveHandler::getColor()
 //PRIVATE##########################################################################################
 void MoveHandler::updateColor()
 {	
-	std::stringstream string;
-	string << "Updating Color: " << (int)this->r << ", " << (int)this->g << ", " << (int)this->b;
-	std::cout << string.str() << std::endl;
+	//std::stringstream string;
+	//string << "Updating Color: " << (int)this->r << ", " << (int)this->g << ", " << (int)this->b;
+	//std::cout << string.str() << std::endl;
 	
 	psmove_set_leds(this->move, this->r, this->g, this->b);
-	psmove_update_leds(this->move);
+	PSMove_Update_Result result = psmove_update_leds(this->move);
+	if(result == Update_Failed)
+	{
+		std::cout << "LED update failed\n";		
+	}
+	else if (result == Update_Ignored)
+	{
+		//std::cout << "LED update ignored\n";
+	}
+	else if(result == Update_Success)
+	{
+		std::cout << "LED update succeeded\n";
+	}
+	else
+	{
+		std::cout << "WAT?!\n";
+	}
 }

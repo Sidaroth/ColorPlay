@@ -15,9 +15,11 @@
 
 int main(int argc, char* argv[])
 {
+	bool running = false;
+
 	BulbHandler bulbHandler;
 	LogModule logger;
-	MoveHandler moveHandler(&logger);
+	MoveHandler moveHandler(&logger, &running);
 	WindowHandler windowHandler("Color Play Game v.0.1", &logger);
 
 	bulbHandler.setBulbAdress("http://192.168.1.172/api/newdeveloper/lights/");

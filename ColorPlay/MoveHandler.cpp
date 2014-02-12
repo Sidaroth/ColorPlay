@@ -57,9 +57,7 @@ bool MoveHandler::connect()
 void MoveHandler::run()
 {
 	this->connect();
-	psmove_set_rumble(this->move, 0);
-	this->setColor(0, 0, 255);
-
+	
 	while(this->running)
 	{	
 		psmove_poll(this->move);

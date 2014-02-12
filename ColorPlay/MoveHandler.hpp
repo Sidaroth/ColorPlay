@@ -21,6 +21,7 @@ class MoveHandler
 public:
 	MoveHandler(LogModule *logger, bool *running);
 	bool connect();
+	void disconnect();
 	void run();
 	void run2();
 
@@ -30,12 +31,20 @@ public:
 private:
 	bool *running;
 
+	//PSMove
 	PSMove *move;
 	enum PSMove_Connection_Type connectionType;
-	unsigned char r,g,b;
+	unsigned char r;
+	unsigned char g;
+	unsigned char b;
 	unsigned int buttons;
 
+	//Tracker
 	PSMoveTracker *tracker;
+	void *frame;
+	float *x; 
+	float *y; 
+	float *z;
 	measurement *measurements;
 
 	LogModule *logger;

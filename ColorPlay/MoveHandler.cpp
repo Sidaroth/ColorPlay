@@ -46,7 +46,10 @@ bool MoveHandler::connect()
 		return false;
 	}
 	
-	logger->LogEvent("Calibrating controller...");
+	logger->LogEvent("Enable Move LED auto update.");
+	psmove_tracker_set_auto_update_leds(this->tracker, this->move, PSMove_True);
+	
+	logger->LogEvent("Calibrating tracker...");
 	while (psmove_tracker_enable(this->tracker, this->move) != Tracker_CALIBRATED);
 	logger->LogEvent("Calibration finished.");
 
@@ -58,12 +61,25 @@ void MoveHandler::run()
 {
 	if(this->connect())
 	{
-		while(this->running)
+		while(this->running && (cvWaitKey(1) & 0xFF) != 27)
 		{	
 			psmove_poll(this->move);
-			this->updateColor();
+			buttons = psmove_get_buttons(this->move);
+        	if(buttons & Btn_MOVE)
+        	{
+        		this->running = false;
+        		std::cout << "Move button pressed.\n";
+        	}
+
+        	psmove_tracker_update_image(tracker);
+        	psmove_tracker_update(tracker, NULL);
+        	psmove_tracker_annotate(tracker);
+
+
 			std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		}
+
+		psmove_disconnect(this->move);
 	}	
 }
 

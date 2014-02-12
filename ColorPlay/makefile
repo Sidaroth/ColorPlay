@@ -20,7 +20,7 @@ INC=-I../lib/poco/include -I../lib/SFML/include -I../lib/psmoveapi/include
 # Flags for the linker. (When adding new libraries, add another flag here, as such: -lexample-lib) PS: These are the libexample-lib.so files, with the lib prefix and .so extension removed. 
 POCOFLAGS=   -lPocoFoundation -lPocoNet
 SFMLFLAGS=   -lsfml-graphics -lsfml-window -lsfml-system
-PSMOVEFLAGS= -lpsmoveapi -lpsmoveapi_tracker
+PSMOVEFLAGS= -lpsmoveapi -lpsmoveapi_tracker -lopencv_highgui -lopencv_core
 
 LFLAGS=-lpthread $(POCOFLAGS) $(SFMLFLAGS) $(PSMOVEFLAGS)
 

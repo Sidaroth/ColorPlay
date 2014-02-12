@@ -8,6 +8,8 @@
 
 #include "psmove.h"
 #include "psmove_tracker.h"
+#include "opencv2/core/core_c.h"
+#include "opencv2/highgui/highgui_c.h"
 
 #include "struct.hpp"
 #include "LogModule.hpp"
@@ -27,7 +29,7 @@ public:
 	char* getColor();
 private:
 	bool *running;
-	
+
 	PSMove *move;
 	enum PSMove_Connection_Type connectionType;
 	unsigned char r,g,b;

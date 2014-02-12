@@ -15,10 +15,12 @@
 
 int main(int argc, char* argv[])
 {
+	bool running = false;
 	BulbHandler bulbHandler;
 	LogModule logger;
 	MoveHandler moveHandler(&logger);
-	WindowHandler windowHandler("Color Play Game v.0.1", &logger);
+	WindowHandler windowHandler("Color Play Game v.0.1", &logger, &running);
+
 
 	bulbHandler.setBulbAdress("http://192.168.1.172/api/newdeveloper/lights/");
 
@@ -39,16 +41,24 @@ int main(int argc, char* argv[])
 	
 	///////////////// START WORK IN THE MAIN THREAD //////////////////
 	std::cout << "Main thread: " << std::this_thread::get_id() << std::endl;
-	windowHandler.run();
+	running = true; 
+
+	while(running)
+	{
+		// Event processing
+
+		windowHandler.processEvents();
+
+		// Updates
+		windowHandler.update();
+		
+		// Rendering
+		windowHandler.render();
+	}
+		
 	
-	//bulbHandler.runCalibration(settings[0], settings[1], settings[2], settings[3], settings[4]);
-	//bulbHandler.getHue(1);
-
-
-
+	///////////////// CLEANUP //////////////////////
 	logger.LogEvent("quit"); // logger.quit(); perhaps...
-	///////////////// END WORK IN MAIN THREAD //////////////////////
-
 
 	///////////////// JOIN / WAIT FOR THREADS - NO MORE WORK AFTER THIS/////////////////////
 	moveHandlerThread.join();

@@ -56,15 +56,15 @@ bool MoveHandler::connect()
 
 void MoveHandler::run()
 {
-	this->connect();
-	
-	while(this->running)
-	{	
-		psmove_poll(this->move);
-		this->updateColor();
-		std::this_thread::sleep_for(std::chrono::milliseconds(5));
-	}
-		
+	if(this->connect())
+	{
+		while(this->running)
+		{	
+			psmove_poll(this->move);
+			this->updateColor();
+			std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		}
+	}	
 }
 
 void MoveHandler::run2()

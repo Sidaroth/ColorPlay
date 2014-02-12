@@ -8,7 +8,8 @@ WindowHandler::WindowHandler()
 }
 
 WindowHandler::WindowHandler(std::string windowName,
-							 LogModule* logger, 
+							 LogModule* logger,
+							 bool* running,
 							 int width,          /* 800  */ 
 							 int height, 		 /* 600  */
 							 bool verticalSync , /* true */ 
@@ -18,6 +19,7 @@ WindowHandler::WindowHandler(std::string windowName,
 	window.setVerticalSyncEnabled(verticalSync);
 	
 	this -> logger = logger;
+	this -> running = running; 
 
 	if(verticalSync != true)			// VSync and forced framerate should not be used at the same time. It can make the screen do weird things... - SFML Docs.
 	{
@@ -28,36 +30,36 @@ WindowHandler::WindowHandler(std::string windowName,
 	
 }
 
-// The window handler / render loop of the game.  
-void WindowHandler::run()
+bool WindowHandler::processEvents()
+{
+	while(window.pollEvent(event))
+	{
+		if(event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
+		{
+			window.close();
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void WindowHandler::update()
+{
+
+}
+
+void WindowHandler::render()
 {
 	sf::CircleShape shape(250.f);
-	shape.setFillColor(sf::Color::Green);
+	shape.setFillColor(sf::Color::Red);
+	window.clear(sf::Color::Black);
 
-	logger -> LogEvent("WindowHandler running");
-	while(window.isOpen())
-	{
-		sf::Event event;
-		while(window.pollEvent(event))
-		{	
-			if(event.type != 13 && event.type != 14)
-			{
-				std::cout << event.type << std::endl;
-			} 
-			// If either the "cross" is clicked, or the escape button is pressed. 
-			if(event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
-			{
-				window.close();
-			}
-		}
+	window.draw(shape);
+	window.display();
+}
 
-		// Clear the window with BG color.
-		window.clear(sf::Color::Black);
-		
-		// Draw everything onto the screen buffer.
-		window.draw(shape);
-
-		// Swap the buffer  / actually draw the screen. 
-		window.display();
-	}
+void WindowHandler::close()
+{
+	window.close();
 }

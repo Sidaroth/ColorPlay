@@ -12,6 +12,9 @@ void LogModule::run()
 	
 	std::chrono::time_point<std::chrono::system_clock> now;
 	std::string eventDesc = "";
+	char buffer[BUFFERSIZE];
+	struct tm * timeinfo;
+	std::time_t logTime;
 
 	// Polling the queue, sleeping to avoid CPU Drain (busy wait). 
 	while (running)
@@ -22,10 +25,12 @@ void LogModule::run()
 			eventDesc = logEvents.pop();
 
 			now = std::chrono::system_clock::now();
-			std::time_t logTime = std::chrono::system_clock::to_time_t(now);
+			logTime = std::chrono::system_clock::to_time_t(now);
 
-		//	char buffer[BUFFERSIZE];
-		//	ctime_s(buffer, BUFFERSIZE, &logTime);
+			time(&logTime);
+			timeinfo = localtime(&logTime);
+			strftime(buffer, BUFFERSIZE, "%F,%T",timeinfo);
+
 
 			if (eventDesc == "quit")
 			{
@@ -33,7 +38,7 @@ void LogModule::run()
 			}
 
 			std::cout << "Log event: " << eventDesc << "\n";
-			ofs << "Log event(" << ctime(&logTime) << "): " << eventDesc << "\n";
+			ofs << "Log event(" << buffer << "): " << eventDesc << "\n";
 		}
 
 		// Avoid busy wait while polling. 

@@ -18,24 +18,36 @@
 class WindowHandler
 {
 public:
+	enum class WindowType{
+		Config,
+		Game,
+		Shield
+	};
+
 	WindowHandler();
 	WindowHandler(std::string windowName, LogModule* logger, bool* running, int width=800, int height=600, bool verticalSync=true, int frameRateLimit=60 );
+	bool init(); 
 	void processEvents();
 	void update();
 	void render();
 	void close();
 
-	void setWindowType(short type);
-	int getWindowType();
+	void setWindowType(WindowType windowType=WindowType::Game);
 
 private:
 	sf::RenderWindow window;
 	LogModule* logger;
 	bool* running; 
 	sf::Event event;
+	WindowType windowType;
+	sf::Font font;
+	sf::Text text;
 
-	enum windowType{
-		Config,
-		Game
-	};
+	void gameProcessEvents();
+	void gameUpdate();
+	void gameRender();
+	
+	void configProcessEvents();
+	void configUpdate();
+	void configRender();
 };

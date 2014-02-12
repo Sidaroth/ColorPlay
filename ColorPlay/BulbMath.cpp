@@ -6,11 +6,11 @@ BulbMath::BulbMath()
 
 }
 
-float BulbMath::lab2xyz(float L, float a, float b)
+float *BulbMath::lab2xyz(float L, float a, float b)
 {
-	//float *pointer;
-	//float xyz[3];
-	//pointer = &xyz[0];
+	float *pointer;
+	float xyz[3];
+	pointer = &xyz[0];
 
 	//Treshholds
 	float T1 = 0.008856;
@@ -63,17 +63,17 @@ float BulbMath::lab2xyz(float L, float a, float b)
 	Y = fY;
 
 	//Slightly change fY for further calculations
-	if (fY > T1)
+	/*if (fY > T1)
 	{
 		fY = pow(fY, (1/3));
 	}
 	else
 	{
 		fY = (7.787 * fY + 16/116);
-	}
+	}*/
 
 	//Calculate X
-	fX = a / 500 + fY;
+	fX = (a / 500) + fY;
 
 	if (fX > T2)
 	{
@@ -81,11 +81,11 @@ float BulbMath::lab2xyz(float L, float a, float b)
 	}
 	else
 	{
-		X = (fX -16/116) / 7.787;
+		X = fX - ((16.0f/116.0f) / 7.7877);
 	}
 
 	//Calculate Z
-	fZ = fY - b / 200;
+	fZ = fY - (b / 200.0f);
 
 	if (fZ > T2)
 	{
@@ -93,15 +93,19 @@ float BulbMath::lab2xyz(float L, float a, float b)
 	}
 	else
 	{
-		(fZ - 16/116) / 7.787;
+		Z = fZ - ((16.0f/116.0f) / 7.7877);
 	}
 
 	//Normalize for D65 white point
 	X = X * 0.950456;
 	Z = Z * 1.088754;
 
-	std::cout << "X: " << X << " Y: " << Y << " Z: " << X;
+	std::cout << "\n X: " << X << " Y: " << Y << " Z: " << Z << std::endl;
 
-	return 10;
+	xyz[0] = X;
+	xyz[1] = Y;
+	xyz[2] = Z;
+
+	return pointer;
 
 }

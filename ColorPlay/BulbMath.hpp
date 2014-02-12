@@ -6,7 +6,7 @@ class BulbMath
 {
 public: 
 	BulbMath();
-	float lab2xyz(float x, float y, float z);
+	float *lab2xyz(float x, float y, float z);
 
 private:
 

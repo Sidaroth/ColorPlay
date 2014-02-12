@@ -26,35 +26,74 @@ WindowHandler::WindowHandler(std::string windowName,
 		window.setFramerateLimit(frameRateLimit);
 	}
 
+	windowType = WindowType::Game;
+
 	logger -> LogEvent("Window created");
 	
 }
 
+bool WindowHandler::init()
+{
+	if(!font.loadFromFile("./assets/Leo Arrow.ttf"))
+	{
+		this -> logger -> LogEvent("ERROR: Loading font failed!");
+		return 1;
+	}
+
+	text.setFont(font);
+
+	return 0;
+}
+
 void WindowHandler::processEvents()
 {
-	while(window.pollEvent(event))
+	if(this -> windowType == WindowType::Game)
 	{
-		if(event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
-		{
-			window.close();
-			*running = false;
-		}
+		this -> gameProcessEvents();
+	}
+	else if(this -> windowType == WindowType::Config)
+	{
+		this -> configProcessEvents();
+	}
+	else
+	{
+		this -> logger -> LogEvent("ERROR: WindowHandler processEvents could not identify WindowType!");
 	}
 }
 
+// Identifies the windowType and runs the appropriate update call. 
 void WindowHandler::update()
 {
-
+	if(this -> windowType == WindowType::Game)
+	{
+		this -> gameUpdate();
+	}
+	else if(this -> windowType == WindowType::Config)
+	{
+		this -> configUpdate();
+	}
+	else
+	{
+		this -> logger -> LogEvent("ERROR: WindowHandler update could not identify WindowType!");
+	}
 }
 
+/// Identifies the windowType and runs the appropriate render call. 
 void WindowHandler::render()
 {
-	sf::CircleShape shape(250.f);
-	shape.setFillColor(sf::Color::Red);
-	window.clear(sf::Color::Black);
+	if(this -> windowType == WindowType::Game)
+	{
+		this -> gameRender();
+	}
+	else if(this -> windowType == WindowType::Config)
+	{
+		this -> configRender();
+	}
+	else
+	{
+		this -> logger -> LogEvent("ERROR: WindowHandler render could not identify WindowType!");
+	}
 
-	window.draw(shape);
-	window.display();
 }
 
 void WindowHandler::close()
@@ -62,7 +101,116 @@ void WindowHandler::close()
 	window.close();
 }
 
-void WindowHandler::setWindowType(short type)
+void WindowHandler::setWindowType(WindowType windowType)
+{
+	this -> windowType = windowType;
+}
+
+
+
+///////////// GAME RELATED /////////////////
+void WindowHandler::gameProcessEvents()
+{
+	while(window.pollEvent(event))
+	{
+		switch(event.type)
+		{
+			case sf::Event::Closed:
+				window.close();
+				(*running) = false;
+				break;
+
+			case sf::Event::KeyPressed:
+			// Switch to determine which button is pressed. 
+				switch(event.key.code)
+				{
+					case sf::Keyboard::Escape:
+						window.close();
+						(*running) = false;
+						break;
+
+					case sf::Keyboard::Space:
+						this -> logger -> LogEvent("WindowType Changed to Config!");
+						this -> windowType = WindowType::Config;
+				
+					default: break;
+				}
+
+			default: break;
+		}
+	}
+}
+
+void WindowHandler::gameUpdate()
 {
 
+}
+
+void WindowHandler::gameRender()
+{
+	sf::CircleShape shape(250.f);
+	shape.setFillColor(sf::Color::Red);
+	text.setString("Game Render!");
+	text.setCharacterSize(24);
+	text.setColor(sf::Color::Green);
+	text.setPosition(500, 0);
+
+	window.clear(sf::Color::Black);
+	window.draw(shape);
+	window.draw(text);
+	window.display();
+}
+
+
+///////////////// CONFIG RELATED ////////////////
+void WindowHandler::configProcessEvents()
+{
+	while(window.pollEvent(event))
+	{
+		switch(event.type)
+		{
+			case sf::Event::Closed:
+				window.close();
+				(*running) = false;
+				break;
+
+			case sf::Event::KeyPressed:
+			// Switch to determine which button is pressed. 
+				switch(event.key.code)
+				{
+					case sf::Keyboard::Escape:
+						window.close();
+						(*running) = false;
+						break;
+
+					case sf::Keyboard::Space:
+						this -> logger -> LogEvent("WindowType Changed to Game!");
+						this -> windowType = WindowType::Game;
+				
+					default: break;
+				}
+
+			default: break;
+		}
+	}
+}
+
+void WindowHandler::configUpdate()
+{
+
+}
+
+void WindowHandler::configRender()
+{
+	sf::CircleShape shape(250.f);
+	shape.setFillColor(sf::Color::Blue);
+	text.setString("Config Render!");
+	text.setCharacterSize(24);
+	text.setColor(sf::Color::Black);
+	text.setPosition(500, 0);
+
+	window.clear(sf::Color::White);
+	window.draw(shape);
+	window.draw(text);
+	window.display();
 }

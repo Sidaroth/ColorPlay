@@ -164,3 +164,75 @@ float BulbMath::xyz2rgb(float x, float y, float z)
 
 	return 10.0f;
 }
+
+//This function is not tested yet, math and matrix taken from rgb2lab.m documentation from Shida
+float BulbMath::rgb2xyz(float r, float g, float b)
+{
+	float X, Y, Z;
+
+	//Threshold
+	T = 0.008856;
+
+	// RGB to XYZ matrix
+	float M[3][3] =
+	{
+		{0.412453, 0.357580, 0.180423},
+		{0.212671, 0.715160, 0.072169},
+		{0.019334, 0.119193, 0.950227}
+	};
+
+	X = (M[0][0] * r) + (M[0][1] * g) + (M[0][2] * b);
+	Y = (M[1][0] * r) + (M[1][1] * g) + (M[1][2] * b);
+	Z = (M[2][0] * r) + (M[2][1] * g) + (M[2][2] * b);
+
+	//Normalize for D65 white
+
+	X = X / 0.950456;
+	Z = Z / 1.088754;
+
+}
+
+//This function is not tested yet, math and matrix taken from rgb2lab.m documentation from Shida
+float BulbMath::xyz2lab(float x, float y, float z)
+{
+	float L, a, b;
+	float fX, fY, fZ;
+
+	//Threshold
+	T = 0.008856;
+
+	Y3 = pow(y, 3);
+
+	if (x > T)
+	{
+		fX = pow(x, 1/3);
+	}
+	else
+	{
+		fX = 7.787 * x + 16.0f/116.0f;
+	}
+
+	if (y > T)
+	{
+		fY = Y3;
+		L = (116.0f * Y3 -16.0f);
+	}
+	else
+	{
+		fY = 7.787 * y + 16.0f/116.0f;
+		L = 903.3 * y;
+	}
+
+	if (z > T)
+	{
+		fZ = pow(z, 1/3);
+	}
+	else
+	{
+		fZ = 7.787 * z + 16.0f/116.0f;
+	}
+
+	a = 500 * (fX - fY);
+	b = 200 * (fY - fZ);
+
+}

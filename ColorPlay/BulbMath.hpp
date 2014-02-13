@@ -8,6 +8,7 @@ public:
 	BulbMath();
 	float *lab2xyz(float L, float a, float b);
 	float xyz2rgb(float x, float y, float z);
+	float rgb2xyz(float r, float g, float b);
 
 private:
 	float rgbTreshholdCheck(float x);

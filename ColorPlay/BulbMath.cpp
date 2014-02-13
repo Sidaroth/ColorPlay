@@ -1,4 +1,3 @@
-#include "math.h"
 #include "BulbMath.hpp"
 
 BulbMath::BulbMath()
@@ -7,12 +6,8 @@ BulbMath::BulbMath()
 }
 
 //Calculates xyz from lab, returnes a float array with X in [0], Y in [1] and Z in [2]
-float *BulbMath::lab2xyz(float L, float a, float b)
+sf::Vector3f BulbMath::lab2xyz(float L, float a, float b)
 {
-	float *pointer;
-	float xyz[3];
-	pointer = &xyz[0];
-
 	//Treshholds
 	float T1 = 0.008856;
 	float T2 = 903.3;
@@ -101,13 +96,9 @@ float *BulbMath::lab2xyz(float L, float a, float b)
 	X = X * 0.950456;
 	Z = Z * 1.088754;
 
-	std::cout << "\n X: " << X << " Y: " << Y << " Z: " << Z << std::endl;
+	sf::Vector3f XYZ(X, Y, Z);
 
-	xyz[0] = X;
-	xyz[1] = Y;
-	xyz[2] = Z;
-
-	return pointer;
+	return XYZ;
 
 }
 
@@ -126,7 +117,7 @@ float BulbMath::rgbTreshholdCheck(float x)
 }
 
 //NOT finished, Seems to return right values in correspondance to eachother but in the wrong range
-float BulbMath::xyz2rgb(float x, float y, float z)
+sf::Vector3f BulbMath::xyz2rgb(float x, float y, float z)
 {
 	float R, G, B;
 	float rx, ry, rz;
@@ -160,18 +151,18 @@ float BulbMath::xyz2rgb(float x, float y, float z)
 	G = rgbTreshholdCheck(G);
 	B = rgbTreshholdCheck(B);
 
-	std::cout << "\n R: " << R*255.0f << " G: " << G*255.0f << " B: " << B*255.0f << std::endl;
+	sf::Vector3f RGB(R, G, B);
 
-	return 10.0f;
+	return RGB;
 }
 
 //This function is not tested yet, math and matrix taken from rgb2lab.m documentation from Shida
-float BulbMath::rgb2xyz(float r, float g, float b)
+sf::Vector3f BulbMath::rgb2xyz(float r, float g, float b)
 {
 	float X, Y, Z;
 
 	//Threshold
-	T = 0.008856;
+	//float T = 0.008856;
 
 	// RGB to XYZ matrix
 	float M[3][3] =
@@ -186,22 +177,24 @@ float BulbMath::rgb2xyz(float r, float g, float b)
 	Z = (M[2][0] * r) + (M[2][1] * g) + (M[2][2] * b);
 
 	//Normalize for D65 white
-
 	X = X / 0.950456;
 	Z = Z / 1.088754;
 
+	sf::Vector3f XYZ(X, Y, Z);	
+
+	return XYZ;
 }
 
 //This function is not tested yet, math and matrix taken from rgb2lab.m documentation from Shida
-float BulbMath::xyz2lab(float x, float y, float z)
+sf::Vector3f BulbMath::xyz2lab(float x, float y, float z)
 {
 	float L, a, b;
 	float fX, fY, fZ;
 
 	//Threshold
-	T = 0.008856;
+	float T = 0.008856;
 
-	Y3 = pow(y, 3);
+	float Y3 = pow(y, 3);
 
 	if (x > T)
 	{
@@ -235,4 +228,72 @@ float BulbMath::xyz2lab(float x, float y, float z)
 	a = 500 * (fX - fY);
 	b = 200 * (fY - fZ);
 
+	sf::Vector3f Lab(L, a, b);
+
+	return Lab;
+}
+
+//Input = rgb in range 0 - 255, output = H in range 0 - 360, s and v in range 0 - 100
+//Partly tested, worked for the ~10 values I tried according to the calculator at http://www.csgnetwork.com/csgcolorsel4.html
+sf::Vector3f BulbMath::rgb2hsv(int r, int g, int b)
+{
+	sf::Vector3f hsv;
+
+	float min, max, delta;
+
+	float rr = (float)r/255;
+	float gg = (float)g/255;
+	float bb = (float)b/255;
+
+
+	max = std::max(std::max(rr, gg), std::max(gg, bb));
+	std::cout << "\nMAXXXX: " << max << std::endl;
+	min = std::min(std::min(rr, gg), std::min(gg, bb));
+	delta = max - min;
+
+	hsv.z = max;
+
+	if (max != 0)
+	{
+		hsv.y = delta / max;
+	}
+	else
+	{
+		//This means r, g and b are all 0, which means s = 0 and v is undefined
+		hsv.x = -1;
+		hsv.y = 0;
+	}
+
+	if (min == max)
+	{
+		hsv.x = 0;
+	}
+	else
+	{
+		if (rr == max)
+		{
+			std::cout << "\n1111111111" << std::endl;
+			hsv.x = (gg - bb) / delta;
+		}
+		else if (gg == max)
+		{
+			std::cout << "\n2222222222" << std::endl;
+			hsv.x = 2 + (bb - rr) / delta;
+		}
+		else
+		{
+			std::cout << "\n33333333333" << std::endl;
+			hsv.x = 4 + (rr - gg) / delta;
+		}
+	}
+	std::cout << "\nHER: " << hsv.x << std::endl;
+	hsv.x = hsv.x * 60;
+	if (hsv.x < 0)
+	{
+		hsv.x = hsv.x + 360;
+	}
+
+	std::cout << "\n H: " << round(hsv.x) << " s: " << round(hsv.y * 100) << " v: " << round(hsv.z * 100) << std::endl;
+
+	return hsv;
 }

@@ -10,8 +10,8 @@ WindowHandler::WindowHandler()
 WindowHandler::WindowHandler(std::string windowName,
 							 LogModule* logger,
 							 bool* running,
-							 int width,          /* 800  */ 
-							 int height, 		 /* 600  */
+							 int width,          /* 1280  */ 
+							 int height, 		 /* 720  */
 							 bool verticalSync , /* true */ 
 							 int frameRateLimit) /* 60   */
 {
@@ -120,7 +120,7 @@ void WindowHandler::gameProcessEvents()
 				(*running) = false;
 				break;
 
-			case sf::Event::KeyPressed:
+			case sf::Event::KeyReleased:
 			// Switch to determine which button is pressed. 
 				switch(event.key.code)
 				{
@@ -174,7 +174,7 @@ void WindowHandler::configProcessEvents()
 				(*running) = false;
 				break;
 
-			case sf::Event::KeyPressed:
+			case sf::Event::KeyReleased:
 			// Switch to determine which button is pressed. 
 				switch(event.key.code)
 				{
@@ -207,10 +207,15 @@ void WindowHandler::configRender()
 	text.setString("Config Render!");
 	text.setCharacterSize(24);
 	text.setColor(sf::Color::Black);
-	text.setPosition(500, 0);
+	text.setPosition(750, 0);
 
-	window.clear(sf::Color::White);
-	window.draw(shape);
+	sf::RectangleShape rectShape(sf::Vector2f(300, 300));
+	rectShape.setFillColor(sf::Color(123, 123, 255));
+	rectShape.setPosition(500, 300);
+
+	window.clear(sf::Color(128,128,128));
+	window.draw(rectShape);
 	window.draw(text);
 	window.display();
 }
+

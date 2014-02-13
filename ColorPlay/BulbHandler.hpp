@@ -1,7 +1,7 @@
 /*
 	Purpose: This class is responsible for handling the communication to and from the Philips Hue lightbulbs. 
 
-	Last edited: 9. Feb. 2014
+	Last edited: 13. Feb. 2014
 
 	Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun, Harry Nystad
 			 Gjøvik University College.
@@ -15,11 +15,10 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
+#include <istream>
+#include <ostream>
 
-#include <Poco/Net/HTTPRequest.h>
-#include <Poco/Net/HTTPClientSession.h>
-#include <Poco/Net/HTTPResponse.h>
-#include <Poco/StreamCopier.h>
+#include <curl/curl.h>
 #include "StringQueue.hpp"
 
 #define DEBUG 1
@@ -44,7 +43,7 @@ private:
 	std::vector<char> bulbList;
 	std::vector<char>::iterator it;
 
-	//CURL* curl;
+	CURL* curl;
 	std::string bulbAdress;
 
 	void command(std::string body, std::string type, int bulbId);

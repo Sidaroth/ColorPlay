@@ -37,7 +37,7 @@ int BulbHandler::getBrightness(int bulbId)
 void BulbHandler::setHue(int hue, int bulbId)
 {
 	std::stringstream message;
-	message << "{\"on\":true, \"hue\":" << hue << "}";
+	message << "{\"on\":true,\"hue\":" << hue << ",\"sat\":255" << "}";
 	
 	if (DEBUG >= 1)
 	{
@@ -77,70 +77,46 @@ int BulbHandler::getSaturation(int bulbId)
 
 void BulbHandler::command(std::string body, std::string type, int bulbId)
 {
-	try {
-		Poco::Net::HTTPClientSession session("192.168.1.172");
-		Poco::Net::HTTPRequest request(Poco::Net::HTTPRequest::HTTP_PUT, "/lights/api/newdeveloper/1/state");
 
-		std::ostream& os = session.sendRequest(request);
+	std::stringstream message; 
+	CURLcode res;
+	struct curl_slist *headers = NULL;
+	curl = curl_easy_init();
 
-		// Potential program killer... Testing. 
-		os << "Testing";
+	if (curl)
+	{
+		if (DEBUG >= 1)
+		{
+			printf("Sending request \n");
+		}
+	
+		// Set headers. 
+		headers = curl_slist_append(headers, "Accept: application/json");
+		headers = curl_slist_append(headers, "Content-Type: application/json");
+		headers = curl_slist_append(headers, "charsets: utf-8");
+		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
-		Poco::Net::HTTPResponse response;
-		std::istream& rs = session.receiveResponse(response);
+		message << bulbAdress << bulbId << "/state";
 
-		// Do something with the response?
+		if (DEBUG >= 1)
+		{
+			std::cout << "Received body is: " << &body[0] << "\n";
+			std::cout << "Bulb adress: " << &message.str()[0] << "\n";
+			std::cout << "Message type is: " << type << "\n";
+		}
 
-	} catch (Poco::Exception& e) {
-		std::cerr << e.displayText() << std::endl;
+		curl_easy_setopt(curl, CURLOPT_URL, &message.str()[0]);
+
+		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, &type[0]);
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, &body[0]);
+
+		std::cout << "perform\n";
+		res = curl_easy_perform(curl);
+		curl_slist_free_all(headers);
+		curl_easy_cleanup(curl);
 	}
 
-
-	// CURLcode res;
-	// struct curl_slist *headers = NULL;
-	// curl = curl_easy_init();
-
-	// std::stringstream message;
-
-	// if (curl)
-	// {
-	// 	if (DEBUG >= 1)
-	// 	{
-	// 		printf("Sending request \n");
-	// 	}
-	
-	// 	// Set headers. 
-	// 	headers = curl_slist_append(headers, "Accept: application/json");
-	// 	headers = curl_slist_append(headers, "Content-Type: application/json");
-	// 	headers = curl_slist_append(headers, "charsets. utf-8");
-	// 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-
-	// 	message << bulbAdress << bulbList[bulbId - 1] << "/state";
-		
-	// 	if (type == "PUT")
-	// 	{
-	// 		message << "/state";
-	// 	}
-
-	// 	if (DEBUG >= 1)
-	// 	{
-	// 		std::cout << "Received body is: " << &body[0] << "\n";
-	// 		std::cout << "Bulb adress: " << &message.str()[0] << "\n";
-	// 		std::cout << "Message type is: " << type << "\n";
-	// 	}
-
-	// 	curl_easy_setopt(curl, CURLOPT_URL, &message.str()[0]);
-
-	// 	//TODO: This should be customizable I think...
-	// 	curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, &type[0]);
-	// 	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, &body[0]);
-
-	// 	res = curl_easy_perform(curl);
-	// 	curl_slist_free_all(headers);
-	// 	curl_easy_cleanup(curl);
-	// }
-
-	// curl_global_cleanup();
+	curl_global_cleanup();
 }
 
 

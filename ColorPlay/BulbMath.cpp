@@ -10,11 +10,12 @@ BulbMath::BulbMath()
 //remember to set reference white to D65 when using calculator
 sf::Vector3f BulbMath::lab2xyz(float L, float a, float b)
 {
+	
 	//Tristimulus values of reference white D(65)
-	float Xn = 95.047;
-	float Yn = 100.0;
-	float Zn = 108.883;
-
+	float Xn = 95.047/100;
+	float Yn = 100.0/100;
+	float Zn = 108.883/100;
+	/*	
 	float X, Y, Z;
 
 	X = Xn * pow((((L + 16) / 116) + a / 500), 3);
@@ -26,6 +27,113 @@ sf::Vector3f BulbMath::lab2xyz(float L, float a, float b)
 	sf::Vector3f XYZ((X*100), (Y*100), (Z*100));
 
 	return XYZ;
+	*/
+	float fx, fy, fz, xr, yr, zr, X, Y, Z;
+
+	//Tresholds
+	float T1 = 0.008856;
+	float T2 = 903.3;
+
+	fy = (L + 16) / 116;
+	fz = fy - b / 200;
+	fx = a / 500 + fy;
+
+	if (pow(fx, 3) > T1)
+	{
+		xr = pow(fx, 3);
+	}
+	else
+	{
+		xr = (116 * fx - 16) / T2;
+	}
+
+	if (L > (T1 * T2))
+	{
+		yr = pow(((L + 16) / 116), 3);
+	}
+	else
+	{
+		yr = L / T2;
+	}
+
+	if (pow (fz, 3) > T1)
+	{
+		zr = pow(fz, 3);
+	}
+	else
+	{
+		zr = (116 * fz - 16) / T2;
+	}
+	X = xr * Xn;
+	Y = yr * Yn;
+	Z = zr * Zn;
+
+
+	sf::Vector3f XYZ(X*100, Y*100, Z*100);
+	//std::cout << "X: " << XYZ.x << " Y: " << XYZ.y << " Z: " << XYZ.z << std::endl;
+
+	return XYZ;
+
+}
+
+
+//This function is not tested yet, math and matrix taken from rgb2lab.m documentation from Shida
+sf::Vector3f BulbMath::xyz2lab(float X, float Y, float Z)
+{
+	/*
+	float L, a, b;
+	float fX, fY, fZ;
+
+	//Threshold
+	float T = 0.008856;
+
+	float Y3 = pow(y, 3);
+
+	if (x > T)
+	{
+		fX = pow(x, 1/3);
+	}
+	else
+	{
+		fX = 7.787 * x + 16.0f/116.0f;
+	}
+
+	if (y > T)
+	{
+		fY = Y3;
+		L = (116.0f * Y3 -16.0f);
+	}
+	else
+	{
+		fY = 7.787 * y + 16.0f/116.0f;
+		L = 903.3 * y;
+	}
+
+	if (z > T)
+	{
+		fZ = pow(z, 1/3);
+	}
+	else
+	{
+		fZ = 7.787 * z + 16.0f/116.0f;
+	}
+
+	a = 500 * (fX - fY);
+	b = 200 * (fY - fZ);
+
+	sf::Vector3f Lab(L, a, b);
+	
+	return Lab;
+	*/
+	sf::Vector3f Lab;
+
+	//D65 Tristimulus values
+	float Xn = 95.047;
+	float Yn = 100.0;
+	float Zn = 108.883;
+
+	//Treshold
+	0.008856;
 }
 
 float BulbMath::rgbTreshholdCheck(float x)
@@ -111,53 +219,6 @@ sf::Vector3f BulbMath::rgb2xyz(float r, float g, float b)
 	return XYZ;
 }
 
-//This function is not tested yet, math and matrix taken from rgb2lab.m documentation from Shida
-sf::Vector3f BulbMath::xyz2lab(float x, float y, float z)
-{
-	float L, a, b;
-	float fX, fY, fZ;
-
-	//Threshold
-	float T = 0.008856;
-
-	float Y3 = pow(y, 3);
-
-	if (x > T)
-	{
-		fX = pow(x, 1/3);
-	}
-	else
-	{
-		fX = 7.787 * x + 16.0f/116.0f;
-	}
-
-	if (y > T)
-	{
-		fY = Y3;
-		L = (116.0f * Y3 -16.0f);
-	}
-	else
-	{
-		fY = 7.787 * y + 16.0f/116.0f;
-		L = 903.3 * y;
-	}
-
-	if (z > T)
-	{
-		fZ = pow(z, 1/3);
-	}
-	else
-	{
-		fZ = 7.787 * z + 16.0f/116.0f;
-	}
-
-	a = 500 * (fX - fY);
-	b = 200 * (fY - fZ);
-
-	sf::Vector3f Lab(L, a, b);
-
-	return Lab;
-}
 
 //Input = rgb in range 0 - 255, output = H in range 0 - 360, s and v in range 0 - 100
 //Partly tested, worked for the ~10 values I tried according to the calculator at http://www.csgnetwork.com/csgcolorsel4.html
@@ -173,7 +234,6 @@ sf::Vector3f BulbMath::rgb2hsv(int r, int g, int b)
 
 
 	max = std::max(std::max(rr, gg), std::max(gg, bb));
-	std::cout << "\nMAXXXX: " << max << std::endl;
 	min = std::min(std::min(rr, gg), std::min(gg, bb));
 	delta = max - min;
 
@@ -215,7 +275,7 @@ sf::Vector3f BulbMath::rgb2hsv(int r, int g, int b)
 		hsv.x = hsv.x + 360;
 	}
 
-	std::cout << "\n H: " << round(hsv.x) << " s: " << round(hsv.y * 100) << " v: " << round(hsv.z * 100) << std::endl;
+	//std::cout << "\n H: " << round(hsv.x) << " s: " << round(hsv.y * 100) << " v: " << round(hsv.z * 100) << std::endl;
 
 	return hsv;
 }
@@ -238,7 +298,7 @@ sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 		RGB.y = round(RGB.y * 255);
 		RGB.z = round(RGB.z * 255);
 
-		std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
+		//std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
 		return RGB;
 	}
 
@@ -285,6 +345,6 @@ sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 	RGB.x = round(RGB.x * 255);
 	RGB.y = round(RGB.y * 255);
 	RGB.z = round(RGB.z * 255);
-	std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
+	//std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
 	return RGB;
 }

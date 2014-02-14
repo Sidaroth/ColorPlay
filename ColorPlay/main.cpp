@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 	WindowHandler windowHandler("Color Play Game v.0.1", &logger, &running);
 
 	////////////////////// INIT //////////////////////
-	bulbHandler.setBulbAdress("http://192.168.1.172/api/newdeveloper/lights/");
+	bulbHandler.setBulbAdress("http://192.168.37.114/api/newdeveloper/lights/");
 
 	bulbHandler.addBulb('1');
 	bulbHandler.addBulb('2');
@@ -44,6 +44,11 @@ int main(int argc, char* argv[])
 		std::cout << "Window initialization failed! Exiting...";
 		return -1;		
 	}
+
+	//bulbHandler.setHue(46000, 1);
+	bulbHandler.setHue(60000, 2);
+	bulbHandler.setHue(46000, 3);
+	//bulbHandler.setHue(56000, 4);
 
 	///////////////// START THREADS /////////////////
 	std::thread loggerThread(&LogModule::run, &logger);	// Run the logger module in a background thread.

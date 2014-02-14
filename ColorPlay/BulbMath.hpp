@@ -14,6 +14,7 @@ public:
 	sf::Vector3f rgb2xyz(float r, float g, float b);
 	sf::Vector3f xyz2lab(float x, float y, float z);
 	sf::Vector3f rgb2hsv(int r, int g, int b);
+	sf::Vector3f hsv2rgb(float H, float s, float v);
 
 
 private:

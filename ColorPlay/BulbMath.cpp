@@ -272,21 +272,17 @@ sf::Vector3f BulbMath::rgb2hsv(int r, int g, int b)
 	{
 		if (rr == max)
 		{
-			std::cout << "\n1111111111" << std::endl;
 			hsv.x = (gg - bb) / delta;
 		}
 		else if (gg == max)
 		{
-			std::cout << "\n2222222222" << std::endl;
 			hsv.x = 2 + (bb - rr) / delta;
 		}
 		else
 		{
-			std::cout << "\n33333333333" << std::endl;
 			hsv.x = 4 + (rr - gg) / delta;
 		}
 	}
-	std::cout << "\nHER: " << hsv.x << std::endl;
 	hsv.x = hsv.x * 60;
 	if (hsv.x < 0)
 	{
@@ -296,4 +292,73 @@ sf::Vector3f BulbMath::rgb2hsv(int r, int g, int b)
 	std::cout << "\n H: " << round(hsv.x) << " s: " << round(hsv.y * 100) << " v: " << round(hsv.z * 100) << std::endl;
 
 	return hsv;
+}
+
+//H in value 0 - 360, s and v in range 0 - 100; return rgb in range 0 - 255.
+//Tested and works according to calculator @ http://www.csgnetwork.com/csgcolorsel4.html
+sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
+{
+	sf::Vector3f RGB;
+	float f, p, q, t, hh, ss, vv;
+	int i;
+
+	ss = s / 100;
+	vv = v / 100;
+
+	if (s == 0)		//This means the color is grey
+	{
+		RGB.x = RGB.y = RGB.z = vv;
+		RGB.x = round(RGB.x * 255);
+		RGB.y = round(RGB.y * 255);
+		RGB.z = round(RGB.z * 255);
+
+		std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
+		return RGB;
+	}
+
+	hh = H / 60;
+	i = floor(hh);
+	f = hh - i;
+	p = vv * (1 - ss);
+	q = vv * (1 - ss * f);
+	t = vv * (1 - ss * (1 - f));
+
+	switch(i) {
+		case 0:
+				RGB.x = vv;
+				RGB.y = t;
+				RGB.z = p;
+				break;
+		case 1:
+				RGB.x = q;
+				RGB.y = vv;
+				RGB.z = p;
+				break;
+		case 2:
+				RGB.x = p;
+				RGB.y = vv;
+				RGB.z = t;
+				break;
+		case 3:
+				RGB.x = p;
+				RGB.y = q;
+				RGB.z = vv;
+				break;
+		case 4:
+				RGB.x = t;
+				RGB.y = p;
+				RGB.z = vv;
+				break;
+		default:
+				RGB.x = vv;
+				RGB.y = p;
+				RGB.z = q;
+				break;
+	}
+
+	RGB.x = round(RGB.x * 255);
+	RGB.y = round(RGB.y * 255);
+	RGB.z = round(RGB.z * 255);
+	std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
+	return RGB;
 }

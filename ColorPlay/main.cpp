@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
 	logger.LogEvent("Adding lightBulb 3");
 	logger.LogEvent("Adding lightBulb 4");
 	
-	bulbMath.rgb2hsv(100, 100, 50);
+	bulbMath.hsv2rgb(300.0f, 0.0f, 60.0f);
 
 	if(windowHandler.init())
 	{

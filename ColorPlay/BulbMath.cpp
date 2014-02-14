@@ -15,19 +15,6 @@ sf::Vector3f BulbMath::lab2xyz(float L, float a, float b)
 	float Xn = 95.047/100;
 	float Yn = 100.0/100;
 	float Zn = 108.883/100;
-	/*	
-	float X, Y, Z;
-
-	X = Xn * pow((((L + 16) / 116) + a / 500), 3);
-	Y = Yn * pow(((L + 16) / 116), 3);
-	Z = Zn * pow((((L + 16) / 116) - b / 200), 3);
-
-	std::cout << "X: " << X << " Y: " << Y << " Z: " << Z << std::endl;
-
-	sf::Vector3f XYZ((X*100), (Y*100), (Z*100));
-
-	return XYZ;
-	*/
 	float fx, fy, fz, xr, yr, zr, X, Y, Z;
 
 	//Tresholds
@@ -77,55 +64,11 @@ sf::Vector3f BulbMath::lab2xyz(float L, float a, float b)
 }
 
 
-//This function is not tested yet, math and matrix taken from rgb2lab.m documentation from Shida
+//Working. Tested with bruce lindbloom calculator (remember to set d65 white point)
+//input XYZ in rage 0 - 100
 sf::Vector3f BulbMath::xyz2lab(float X, float Y, float Z)
 {
-	/*
-	float L, a, b;
-	float fX, fY, fZ;
-
-	//Threshold
-	float T = 0.008856;
-
-	float Y3 = pow(y, 3);
-
-	if (x > T)
-	{
-		fX = pow(x, 1/3);
-	}
-	else
-	{
-		fX = 7.787 * x + 16.0f/116.0f;
-	}
-
-	if (y > T)
-	{
-		fY = Y3;
-		L = (116.0f * Y3 -16.0f);
-	}
-	else
-	{
-		fY = 7.787 * y + 16.0f/116.0f;
-		L = 903.3 * y;
-	}
-
-	if (z > T)
-	{
-		fZ = pow(z, 1/3);
-	}
-	else
-	{
-		fZ = 7.787 * z + 16.0f/116.0f;
-	}
-
-	a = 500 * (fX - fY);
-	b = 200 * (fY - fZ);
-
-	sf::Vector3f Lab(L, a, b);
-	
-	return Lab;
-	*/
-	sf::Vector3f Lab;
+	float xr, yr, zr, fx, fy, fz, L, a, b;
 
 	//D65 Tristimulus values
 	float Xn = 95.047;
@@ -133,7 +76,49 @@ sf::Vector3f BulbMath::xyz2lab(float X, float Y, float Z)
 	float Zn = 108.883;
 
 	//Treshold
-	0.008856;
+	float T1 = 0.008856;
+	float T2 = 903.3;
+
+	xr = X / Xn;
+	yr = Y / Yn;
+	zr = Z / Zn;
+
+	if (xr > T1)
+	{
+		fx = cbrt(xr);
+	}
+	else
+	{
+		fx = (T2 * xr + 16) / 116;
+	}
+
+	if (yr > T1)
+	{
+		fy = cbrt(yr);
+	}
+	else
+	{
+		fy = (T2 * yr + 16) / 116;
+	}
+
+	if (zr > T1)
+	{
+		fz = cbrt(zr);
+	}
+	else
+	{
+		fz = (T2 * zr + 16) / 116;
+	}
+
+	L = 116 * fy - 16;
+	a = 500 * (fx - fy);
+	b = 200 * (fy - fz);
+
+	sf::Vector3f LAB(L, a, b);
+	std::cout << "\nL: " << L << " a: " << a << " b: " << b << std::endl;
+
+	return LAB;
+
 }
 
 float BulbMath::rgbTreshholdCheck(float x)

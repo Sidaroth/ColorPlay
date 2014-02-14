@@ -5,101 +5,27 @@ BulbMath::BulbMath()
 
 }
 
-//Calculates xyz from lab, returnes a float array with X in [0], Y in [1] and Z in [2]
+//Returns XYZ in range 0 - 100.
+//Works according to calculator at www.google.no/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0CC0QFjAA&url=http%3A%2F%2Fwww.brucelindbloom.com%2F&ei=qFr7UpDgGKP9ywO-qILgBw&usg=AFQjCNF2xEuBjOP60Afxlj2BMU8lhYlaMA&bvm=bv.61190604,d.bGQ
+//remember to set reference white to D65 when using calculator
 sf::Vector3f BulbMath::lab2xyz(float L, float a, float b)
 {
-	//Treshholds
-	float T1 = 0.008856;
-	float T2 = 903.3;
+	//Tristimulus values of reference white D(65)
+	float Xn = 95.047;
+	float Yn = 100.0;
+	float Zn = 108.883;
 
-	float fX, fY, fZ;
-	//float xr, yr, zr;
 	float X, Y, Z;
-	/*
-	Lindbloom version
-	//if ((fx^3.0f) > T1)
-	if (pow(fx, 3) > T1)
-	{
-		xr = pow(fx, 3);
-	}
-	else
-	{
-		xr = (116 * fx - 16) / T2;
-	}
 
-	if (L > T1 * T2)
-	{
-		yr = pow(((L + 16) / 116), 3);
-	}
-	else
-	{
-		yr = L / T2;
-	}
+	X = Xn * pow((((L + 16) / 116) + a / 500), 3);
+	Y = Yn * pow(((L + 16) / 116), 3);
+	Z = Zn * pow((((L + 16) / 116) - b / 200), 3);
 
-	//if (fz^3 > T1)
-	if (pow(fz, 3) > T1)
-	{
-		zr = pow(fz, 3);
-	}
-	else
-	{
-		zr = (116 * fz - 16) / T2;
-	}
-	*/
+	std::cout << "X: " << X << " Y: " << Y << " Z: " << Z << std::endl;
 
-	//Math from shida
-	//Calculate Y
-	fY = pow(((L + 16) / 116), 3);
-
-	if (fY <= T1)
-	{
-		fY = L / 903.3;
-	}
-
-	Y = fY;
-
-	//Slightly change fY for further calculations
-	/*if (fY > T1)
-	{
-		fY = pow(fY, (1/3));
-	}
-	else
-	{
-		fY = (7.787 * fY + 16/116);
-	}*/
-
-	//Calculate X
-	fX = (a / 500) + fY;
-
-	if (fX > T2)
-	{
-		X = pow(fX, 3);
-	}
-	else
-	{
-		X = fX - ((16.0f/116.0f) / 7.7877);
-	}
-
-	//Calculate Z
-	fZ = fY - (b / 200.0f);
-
-	if (fZ > T2)
-	{
-		Z = pow(fZ, 3);
-	}
-	else
-	{
-		Z = fZ - ((16.0f/116.0f) / 7.7877);
-	}
-
-	//Normalize for D65 white point
-	X = X * 0.950456;
-	Z = Z * 1.088754;
-
-	sf::Vector3f XYZ(X, Y, Z);
+	sf::Vector3f XYZ((X*100), (Y*100), (Z*100));
 
 	return XYZ;
-
 }
 
 float BulbMath::rgbTreshholdCheck(float x)

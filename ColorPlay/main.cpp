@@ -4,13 +4,13 @@
 #include <iostream>
 #include <sstream>
 
-
 #include "BulbHandler.hpp"
 #include "BulbMath.hpp"
 #include "LogModule.hpp"
 #include "StringQueue.hpp"
 #include "MoveHandler.hpp"
 #include "WindowHandler.hpp"
+#include "EventQueue.hpp"
 
 #define DEBUG 1
 
@@ -18,26 +18,30 @@ int main(int argc, char* argv[])
 {
 	bool running = false;
 
-	BulbHandler bulbHandler;
+	EventQueue eventQueue;
+	BulbHandler bulbHandler(&eventQueue);
 	BulbMath bulbMath;
 	LogModule logger;
 	MoveHandler moveHandler(&logger, &running);
 	WindowHandler windowHandler("Color Play Game v.0.1", &logger, &running);
 
+	////////////////////// INIT //////////////////////
+	std::string url = "http://192.168.37.114/api/newdeveloper/lights/";
 
-	bulbHandler.setBulbAdress("http://192.168.1.172/api/newdeveloper/lights/");
-
-	bulbHandler.addBulb('1');
-	bulbHandler.addBulb('2');
-	bulbHandler.addBulb('3');
-	bulbHandler.addBulb('4');
-
-	logger.LogEvent("Adding lightBulb 1");
-	logger.LogEvent("Adding lightBulb 2");
-	logger.LogEvent("Adding lightBulb 3");
-	logger.LogEvent("Adding lightBulb 4");
+	bulbHandler.setBulbAdress(url);
 	
-	bulbMath.lab2xyz(1,1,1);
+	bulbMath.rgb2hsv(100, 100, 50);
+
+	if(windowHandler.init())
+	{
+		std::cout << "Window initialization failed! Exiting...";
+		return -1;		
+	}
+
+	//bulbHandler.setHue(46000, 1);
+	bulbHandler.setHue(60000, 2);
+	bulbHandler.setHue(61000, 3);
+	//bulbHandler.setHue(56000, 4);
 
 	///////////////// START THREADS /////////////////
 	std::thread loggerThread(&LogModule::run, &logger);	// Run the logger module in a background thread.
@@ -45,14 +49,23 @@ int main(int argc, char* argv[])
 	
 	///////////////// START WORK IN THE MAIN THREAD //////////////////
 	std::cout << "Main thread: " << std::this_thread::get_id() << std::endl;
-	running = true; 
+	running = true;
 
+	ActionEvent event(12, ActionEvent::Action::Up);
+	eventQueue.push(event);
+	event.setAction(ActionEvent::Action::None);
+	eventQueue.push(event);
+	event.setAction(ActionEvent::Action::Finish);
+	eventQueue.push(event);
+	event.setAction(ActionEvent::Action::Down);
+	eventQueue.push(event);
+	
 	while(running)
 	{
 		// Event processing
-
 		windowHandler.processEvents();
-		
+		bulbHandler.processEvents();
+
 		// Updates
 		windowHandler.update();
 		

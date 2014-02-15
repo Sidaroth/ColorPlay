@@ -15,7 +15,7 @@ MoveHandler::MoveHandler(LogModule *logger, bool *running)
 	this->frame = nullptr;
 	this->x = nullptr;
 	this->y = nullptr;
-	this->z = nullptr;
+	this->radius = nullptr;
 	this->measurements = new measurement[MEASUREMENTS];
 	this->logger = logger;
 	
@@ -94,8 +94,8 @@ void MoveHandler::run()
         	    cvShowImage("live camera feed", frame);
         	}
 
-            psmove_tracker_get_position(this->tracker, this->move, this->x, this->y, this->z);
-            printf("x: %10.2f, y: %10.2f, r: %10.2f\n", x, y, z);
+            psmove_tracker_get_position(this->tracker, this->move, this->x, this->y, this->radius);
+            printf("x: %10.2f, y: %10.2f, r: %10.2f\n", this->x, this->y, this->radius);
 
 			std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		}
@@ -126,7 +126,7 @@ void MoveHandler::run2()
 
 			if(buttons & Btn_TRIANGLE)
 			{
-				this->g =255;
+				this->g = 255;
 			}
 			else
 			{
@@ -160,12 +160,6 @@ void MoveHandler::setColor(unsigned char r, unsigned char g, unsigned char b)
 	this->updateColor();
 }
 
-char* MoveHandler::getColor()
-{
-	char* color = new char[this->r, this->g, this->b];
-	return color;
-}
-
 //PRIVATE##########################################################################################
 void MoveHandler::updateColor()
 {	
@@ -189,6 +183,6 @@ void MoveHandler::updateColor()
 	}
 	else
 	{
-		std::cout << "WAT?!\n";
+		std::cout << "WHAT?!\n";
 	}
 }

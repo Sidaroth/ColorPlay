@@ -1,10 +1,6 @@
 #pragma once
 
-//define NDEBUG
-
-#include <assert.h>
-#include <sstream>
-//#include <mutex>
+//#include <sstream>
 
 #include "psmove.h"
 #include "psmove_tracker.h"
@@ -27,7 +23,6 @@ public:
 
 	//Setters and getters
 	void setColor(unsigned char r, unsigned char g, unsigned char b);
-	char* getColor();
 private:
 	bool *running;
 
@@ -44,7 +39,7 @@ private:
 	void *frame;
 	float *x; 
 	float *y; 
-	float *z;
+	float *radius;
 	measurement *measurements;
 
 	LogModule *logger;

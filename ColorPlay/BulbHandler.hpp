@@ -20,6 +20,8 @@
 
 #include <curl/curl.h>
 #include "StringQueue.hpp"
+#include "EventQueue.hpp"
+#include "ActionEvent.hpp"
 
 #define DEBUG 1
 
@@ -27,8 +29,18 @@ class BulbHandler
 {
 public:
 	BulbHandler();
+	BulbHandler(EventQueue *eventQueue);
+
+	typedef struct Bulb{
+		short id;
+		short hue;
+		short sat;
+		short bri;
+		bool on; 
+	} Bulb;
+
+
 	void setBulbAdress(std::string bulbAdress);
-	void addBulb(char id);
 	void setBrightness(int brightness, int bulbId);
 	int  getBrightness(int bulbId);
 	void setHue(int hue, int bulbId);
@@ -36,17 +48,18 @@ public:
 	void setSaturation(int saturation, int bulbId);
 	int  getSaturation(int bulbId);
 
+	void processEvents();
+
 	static int callback_func(void *getInfo, size_t size, size_t count, void *stream);
-	void runCalibration(int bulbId, int low, int high, int step, int stepDelay);
 	
 private:
-	std::vector<char> bulbList;
-	std::vector<char>::iterator it;
 
 	CURL* curl;
 	std::string bulbAdress;
+	EventQueue *eventQueue;
+	ActionEvent currentAction;
 
-	void command(std::string body, std::string type, int bulbId);
+	void command(std::string body, int bulbId);
 	void commandGet();
 
 	int Hue;

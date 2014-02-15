@@ -3,17 +3,18 @@
 
 BulbHandler::BulbHandler()
 {
-	//curl = curl_easy_init();
+	curl = curl_easy_init();
+}
+
+BulbHandler::BulbHandler(EventQueue *eventQueue)
+{
+	curl = curl_easy_init();
+	this -> eventQueue = eventQueue;
 }
 
 void BulbHandler::setBulbAdress(std::string bulbAdress)
 {
 	this -> bulbAdress = bulbAdress;
-}
-
-void BulbHandler::addBulb(char id)
-{
-	bulbList.push_back(id);
 }
 
 void BulbHandler::setBrightness(int brightness, int bulbId)
@@ -26,7 +27,7 @@ void BulbHandler::setBrightness(int brightness, int bulbId)
 		std::cout << "Setting brightness to: " << brightness << "\n";
 	}
 
-	command(message.str(), "PUT", bulbId);
+	command(message.str(), bulbId);
 }
 
 int BulbHandler::getBrightness(int bulbId)
@@ -44,7 +45,7 @@ void BulbHandler::setHue(int hue, int bulbId)
 		std::cout << "Setting hue to: " << hue << "\n";
 	}
 
-	command(message.str(), "PUT", bulbId);
+	command(message.str(), bulbId);
 }
 
 int BulbHandler::getHue(int bulbId)
@@ -67,7 +68,7 @@ void BulbHandler::setSaturation(int saturation, int bulbId)
 		std::cout << "Setting saturation to: " << saturation << "\n";
 	}
 
-	command(message.str(), "PUT", bulbId);
+	command(message.str(), bulbId);
 }
 
 int BulbHandler::getSaturation(int bulbId)
@@ -75,7 +76,7 @@ int BulbHandler::getSaturation(int bulbId)
 	return 0;
 }
 
-void BulbHandler::command(std::string body, std::string type, int bulbId)
+void BulbHandler::command(std::string body, int bulbId)
 {
 
 	std::stringstream message; 
@@ -102,21 +103,53 @@ void BulbHandler::command(std::string body, std::string type, int bulbId)
 		{
 			std::cout << "Received body is: " << &body[0] << "\n";
 			std::cout << "Bulb adress: " << &message.str()[0] << "\n";
-			std::cout << "Message type is: " << type << "\n";
 		}
 
 		curl_easy_setopt(curl, CURLOPT_URL, &message.str()[0]);
 
-		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, &type[0]);
+		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, &body[0]);
 
-		std::cout << "perform\n";
 		res = curl_easy_perform(curl);
 		curl_slist_free_all(headers);
 		curl_easy_cleanup(curl);
 	}
 
 	curl_global_cleanup();
+}
+
+
+// Process any events that have been added to the event queue. 
+void BulbHandler::processEvents()
+{
+	while(!this -> eventQueue -> empty())
+	{
+	 	currentAction = eventQueue -> pop();
+
+		switch(currentAction.action)
+		{
+			case ActionEvent::Action::Up:
+				std::cout << "UP!\n";
+				break;
+
+			case ActionEvent::Action::Down:
+				std::cout << "Down!\n";
+				break;
+
+			case ActionEvent::Action::Finish:
+				std::cout << "Finish!\n";
+				break;
+
+			case ActionEvent::Action::None:
+				std::cout << "None! - Should not be called unless an event has been mistakingly created!\n";
+				break;
+
+			default: break;
+		}
+
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(5));
+	}
 }
 
 
@@ -213,23 +246,4 @@ void BulbHandler::commandGet()
 	// }
 
 	// curl_global_cleanup();
-}
-
-void BulbHandler::runCalibration(int bulbId, int low, int high, int step, int stepDelay)
-{
-	std::chrono::time_point<std::chrono::system_clock> start, end;
-	start = std::chrono::system_clock::now();
-
-	for (int i = low; i <= high; i += step)
-	{
-		std::stringstream messageStream;
-		messageStream << "{\"on\":true, \"sat\":255, \"bri\":100, \"hue\":" << i << "}";
-		
-		command(messageStream.str(), "PUT", bulbId);
-		std::this_thread::sleep_for(std::chrono::milliseconds(stepDelay));
-	}
-
-	end = std::chrono::system_clock::now();
-	std::chrono::duration<double> elapsed_seconds = end - start;
-	std::cout << "Calibration time: " << elapsed_seconds.count() << "s\n";
 }

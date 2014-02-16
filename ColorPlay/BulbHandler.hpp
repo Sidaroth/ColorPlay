@@ -31,6 +31,19 @@ public:
 	BulbHandler();
 	BulbHandler(EventQueue *eventQueue);
 
+
+	// All bulbs use HSV color space, SFML works with RGB.
+	// The system will use one of the following. 
+	enum class ColorSpace
+	{
+		Lab,
+		XYZ,
+		CMY,
+		RGB,
+		HSV
+	};
+
+	// Will this struct be used? - Remains to be seen.
 	typedef struct Bulb{
 		short id;
 		short hue;
@@ -48,6 +61,8 @@ public:
 	void setSaturation(int saturation, int bulbId);
 	int  getSaturation(int bulbId);
 
+	void setColorSpace(ColorSpace colorSpace);
+
 	void processEvents();
 
 	static int callback_func(void *getInfo, size_t size, size_t count, void *stream);
@@ -58,9 +73,8 @@ private:
 	std::string bulbAdress;
 	EventQueue *eventQueue;
 	ActionEvent currentAction;
-
+	ColorSpace currentColorSpace;
+	
 	void command(std::string body, int bulbId);
 	void commandGet();
-
-	int Hue;
 };

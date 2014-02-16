@@ -10,6 +10,7 @@ BulbHandler::BulbHandler(EventQueue *eventQueue)
 {
 	curl = curl_easy_init();
 	this -> eventQueue = eventQueue;
+	this -> currentColorSpace = ColorSpace::HSV;
 }
 
 void BulbHandler::setBulbAdress(std::string bulbAdress)
@@ -116,6 +117,12 @@ void BulbHandler::command(std::string body, int bulbId)
 	}
 
 	curl_global_cleanup();
+}
+
+
+void BulbHandler::setColorSpace(ColorSpace colorSpace)
+{
+	this -> currentColorSpace = colorSpace;
 }
 
 

@@ -59,6 +59,8 @@ int main(int argc, char* argv[])
 	eventQueue.push(event);
 	event.setAction(ActionEvent::Action::Down);
 	eventQueue.push(event);
+
+	bulbHandler.setColorSpace(BulbHandler::ColorSpace::RGB);
 	
 	while(running)
 	{

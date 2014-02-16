@@ -1,6 +1,6 @@
 #pragma once
 
-//#include <sstream>
+#include <sstream>
 
 #include "psmove.h"
 #include "psmove_tracker.h"
@@ -16,18 +16,14 @@ class MoveHandler
 {
 public:
 	MoveHandler(LogModule *logger, bool *running);
-	bool connect();
-	void disconnect();
 	void run();
-	void run2();
 
-	//Setters and getters
-	void setColor(unsigned char r, unsigned char g, unsigned char b);
 private:
 	bool *running;
 
 	//PSMove
-	PSMove *move;
+	int connections;
+	std::vector<PSMove*> controllers;
 	enum PSMove_Connection_Type connectionType;
 	unsigned char r;
 	unsigned char g;
@@ -37,14 +33,13 @@ private:
 	//Tracker
 	PSMoveTracker *tracker;
 	void *frame;
-	float *x; 
-	float *y; 
-	float *radius;
-	measurement *measurements;
+	float x = 0.0f; 
+	float y = 0.0f; 
+	float radius = 0.0f;
+
 
 	LogModule *logger;
 
-
-
-	void updateColor();
+	bool connect();
+	void disconnect();
 };

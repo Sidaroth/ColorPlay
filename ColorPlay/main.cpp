@@ -72,8 +72,8 @@ int main(int argc, char* argv[])
 		// Rendering
 		windowHandler.render();
 	}
-		
 	
+		
 	///////////////// CLEANUP //////////////////////
 	logger.LogEvent("quit"); // logger.quit(); perhaps...
 

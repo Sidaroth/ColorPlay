@@ -137,106 +137,80 @@ float BulbMath::rgbTreshholdCheck(float x)
 	}
 }
 
-//NOT finished, Seems to return right values in correspondance to eachother but in the wrong range
+//input XYZ in range 0 - 100, output rgb in range 0 - 255
+//calculates rgb for d65 whitepoint and sRGB model, works according to bruce lindbloom calc 
+//OPS sometimes calculates different values from the calculator when calculating outside the scope ie for rgb values under 0 or over 255, ask shida about this.
 sf::Vector3f BulbMath::xyz2rgb(float x, float y, float z)
 {
-	float R, G, B;
-	float rx, ry, rz;
+	float var_X, var_Y, var_Z, var_R, var_G, var_B, R, G, B;
 
-	rx = x/100.0f;
-	ry = y/100.0f;
-	rz = z/100.0f;
+	var_X = x / 100;        //X from 0 to  95.047      (Observer = 2°, Illuminant = D65)
+	var_Y = y / 100;        //Y from 0 to 100.000
+	var_Z = z / 100;        //Z from 0 to 108.883
 
-	/* The M matrix for the conversion
-	[
-    0.4124  0.3576  0.1805;
-    0.2126  0.7152  0.0722;
-    0.0193  0.1192  0.9505
-    ];
-	*/
-	
-	//Inverse matrix found using http://ncalculators.com/matrix/inverse-matrix.htm (not verified)
-/*
-	float iMatrix[3][3] =
-	{
-		{2.7454669, -0.4836786, -0.4350259},
-		{-0.7710229, 1.7065571, 0.0446900},
-		{0.0400013, -0.0885376, 1.0132541}
-	};
-*/
-/*
-	//Bruce RGB t
-	float iMatrix[3][3] =
-	{
-		{2.7454669, -1.1358136, -0.4350259},
-		{-0.9692660, 1.8760108, 0.0415560},
-		{0.0112723, -0.1139754, 1.0132541}
-	};
-	*/
-	/*
-	//SRGB
-	float iMatrix[3][3] =
-	{
-		{0.4124564, 0.3575761, 0.1804375},
-		{0.2126729, 0.7151522, 0.0721750},
-		{0.0193339, 0.1191920, 0.9503041}
-	};
-*/
-	//From color
-	float iMatrix[3][3] =
-	{
-		{3.240479, -1.537150, -0.498535},
-		{-0.969256, 1.875992, 0.041556},
-		{0.055648, -0.204043, 1.057311}
-	};
+	var_R = var_X *  3.2406 + var_Y * -1.5372 + var_Z * -0.4986;
+	var_G = var_X * -0.9689 + var_Y *  1.8758 + var_Z *  0.0415;
+	var_B = var_X *  0.0557 + var_Y * -0.2040 + var_Z *  1.0570;
 
-	std::cout << "\nrx " << rx << " ry: " << ry << " rz: " << rz << std::endl; 
+	if ( var_R > 0.0031308 ) 
+		var_R = 1.055 * ( pow(var_R, (1/2.4)) ) - 0.055;
+	else                     
+		var_R = 12.92 * var_R;
+	if ( var_G > 0.0031308 ) 
+		var_G = 1.055 * ( pow(var_G, (1/2.4)) ) - 0.055;
+	else                     
+		var_G = 12.92 * var_G;
+	if ( var_B > 0.0031308 ) 
+		var_B = 1.055 * ( pow(var_B, (1/2.4)) ) - 0.055;
+	else                     
+		var_B = 12.92 * var_B;
 
-	R = (iMatrix[0][0] * rx) + (iMatrix[0][1] * ry) + (iMatrix[0][2] * rz);
-	G = (iMatrix[1][0] * rx) + (iMatrix[1][1] * ry) + (iMatrix[1][2] * rz);
-	B = (iMatrix[2][0] * rx) + (iMatrix[2][1] * ry) + (iMatrix[2][2] * rz);
+	R = var_R * 255;
+	G = var_G * 255;
+	B = var_B * 255;	
 
-	std::cout << "\nfR " << R << " fG: " << G << " fB: " << B << std::endl; 
+	sf::Vector3f RGB(R, G, B);
 
-	R = rgbTreshholdCheck(R);
-	G = rgbTreshholdCheck(G);
-	B = rgbTreshholdCheck(B);
-
-	std::cout << "\nR " << R << " G: " << G << " B: " << B << std::endl; 
-
-
-	sf::Vector3f RGB(R*255, G*255, B*255);
-
-	std::cout << "\nVR " << RGB.x << " VG: " << RGB.y << " VB: " << RGB.z << std::endl; 
+	std::cout << "\nR: " << R << " G: " << G << " B: " << B << std::endl;
 
 	return RGB;
 }
 
+//THIS FUNCTION DOES NOT WORK,  but might now be needed as hsv2rgb and rgb2hsv works
 //This function is not tested yet, math and matrix taken from rgb2lab.m documentation from Shida
 sf::Vector3f BulbMath::rgb2xyz(float r, float g, float b)
 {
-	float X, Y, Z;
+	float var_R, var_G, var_B, X, Y, Z;
 
-	//Threshold
-	//float T = 0.008856;
+	var_R = ( r / 255 );        //R from 0 to 255
+	var_G = ( g / 255 );        //G from 0 to 255
+	var_B = ( b / 255 );        //B from 0 to 255
 
-	// RGB to XYZ matrix
-	float M[3][3] =
-	{
-		{0.412453, 0.357580, 0.180423},
-		{0.212671, 0.715160, 0.072169},
-		{0.019334, 0.119193, 0.950227}
-	};
+	if ( var_R > 0.04045 ) 
+		var_R = ( pow((( var_R + 0.055 ) / 1.055 ), 2.4));
+	else                   
+		var_R = var_R / 12.92;
+	if ( var_G > 0.04045 ) 
+		var_G = ( pow((( var_G + 0.055 ) / 1.055 ), 2.4));
+	else                   
+		var_G = var_G / 12.92;
+	if ( var_B > 0.04045 ) 
+		var_B = ( pow((( var_B + 0.055 ) / 1.055 ), 2.4));
+	else                   
+		var_B = var_B / 12.92;
 
-	X = (M[0][0] * r) + (M[0][1] * g) + (M[0][2] * b);
-	Y = (M[1][0] * r) + (M[1][1] * g) + (M[1][2] * b);
-	Z = (M[2][0] * r) + (M[2][1] * g) + (M[2][2] * b);
+	var_R = var_R * 100;
+	var_G = var_G * 100;
+	var_B = var_B * 100;
 
-	//Normalize for D65 white
-	X = X / 0.950456;
-	Z = Z / 1.088754;
+	//Observer. = 2°, Illuminant = D65
+	X = var_R * 0.4124 + var_G * 0.3576 + var_B * 0.1805;
+	Y = var_R * 0.2126 + var_G * 0.7152 + var_B * 0.0722;
+	Z = var_R * 0.0193 + var_G * 0.1192 + var_B * 0.9505;
 
-	sf::Vector3f XYZ(X, Y, Z);	
+	std::cout << "\nX: " << X << " Y: " << Y << " Z: " << Z << std::endl;
+
+	sf::Vector3f XYZ(X, Y, Z);
 
 	return XYZ;
 }
@@ -409,4 +383,10 @@ sf::Vector3f BulbMath::rgb2cmyk(float r, float g, float b)
 	sf::Vector3f CMY(C, M, Y);
 
 	return CMY;
+}
+
+sf::Vector3f BulbMath::hsv2lab(float h, float s, float v)
+{
+	sf::Vector3f HSV;
+	return HSV;
 }

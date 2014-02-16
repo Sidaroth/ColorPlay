@@ -123,16 +123,18 @@ sf::Vector3f BulbMath::xyz2lab(float X, float Y, float Z)
 
 float BulbMath::rgbTreshholdCheck(float x)
 {
-	float temp;
-	if (x > 0.0031308)
+	if (x < 0)
 	{
-		temp = 1.055 * (pow(x, (1.0f/2.2))) - 0.055;
+		return 0.0f;
+	}
+	else if (x > 1)
+	{
+		return 1.0f;
 	}
 	else
 	{
-		temp = 12.92 * x;
+		return x;
 	}
-	return temp;
 }
 
 //NOT finished, Seems to return right values in correspondance to eachother but in the wrong range
@@ -154,23 +156,58 @@ sf::Vector3f BulbMath::xyz2rgb(float x, float y, float z)
 	*/
 	
 	//Inverse matrix found using http://ncalculators.com/matrix/inverse-matrix.htm (not verified)
-
+/*
 	float iMatrix[3][3] =
 	{
-		{0.6705, -0.3183, -0.1014},
-		{-0.2005, 0.3885, 0.0065},
-		{0.0115, -0.0422, 0.2189}
+		{2.7454669, -0.4836786, -0.4350259},
+		{-0.7710229, 1.7065571, 0.0446900},
+		{0.0400013, -0.0885376, 1.0132541}
 	};
+*/
+/*
+	//Bruce RGB t
+	float iMatrix[3][3] =
+	{
+		{2.7454669, -1.1358136, -0.4350259},
+		{-0.9692660, 1.8760108, 0.0415560},
+		{0.0112723, -0.1139754, 1.0132541}
+	};
+	*/
+	/*
+	//SRGB
+	float iMatrix[3][3] =
+	{
+		{0.4124564, 0.3575761, 0.1804375},
+		{0.2126729, 0.7151522, 0.0721750},
+		{0.0193339, 0.1191920, 0.9503041}
+	};
+*/
+	//From color
+	float iMatrix[3][3] =
+	{
+		{3.240479, -1.537150, -0.498535},
+		{-0.969256, 1.875992, 0.041556},
+		{0.055648, -0.204043, 1.057311}
+	};
+
+	std::cout << "\nrx " << rx << " ry: " << ry << " rz: " << rz << std::endl; 
 
 	R = (iMatrix[0][0] * rx) + (iMatrix[0][1] * ry) + (iMatrix[0][2] * rz);
 	G = (iMatrix[1][0] * rx) + (iMatrix[1][1] * ry) + (iMatrix[1][2] * rz);
 	B = (iMatrix[2][0] * rx) + (iMatrix[2][1] * ry) + (iMatrix[2][2] * rz);
 
+	std::cout << "\nfR " << R << " fG: " << G << " fB: " << B << std::endl; 
+
 	R = rgbTreshholdCheck(R);
 	G = rgbTreshholdCheck(G);
 	B = rgbTreshholdCheck(B);
 
-	sf::Vector3f RGB(R, G, B);
+	std::cout << "\nR " << R << " G: " << G << " B: " << B << std::endl; 
+
+
+	sf::Vector3f RGB(R*255, G*255, B*255);
+
+	std::cout << "\nVR " << RGB.x << " VG: " << RGB.y << " VB: " << RGB.z << std::endl; 
 
 	return RGB;
 }
@@ -332,4 +369,44 @@ sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 	RGB.z = round(RGB.z * 255);
 	//std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
 	return RGB;
+}
+
+//input cmyk in rage 0 - 1, output rgb in range 0 - 255
+//math from http://www.rapidtables.com/convert/color/cmyk-to-rgb.htm, verified using calculator from same site
+sf::Vector3f BulbMath::cmyk2rgb(float c, float m, float y, float k)
+{
+	float R, G, B;
+
+	R = 255 * (1 - c) * (1 - k);
+	G = 255 * (1 - m) * (1 - k);
+	B = 255 * (1 - y) * (1 - k);
+
+	sf::Vector3f RGB(round(R), round(G), round(B));
+
+	std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
+
+	return RGB;
+}
+
+//input rgb in rage 0 - 255,output cymk in range 0 - 1
+//math from http://www.rapidtables.com/convert/color/cmyk-to-rgb.htm, verified using calculator from same site
+sf::Vector3f BulbMath::rgb2cmyk(float r, float g, float b)
+{
+
+	float rr, gg, bb, C, M, Y, K;
+
+	rr = r / 255.0f;
+	gg = g / 255.0f;
+	bb = b / 255.0f;
+
+	K = 1 - (std::max(std::max(rr, gg), std::max(gg, bb)));
+	C = (1 - rr - K) / (1 - K);
+	M = (1 - gg - K) / (1 - K);
+	Y = (1 - bb - K) / (1 - K);
+
+	std::cout << "\nC: " << C << " M: " << M << " Y: " << Y << " K: " << K << std::endl;
+
+	sf::Vector3f CMY(C, M, Y);
+
+	return CMY;
 }

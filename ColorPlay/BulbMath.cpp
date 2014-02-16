@@ -371,15 +371,41 @@ sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 	return RGB;
 }
 
+//input cmyk in rage 0 - 1, output rgb in range 0 - 255
+//math from http://www.rapidtables.com/convert/color/cmyk-to-rgb.htm, verified using calculator from same site
 sf::Vector3f BulbMath::cmyk2rgb(float c, float m, float y, float k)
 {
-	sf::Vector3f RGB;
+	/*
+	The R,G,B values are given in the range of 0..255.
+
+	The red (R) color is calculated from the cyan (C) and black (K) colors:
+
+	R = 255 × (1-C) × (1-K)
+
+	The green color (G) is calculated from the magenta (M) and black (K) colors:
+
+	G = 255 × (1-M) × (1-K)
+
+	The blue color (B) is calculated from the yellow (Y) and black (K) colors:
+
+	B = 255 × (1-Y) × (1-K)
+	*/
+
+	float R, G, B;
+
+	R = 255 * (1 - c) * (1 - k);
+	G = 255 * (1 - m) * (1 - k);
+	B = 255 * (1 - y) * (1 - k);
+
+	sf::Vector3f RGB(round(R), round(G), round(B));
+
+	std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
 
 	return RGB;
 }
 
-//FOrmula from http://www.rapidtables.com/convert/color/rgb-to-cmyk.htm
-//Work according to calculator at same site
+//input rgb in rage 0 - 255,output cymk in range 0 - 1
+//math from http://www.rapidtables.com/convert/color/cmyk-to-rgb.htm, verified using calculator from same site
 sf::Vector3f BulbMath::rgb2cmyk(float r, float g, float b)
 {
 

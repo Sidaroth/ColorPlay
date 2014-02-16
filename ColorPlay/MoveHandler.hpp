@@ -10,7 +10,7 @@
 #include "struct.hpp"
 #include "LogModule.hpp"
 
-#define MEASUREMENTS 50
+#define DEBUG 1
 
 class MoveHandler
 {

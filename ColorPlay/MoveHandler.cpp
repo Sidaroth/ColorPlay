@@ -143,22 +143,25 @@ void MoveHandler::run()
 			
 			psmove_tracker_update_image(this->tracker);
 			psmove_tracker_update(this->tracker, NULL);
-			psmove_tracker_get_position(this->tracker, this->controllers[0], &xPos, &yPos, &ledRadius);
 
+			#if DEBUG			
+				psmove_tracker_annotate(this->tracker);
+				frame = psmove_tracker_get_frame(this->tracker);
+				if (frame)
+				{
+					cvShowImage("Live camera feed", frame);
+				}
+			#endif
+
+			psmove_tracker_get_position(this->tracker, this->controllers[0], &xPos, &yPos, &ledRadius);
 			this->x = xPos;
 			this->y = yPos;
 			this->radius = ledRadius;
 
-			printf("Controller 0: x: %10.2f, y: %10.2f, r: %10.2f\n", this->x, this->y, this->radius);
-			
-			// psmove_tracker_annotate(this->tracker);
-			// frame = psmove_tracker_get_frame(this->tracker);
-			// if (frame)
-			// {
-			// 	cvShowImage("Live camera feed", frame);
-			// 	psmove_tracker_get_position(this->tracker, this->controllers[0], &xPos, &yPos, &ledRadius);
-			// 	printf("Controller 0: x: %10.2f, y: %10.2f, r: %10.2f\n", xPos, yPos, ledRadius);
-			// }
+			#if DEBUG			
+				printf("x: %10.2f, y: %10.2f, r: %10.2f\n", this->x, this->y, this->radius);
+			#endif
+
 			
 			std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		}

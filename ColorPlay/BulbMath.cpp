@@ -375,22 +375,6 @@ sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 //math from http://www.rapidtables.com/convert/color/cmyk-to-rgb.htm, verified using calculator from same site
 sf::Vector3f BulbMath::cmyk2rgb(float c, float m, float y, float k)
 {
-	/*
-	The R,G,B values are given in the range of 0..255.
-
-	The red (R) color is calculated from the cyan (C) and black (K) colors:
-
-	R = 255 × (1-C) × (1-K)
-
-	The green color (G) is calculated from the magenta (M) and black (K) colors:
-
-	G = 255 × (1-M) × (1-K)
-
-	The blue color (B) is calculated from the yellow (Y) and black (K) colors:
-
-	B = 255 × (1-Y) × (1-K)
-	*/
-
 	float R, G, B;
 
 	R = 255 * (1 - c) * (1 - k);

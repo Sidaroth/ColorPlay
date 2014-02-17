@@ -44,6 +44,11 @@ private:
 	sf::Font font;
 	sf::Text text;
 
+	BulbHandler* bulbHandler;
+
+	int width;
+	int height;
+
 	void gameProcessEvents();
 	void gameUpdate();
 	void gameRender();

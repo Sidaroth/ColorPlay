@@ -94,6 +94,9 @@ void BulbHandler::command(std::string body, int bulbId)
 		{
 			printf("Sending request \n");
 		}
+
+		//Remove data from stdout
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, nullptr);
 	
 		// Set headers. 
 		headers = curl_slist_append(headers, "Accept: application/json");

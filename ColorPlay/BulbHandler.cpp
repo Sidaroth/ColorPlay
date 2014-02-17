@@ -6,14 +6,21 @@ BulbHandler::BulbHandler()
 	curl = curl_easy_init();
 	currentColorSpace = ColorSpace::HSV;
 	goalColor = sf::Color(255, 255, 255);
+
+	gen = std::mt19937(SEED);
+	rgbDistribution = std::uniform_int_distribution<>(0, 255);
 }
 
-BulbHandler::BulbHandler(EventQueue *eventQueue)
+BulbHandler::BulbHandler(EventQueue *eventQueue, LogModule* logger)
 {
 	curl = curl_easy_init();
 	currentColorSpace = ColorSpace::HSV;
 	
 	this -> eventQueue = eventQueue;
+	gen = std::mt19937(SEED);
+	rgbDistribution = std::uniform_int_distribution<>(0, 255);
+
+	this -> logger = logger;
 }
 
 void BulbHandler::setBulbAdress(std::string bulbAdress)
@@ -78,6 +85,21 @@ void BulbHandler::setSaturation(int saturation, int bulbId)
 int BulbHandler::getSaturation(int bulbId)
 {
 	return 0;
+}
+
+
+void BulbHandler::generateNewGoalColor()
+{
+	unsigned int r, g, b;
+
+	r = rgbDistribution(gen);
+	g = rgbDistribution(gen);
+	b = rgbDistribution(gen);
+
+	std::stringstream message;
+	message << "Generated new goal color (RGB): (" << r << ", " << g << ", " << b << ")"; 
+	this -> logger -> LogEvent(message.str());
+	setGoalColor(r, g, b);
 }
 
 void BulbHandler::command(std::string body, int bulbId)

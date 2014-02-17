@@ -21,8 +21,8 @@ int main(int argc, char* argv[])
 	EventQueue eventQueue;
 	BulbMath bulbMath;
 
-	BulbHandler bulbHandler(&eventQueue);
-	MoveHandler moveHandler(&logger, &running);
+	BulbHandler bulbHandler(&eventQueue, &logger);
+	//MoveHandler moveHandler(&logger, &running);
 	WindowHandler windowHandler("Color Play Game v.0.1", &logger, &running, &bulbHandler);
 
 	////////////////////// INIT //////////////////////
@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 	if(windowHandler.init())
 	{
 		std::cout << "Window initialization failed! Exiting...\n";
-		return -1;		
+		return -1;
 	}
 	else
 	{
@@ -43,13 +43,13 @@ int main(int argc, char* argv[])
 	}
 
 	//bulbHandler.setHue(46000, 1);
-	bulbHandler.setHue(60000, 2);
+	bulbHandler.setHue(46000 , 2);
 	bulbHandler.setHue(61000, 3);
 	//bulbHandler.setHue(56000, 4);
 
 	///////////////// START THREADS /////////////////
 	std::thread loggerThread(&LogModule::run, &logger);	// Run the logger module in a background thread.
-	std::thread moveHandlerThread(&MoveHandler::run, &moveHandler);
+	//std::thread moveHandlerThread(&MoveHandler::run, &moveHandler);
 	
 	///////////////// START WORK IN THE MAIN THREAD //////////////////
 	std::cout << "Main thread: " << std::this_thread::get_id() << std::endl;
@@ -65,6 +65,9 @@ int main(int argc, char* argv[])
 	eventQueue.push(event);
 
 	bulbHandler.setColorSpace(BulbHandler::ColorSpace::RGB);
+	bulbHandler.generateNewGoalColor();
+	bulbHandler.generateNewGoalColor();
+	bulbHandler.generateNewGoalColor();
 
 	while(running)
 	{
@@ -84,10 +87,8 @@ int main(int argc, char* argv[])
 	logger.LogEvent("quit"); // logger.quit(); perhaps...
 
 	///////////////// JOIN / WAIT FOR THREADS - NO MORE WORK AFTER THIS/////////////////////
-	moveHandlerThread.join();
+	//moveHandlerThread.join();
 	loggerThread.join(); // Wait for the background thread(s) to finish. 
 	
-	std::cout << "\nFinished, press any key to exit.";
-	getchar();
 	return 0;	
 }

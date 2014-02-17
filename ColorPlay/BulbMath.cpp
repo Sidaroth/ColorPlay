@@ -57,7 +57,7 @@ sf::Vector3f BulbMath::lab2xyz(float L, float a, float b)
 
 
 	sf::Vector3f XYZ(X*100, Y*100, Z*100);
-	//std::cout << "X: " << XYZ.x << " Y: " << XYZ.y << " Z: " << XYZ.z << std::endl;
+	std::cout << "X: " << XYZ.x << " Y: " << XYZ.y << " Z: " << XYZ.z << std::endl;
 
 	return XYZ;
 
@@ -172,9 +172,9 @@ sf::Vector3f BulbMath::xyz2rgb(float x, float y, float z)
 	var_B = rgbTreshholdCheck(var_B);
 
 	//Not sure if these values should be rounded
-	R = round(var_R * 255);
-	G = round(var_G * 255);
-	B = round(var_B * 255);	
+	R = (var_R * 255);
+	G = (var_G * 255);
+	B = (var_B * 255);	
 
 	sf::Vector3f RGB(R, G, B);
 
@@ -346,9 +346,9 @@ sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 				break;
 	}
 
-	RGB.x = round(RGB.x * 255);
-	RGB.y = round(RGB.y * 255);
-	RGB.z = round(RGB.z * 255);
+	RGB.x = (RGB.x * 255);
+	RGB.y = (RGB.y * 255);
+	RGB.z = (RGB.z * 255);
 	//std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
 	return RGB;
 }
@@ -393,26 +393,28 @@ sf::Vector3f BulbMath::rgb2cmyk(float r, float g, float b)
 	return CMY;
 }
 
+//works according to http://colormine.org/convert/lab-to-hsv
 sf::Vector3f BulbMath::hsv2lab(float h, float s, float v)
 {
-	float temp1, temp2, temp3;
 	sf::Vector3f Lab;
-
 	Lab = hsv2rgb(h, s, v);
-
-	temp1 = Lab.x;
-	temp2 = Lab.y;
-	temp3 = Lab.z;
-
-	Lab = rgb2xyz(temp1, temp2, temp3);
-
-	temp1 = Lab.x;
-	temp2 = Lab.y;
-	temp3 = Lab.z;
-
-	Lab = xyz2lab(temp1, temp2, temp3);
+	Lab = rgb2xyz(Lab.x, Lab.y, Lab.z);
+	Lab = xyz2lab(Lab.x, Lab.y, Lab.z);
 
 	std::cout << "\nL: " << Lab.x << " a: " << Lab.y << " b: " << Lab.z << std::endl;
 
 	return Lab;
+}
+
+//s and v values are off by about 0.001 according to calulator, check it out
+sf::Vector3f BulbMath::lab2hsv(float L, float a, float b)
+{
+	sf::Vector3f HSV;
+	HSV = lab2xyz(L, a, b);
+	HSV = xyz2rgb(HSV.x, HSV.y, HSV.z);
+	HSV = rgb2hsv(HSV.x, HSV.y, HSV.z);
+
+	std::cout << "\nH: " << HSV.x << " S: " << HSV.y << " V: " << HSV.z << std::endl;
+
+	return HSV;
 }

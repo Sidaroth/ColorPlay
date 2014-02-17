@@ -19,6 +19,10 @@ public:
 	sf::Vector3f rgb2cmyk(float r, float g, float b);
 	sf::Vector3f hsv2lab(float h, float s, float v);
 	sf::Vector3f lab2hsv(float L, float a, float b);
+	sf::Vector3f hsv2cmyk(float h, float s, float v);
+	sf::Vector3f cmyk2hsv(float c, float m, float y, float k);
+	sf::Vector3f hsv2xyz(float h, float s, float v);
+	sf::Vector3f xyz2hsv(float x, float y, float z);
 
 
 private:

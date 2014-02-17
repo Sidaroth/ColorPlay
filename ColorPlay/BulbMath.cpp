@@ -225,7 +225,7 @@ sf::Vector3f BulbMath::rgb2xyz(float r, float g, float b)
 
 
 //Input = rgb in range 0 - 255, output = H in range 0 - 360, s and v in range 0 - 100
-//Partly tested, worked for the ~10 values I tried according to the calculator at http://www.csgnetwork.com/csgcolorsel4.html
+//works according to http://www.rapidtables.com/convert/color/rgb-to-hsv.htm but not according to http://colormine.org/convert/xyz-to-hsv
 sf::Vector3f BulbMath::rgb2hsv(int r, int g, int b)
 {
 	sf::Vector3f hsv;
@@ -349,7 +349,7 @@ sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 	RGB.x = (RGB.x * 255);
 	RGB.y = (RGB.y * 255);
 	RGB.z = (RGB.z * 255);
-	//std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
+	std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
 	return RGB;
 }
 
@@ -363,7 +363,7 @@ sf::Vector3f BulbMath::cmyk2rgb(float c, float m, float y, float k)
 	G = 255 * (1 - m) * (1 - k);
 	B = 255 * (1 - y) * (1 - k);
 
-	sf::Vector3f RGB(round(R), round(G), round(B));
+	sf::Vector3f RGB(R, G, B);
 
 	std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
 
@@ -412,6 +412,53 @@ sf::Vector3f BulbMath::lab2hsv(float L, float a, float b)
 	sf::Vector3f HSV;
 	HSV = lab2xyz(L, a, b);
 	HSV = xyz2rgb(HSV.x, HSV.y, HSV.z);
+	HSV = rgb2hsv(HSV.x, HSV.y, HSV.z);
+
+	std::cout << "\nH: " << HSV.x << " S: " << HSV.y << " V: " << HSV.z << std::endl;
+
+	return HSV;
+}
+
+//Works http://www.rapidtables.com/convert/color/rgb-to-cmyk.htm
+sf::Vector3f BulbMath::hsv2cmyk(float h, float s, float v)
+{
+	sf::Vector3f CMY;
+	CMY = hsv2rgb(h, s, v);
+	CMY = rgb2cmyk(CMY.x, CMY.y, CMY.z);
+
+	std::cout << "\nC: " << CMY.x << " M: " << CMY.y << " Y: " << CMY.z << std::endl;
+
+	return CMY;
+}
+
+//A little off compaired to http://www.rapidtables.com/convert/color/rgb-to-hsv.htm, might be the calculator doing rounding, look for another one to compair
+sf::Vector3f BulbMath::cmyk2hsv(float c, float m, float y, float k)
+{
+	sf::Vector3f HSV;
+	HSV = cmyk2rgb(c, m ,y, k);
+	HSV = rgb2hsv(HSV.x, HSV.y, HSV.z);
+
+	std::cout << "\nH: " << HSV.x << " S: " << HSV.y << " V: " << HSV.z << std::endl;
+
+	return HSV;
+}
+
+//Works according to http://colormine.org/convert/xyz-to-hsv
+sf::Vector3f BulbMath::hsv2xyz(float h, float s, float v)
+{
+	sf::Vector3f XYZ;
+	XYZ = hsv2rgb(h, s, v);
+	XYZ = rgb2xyz(XYZ.x, XYZ.y, XYZ.z);
+
+	std::cout << "\nX: " << XYZ.x << " Y: " << XYZ.y << " Z: " << XYZ.z << std::endl;
+
+	return XYZ;
+}
+
+sf::Vector3f BulbMath::xyz2hsv(float x, float y, float z)
+{
+	sf::Vector3f HSV;
+	HSV = xyz2rgb(x, y, z);
 	HSV = rgb2hsv(HSV.x, HSV.y, HSV.z);
 
 	std::cout << "\nH: " << HSV.x << " S: " << HSV.y << " V: " << HSV.z << std::endl;

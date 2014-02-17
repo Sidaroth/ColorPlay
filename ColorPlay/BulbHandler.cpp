@@ -204,8 +204,8 @@ void BulbHandler::processEvents()
 
 void callback_func(void *getInfo, size_t size, size_t count, void *stream)
 {
-	int hueInt, bulbIdInt, found, found2;
-	std::string hue;
+	int hueInt, briInt, satInt, bulbIdInt, found, found2;
+	std::string hue, sat, bri;
 	std::string bulbId;
 	std::string output((char*)getInfo);
 
@@ -223,25 +223,48 @@ void callback_func(void *getInfo, size_t size, size_t count, void *stream)
 
 	bulbId = output.substr(found + 9, 1);
 
+	found = output.find("sat");
+	found2 = output.find(",", found);
+
+	sat = output.substr(found + 5, found2 - found - 5);
+
+	found = output.find("bri");
+	found2 = output.find(",", found);
+
+	bri = output.substr(found + 5, found2 - found - 5);
+
 	hueInt = atoi(hue.c_str());
 	bulbIdInt = atoi(bulbId.c_str());
+	satInt = atoi(sat.c_str());
+	briInt = atoi(bri.c_str());
 
-//	std::cout << "------>>" << hueInt << "<<----  " << bulbIdInt << std::endl;
+	std::cout << "------>> " << hueInt << "------->> " << bulbIdInt << "------->> " << satInt << "------>> " << briInt << std::endl;
 
 	if (bulbIdInt == 1)
 	{
 		Bulb1HSV.x = hueInt;
+		Bulb1HSV.y = satInt;
+		Bulb1HSV.z = briInt;
 	}
 	else if (bulbIdInt == 2)
 	{
 		Bulb2HSV.x = hueInt;
+		Bulb2HSV.y = satInt;
+		Bulb2HSV.z = briInt;
+	}
+	else if(bulbIdInt == 3)
+	{
+		Bulb3HSV.x = hueInt;
+		Bulb3HSV.y = satInt;
+		Bulb3HSV.z = briInt;
 	}
 	else
 	{
-		Bulb3HSV.x = hueInt;
+		std::cout << "\nERROR: Callback function got no ID";
 	}
 }
 
+//TODO modify this so it can be used to get saturation and brightness as well
 void BulbHandler::commandGet(int bulbId)
 {
 	 CURLcode res;
@@ -268,23 +291,15 @@ void BulbHandler::commandGet(int bulbId)
 		message << bulbAdress << bulbId;
 
 	 	curl_easy_setopt(curl, CURLOPT_URL, &message.str()[0]);
-	 	//TODO: This should be customizable I think...
 	 	curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
-	 	//curl_easy_setopt(curl, CURLOPT_POSTFIELDS, &body[0]);
 
-	 	std::cout << "Før: " << &getInfo << std::endl;
 	 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback_func);
-	 	//curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, std::bind(&BulbHandler::callback_func, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
-	 	//curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &BulbHandler::callback_func);
 
 
 	 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &getInfo);
-	 	std::cout << "Etter: " << &getInfo << std::endl;
 
 	 	res = curl_easy_perform(curl);
-	 	std::cout << "EtterETER: " << &getInfo << std::endl;
 
-	 	//std::cout << " HER :    " << res;
 	 	curl_slist_free_all(headers);
 
 	 	curl_easy_cleanup(curl);

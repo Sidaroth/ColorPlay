@@ -5,6 +5,40 @@ BulbMath::BulbMath()
 
 }
 
+//Makes sure rgb is within range
+float BulbMath::rgbThresholdCheck(float x)
+{
+	if (x < 0)
+	{
+		return 0.0f;
+	}
+	else if (x > 1)
+	{
+		return 1.0f;
+	}
+	else
+	{
+		return x;
+	}
+}
+
+//Makes sure XYZ is within range
+float BulbMath::xyzThresholdCheck(float x)
+{
+	if (x < 0)
+	{
+		return 0.0f;
+	}
+	else if (x > 100)
+	{
+		return 100.0f;
+	}
+	else
+	{
+		return x;
+	}
+}
+
 //Returns XYZ in range 0 - 100.
 //Works according to calculator at www.google.no/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0CC0QFjAA&url=http%3A%2F%2Fwww.brucelindbloom.com%2F&ei=qFr7UpDgGKP9ywO-qILgBw&usg=AFQjCNF2xEuBjOP60Afxlj2BMU8lhYlaMA&bvm=bv.61190604,d.bGQ
 //remember to set reference white to D65 when using calculator
@@ -27,36 +61,47 @@ sf::Vector3f BulbMath::lab2xyz(float L, float a, float b)
 
 	if (pow(fx, 3) > T1)
 	{
+		std::cout << "\n- - - - - - - - - - STEP 1 - - - - - - - - - -" << std::endl;
 		xr = pow(fx, 3);
 	}
 	else
 	{
+		std::cout << "\n- - - - - - - - - - STEP 2 - - - - - - - - - -" << std::endl;
 		xr = (116 * fx - 16) / T2;
 	}
 
 	if (L > (T1 * T2))
 	{
+		std::cout << "\n- - - - - - - - - - STEP 3 - - - - - - - - - -" << std::endl;
 		yr = pow(((L + 16) / 116), 3);
 	}
 	else
 	{
+		std::cout << "\n- - - - - - - - - - STEP 4 - - - - - - - - - -" << std::endl;
 		yr = L / T2;
 	}
 
 	if (pow (fz, 3) > T1)
 	{
+		std::cout << "\n- - - - - - - - - - STEP 5 - - - - - - - - - -" << std::endl;
 		zr = pow(fz, 3);
 	}
 	else
 	{
+		std::cout << "\n- - - - - - - - - - STEP 6 - - - - - - - - - -" << std::endl;
 		zr = (116 * fz - 16) / T2;
 	}
 	X = xr * Xn;
 	Y = yr * Yn;
 	Z = zr * Zn;
 
+	X = xyzThresholdCheck((X*100));
+	Y = xyzThresholdCheck((Y*100));
+	Z = xyzThresholdCheck((Z*100));
 
-	sf::Vector3f XYZ(X*100, Y*100, Z*100);
+
+
+	sf::Vector3f XYZ(X, Y, Z);
 	std::cout << "X: " << XYZ.x << " Y: " << XYZ.y << " Z: " << XYZ.z << std::endl;
 
 	return XYZ;
@@ -121,25 +166,10 @@ sf::Vector3f BulbMath::xyz2lab(float X, float Y, float Z)
 
 }
 
-float BulbMath::rgbTreshholdCheck(float x)
-{
-	if (x < 0)
-	{
-		return 0.0f;
-	}
-	else if (x > 1)
-	{
-		return 1.0f;
-	}
-	else
-	{
-		return x;
-	}
-}
 
 //input XYZ in range 0 - 95.047, 0 - 100, 0 - 108.883, output rgb in range 0 - 255
-//calculates rgb for d65 whitepoint and sRGB model, works according to bruce lindbloom calc 
-//OPS sometimes calculates different values from the calculator when calculating outside the scope ie for rgb values under 0 or over 255, ask shida about this.
+//calculates rgb for d65 whitepoint and sRGB model, works according to bruce lindbloom calc
+//tested 
 sf::Vector3f BulbMath::xyz2rgb(float x, float y, float z)
 {
 	float var_X, var_Y, var_Z, var_R, var_G, var_B, R, G, B;
@@ -167,9 +197,9 @@ sf::Vector3f BulbMath::xyz2rgb(float x, float y, float z)
 
 	std::cout << "\nvR: " << var_R << " vG: " << var_G << " vB: " << var_B << std::endl;
 
-	var_R = rgbTreshholdCheck(var_R);
-	var_G = rgbTreshholdCheck(var_G);
-	var_B = rgbTreshholdCheck(var_B);
+	var_R = rgbThresholdCheck(var_R);
+	var_G = rgbThresholdCheck(var_G);
+	var_B = rgbThresholdCheck(var_B);
 
 	//Not sure if these values should be rounded
 	R = (var_R * 255);

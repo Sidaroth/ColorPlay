@@ -23,6 +23,7 @@
 #include "StringQueue.hpp"
 #include "EventQueue.hpp"
 #include "ActionEvent.hpp"
+#include <SFML/System/Vector3.hpp>
 
 #define DEBUG 1
 
@@ -73,7 +74,7 @@ public:
 	void processEvents();
 
 	static int callback_func(void *getInfo, size_t size, size_t count, void *stream);
-	
+	void dostuff();
 private:
 
 	sf::Color goalColor;
@@ -82,7 +83,7 @@ private:
 	EventQueue *eventQueue;
 	ActionEvent currentAction;
 	ColorSpace currentColorSpace;
-	
+
 	void command(std::string body, int bulbId);
-	void commandGet();
+	void commandGet(int bulbId);
 };

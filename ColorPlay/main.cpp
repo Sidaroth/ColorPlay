@@ -30,8 +30,8 @@ int main(int argc, char* argv[])
 
 	bulbHandler.setBulbAdress(url);
 	
-	bulbMath.xyz2hsv(75.6f, 23.6f, 10.1f);
-
+	//bulbMath.xyz2hsv(75.6f, 23.6f, 10.1f);
+	bulbHandler.getHue(1);
 	if(windowHandler.init())
 	{
 		std::cout << "Window initialization failed! Exiting...\n";

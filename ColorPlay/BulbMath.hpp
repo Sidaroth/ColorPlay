@@ -26,6 +26,6 @@ public:
 
 
 private:
-	float rgbTreshholdCheck(float x);
-
+	float rgbThresholdCheck(float x);
+	float xyzThresholdCheck(float x);
 };

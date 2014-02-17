@@ -9,13 +9,14 @@
 
 #include "struct.hpp"
 #include "LogModule.hpp"
+#include "BulbHandler.hpp"
 
 #define DEBUG 1
 
 class MoveHandler
 {
 public:
-	MoveHandler(LogModule *logger, bool *running);
+	MoveHandler(LogModule *logger, BulbHandler* bulbHandler, bool *running);
 	void run();
 
 private:
@@ -28,7 +29,7 @@ private:
 	unsigned char r;
 	unsigned char g;
 	unsigned char b;
-	unsigned int buttons;
+	std::vector<unsigned int> buttons;
 
 	//Tracker
 	PSMoveTracker *tracker;
@@ -37,9 +38,14 @@ private:
 	float y = 0.0f; 
 	float radius = 0.0f;
 
-
 	LogModule *logger;
+	BulbHandler *bulbHandler;
 
 	bool connect();
+	bool connectControllers();
+	bool connectTracker();
+	void updateControllers();
+	void updateTracker();
+	void processInput();
 	void disconnect();
 };

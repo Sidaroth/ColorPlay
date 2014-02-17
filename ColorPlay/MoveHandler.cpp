@@ -1,9 +1,10 @@
 #include "MoveHandler.hpp"
 
 //PUBLIC###########################################################################################
-MoveHandler::MoveHandler(LogModule *logger, bool *running)
+MoveHandler::MoveHandler(LogModule *logger, BulbHandler* bulbHandler, bool *running)
 {
 	this->logger = logger;
+	this->bulbHandler = bulbHandler;
 
 	this->running = running;
 
@@ -11,23 +12,64 @@ MoveHandler::MoveHandler(LogModule *logger, bool *running)
 	r = 0;
 	g = 0;
 	b = 0;
-	buttons = 0;
-
+	
 	this->tracker = nullptr;
 	this->frame = nullptr;
 }
 
+void MoveHandler::run()
+{
+	if(this->connect())
+	{	
+		while(this->running && (cvWaitKey(1) & 0xFF) != 27)
+		{	
+			this->updateControllers();			
+			this->updateTracker();
+
+			this->processInput();
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		}
+
+		disconnect();
+	}	
+}
+
 bool MoveHandler::connect()
+{
+	if(!this->connectControllers())
+	{
+		return false;
+	}
+
+	if(!this->connectTracker())
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool MoveHandler::connectControllers()
 {
 	std::stringstream string;
 
 	logger->LogEvent("Initializeing controller(s)...");
 	
 	this->connections = psmove_count_connected();
+
+	if(this->connections == 0)
+	{
+		logger->LogEvent("No controllers connected. \nAborting!");
+	}
+	
 	for(int i = 0; i < this->connections; i++)
 	{
 		PSMove* connection = nullptr;
+		unsigned int buttons = 0;
+
 		this->controllers.push_back(connection);
+		this->buttons.push_back(buttons);
 	}
 
 	string << "Move connections: " << this->connections;
@@ -67,7 +109,15 @@ bool MoveHandler::connect()
 		logger->LogEvent(string.str());
 	}
 
-	logger->LogEvent("Creating tracker...");
+    logger->LogEvent("Controller initialization finished");
+    return true;
+}
+
+bool MoveHandler::connectTracker()
+{
+	std::stringstream string;
+
+	logger->LogEvent("Initializeing tracker...");
 	tracker = psmove_tracker_new();
 	if(this->tracker == nullptr || this->tracker == NULL)
 	{
@@ -106,8 +156,85 @@ bool MoveHandler::connect()
 	logger->LogEvent("Enable tracker mirroring");
     psmove_tracker_set_mirror(this->tracker, PSMove_True);
 
-    logger->LogEvent("Controller initialization finished");
+	logger->LogEvent("Controller initialization finished");
 	return true;
+}
+
+void MoveHandler::updateControllers()
+{
+	for(int i = 0; i < connections; i++)
+	{
+		psmove_poll(this->controllers[i]);
+		this->buttons[i] = psmove_get_buttons(this->controllers[i]);
+	}
+}
+
+void MoveHandler::updateTracker()
+{
+	float xPos = 0.0f; 
+	float yPos = 0.0f; 
+	float ledRadius = 0.0f;
+
+	psmove_tracker_update_image(this->tracker);
+	psmove_tracker_update(this->tracker, NULL);
+
+	#if DEBUG		
+		psmove_tracker_annotate(this->tracker);
+		frame = psmove_tracker_get_frame(this->tracker);
+		if (frame)
+		{
+			cvShowImage("Live camera feed", frame);
+		}
+	#endif
+
+	psmove_tracker_get_position(this->tracker, this->controllers[0], &xPos, &yPos, &ledRadius);
+	this->x = xPos;
+	this->y = yPos;
+	this->radius = ledRadius;
+
+	#if DEBUG			
+		printf("\nx: %10.2f, y: %10.2f, r: %10.2f\n", this->x, this->y, this->radius);
+	#endif
+}
+
+void MoveHandler::processInput()
+{
+	int bulb = 1;
+
+	for(int i = 0; i < connections; i++)
+	{
+		if(this->buttons[i] & Btn_MOVE)
+		{
+			this->running = false;
+		}
+	}
+	
+	if(this->x <200)
+	{
+		bulb = 1;
+	}
+	else if (this->x > 400)
+	{
+		bulb = 3;
+	}
+	else
+	{
+		bulb = 2;
+	}
+
+	if(this->y < 200)
+	{
+		this->bulbHandler->setHue(20000, bulb);
+	}
+	else if (this->y > 400)
+	{	
+		this->bulbHandler->setHue(60000, bulb);	
+	}
+	else
+	{
+		this->bulbHandler->setHue(40000, bulb);		
+	}
+
 }
 
 void MoveHandler::disconnect()
@@ -123,49 +250,3 @@ void MoveHandler::disconnect()
 	psmove_tracker_free(this->tracker);
 }
 
-void MoveHandler::run()
-{
-	if(this->connect())
-	{	
-		float xPos = 0.0f; 
-		float yPos = 0.0f; 
-		float ledRadius = 0.0f;
-		
-		while(this->running && (cvWaitKey(1) & 0xFF) != 27)
-		{	
-			psmove_poll(this->controllers[0]);
-			buttons = psmove_get_buttons(this->controllers[0]);
-			if(buttons & Btn_MOVE)
-			{
-				this->running = false;
-				std::cout << "Move button pressed.\n";
-			}
-			
-			psmove_tracker_update_image(this->tracker);
-			psmove_tracker_update(this->tracker, NULL);
-
-			#if DEBUG			
-				psmove_tracker_annotate(this->tracker);
-				frame = psmove_tracker_get_frame(this->tracker);
-				if (frame)
-				{
-					cvShowImage("Live camera feed", frame);
-				}
-			#endif
-
-			psmove_tracker_get_position(this->tracker, this->controllers[0], &xPos, &yPos, &ledRadius);
-			this->x = xPos;
-			this->y = yPos;
-			this->radius = ledRadius;
-
-			#if DEBUG			
-				printf("x: %10.2f, y: %10.2f, r: %10.2f\n", this->x, this->y, this->radius);
-			#endif
-
-			
-			std::this_thread::sleep_for(std::chrono::milliseconds(5));
-		}
-
-		disconnect();
-	}	
-}

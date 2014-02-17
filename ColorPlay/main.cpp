@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "globals.hpp"
 #include "BulbHandler.hpp"
 #include "BulbMath.hpp"
 #include "LogModule.hpp"
@@ -14,6 +15,12 @@
 
 #define DEBUG 1
 
+//tHis isn't even here
+sf::Vector3f Bulb1HSV(0,0,0);
+sf::Vector3f Bulb2HSV(0,0,0);
+sf::Vector3f Bulb3HSV(0,0,0);
+
+
 int main(int argc, char* argv[])
 {
 	bool running = false;
@@ -22,7 +29,7 @@ int main(int argc, char* argv[])
 	BulbMath bulbMath;
 
 	BulbHandler bulbHandler(&eventQueue, &logger);
-	//MoveHandler moveHandler(&logger, &running);
+	MoveHandler moveHandler(&logger, &bulbHandler, &running);
 	WindowHandler windowHandler("Color Play Game v.0.1", &logger, &running, &bulbHandler);
 
 	////////////////////// INIT //////////////////////
@@ -30,8 +37,9 @@ int main(int argc, char* argv[])
 
 	bulbHandler.setBulbAdress(url);
 	
-	bulbMath.xyz2hsv(75.6f, 23.6f, 10.1f);
-
+	//bulbMath.xyz2hsv(75.6f, 23.6f, 10.1f);
+	bulbHandler.getHue(1);
+	std::cout << "\n----------->" << Bulb1HSV.x << "<----------" << std::endl;
 	if(windowHandler.init())
 	{
 		std::cout << "Window initialization failed! Exiting...\n";
@@ -42,9 +50,12 @@ int main(int argc, char* argv[])
 		std::cout << "Window initialization successful!\n";
 	}
 
-	//bulbHandler.setHue(46000, 1);
-	bulbHandler.setHue(46000 , 2);
-	bulbHandler.setHue(61000, 3);
+	bulbHandler.setHue(20000, 1);
+	bulbHandler.setBrightness(126, 1);
+	bulbHandler.setHue(40000, 2);
+	bulbHandler.setBrightness(126, 2);
+	bulbHandler.setHue(60000, 3);
+	bulbHandler.setBrightness(126, 3);
 	//bulbHandler.setHue(56000, 4);
 
 	///////////////// START THREADS /////////////////

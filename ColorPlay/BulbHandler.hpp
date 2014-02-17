@@ -4,7 +4,7 @@
 	Last edited: 17. Feb. 2014
 
 	Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun, Harry Nystad
-			 Gjøvik University College.
+			 Gjï¿½vik University College.
 */
 
 #pragma once // Include guard
@@ -20,10 +20,12 @@
 #include <random>
 
 #include <SFML/Graphics.hpp>
+#include <SFML/System/Vector3.hpp>
 #include <curl/curl.h>
 #include "EventQueue.hpp"
 #include "ActionEvent.hpp"
 #include "LogModule.hpp"
+#include "globals.hpp"
 
 #define SEED 314159265358979323
 #define DEBUG 1
@@ -75,8 +77,6 @@ public:
 
 	void processEvents();
 
-	static int callback_func(void *getInfo, size_t size, size_t count, void *stream);
-	
 private:
 
 	sf::Color goalColor;
@@ -90,7 +90,7 @@ private:
 
 	std::mt19937 gen;
 	std::uniform_int_distribution<> rgbDistribution;
-	
+
 	void command(std::string body, int bulbId);
-	void commandGet();
+	void commandGet(int bulbId);
 };

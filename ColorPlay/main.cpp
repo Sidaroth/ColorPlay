@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "globals.hpp"
 #include "BulbHandler.hpp"
 #include "BulbMath.hpp"
 #include "LogModule.hpp"
@@ -14,6 +15,12 @@
 
 #define DEBUG 1
 
+//tHis isn't even here
+sf::Vector3f Bulb1HSV(0,0,0);
+sf::Vector3f Bulb2HSV(0,0,0);
+sf::Vector3f Bulb3HSV(0,0,0);
+
+
 int main(int argc, char* argv[])
 {
 	bool running = false;
@@ -21,7 +28,7 @@ int main(int argc, char* argv[])
 	EventQueue eventQueue;
 	BulbMath bulbMath;
 
-	BulbHandler bulbHandler(&eventQueue);
+	BulbHandler bulbHandler(&eventQueue, &logger);
 	MoveHandler moveHandler(&logger, &bulbHandler, &running);
 	WindowHandler windowHandler("Color Play Game v.0.1", &logger, &running, &bulbHandler);
 
@@ -30,12 +37,13 @@ int main(int argc, char* argv[])
 
 	bulbHandler.setBulbAdress(url);
 	
-	bulbMath.xyz2hsv(75.6f, 23.6f, 10.1f);
-
+	//bulbMath.xyz2hsv(75.6f, 23.6f, 10.1f);
+	bulbHandler.getHue(1);
+	std::cout << "\n----------->" << Bulb1HSV.x << "<----------" << std::endl;
 	if(windowHandler.init())
 	{
 		std::cout << "Window initialization failed! Exiting...\n";
-		return -1;		
+		return -1;
 	}
 	else
 	{
@@ -52,7 +60,7 @@ int main(int argc, char* argv[])
 
 	///////////////// START THREADS /////////////////
 	std::thread loggerThread(&LogModule::run, &logger);	// Run the logger module in a background thread.
-	std::thread moveHandlerThread(&MoveHandler::run, &moveHandler);
+	//std::thread moveHandlerThread(&MoveHandler::run, &moveHandler);
 	
 	///////////////// START WORK IN THE MAIN THREAD //////////////////
 	std::cout << "Main thread: " << std::this_thread::get_id() << std::endl;
@@ -68,6 +76,9 @@ int main(int argc, char* argv[])
 	eventQueue.push(event);
 
 	bulbHandler.setColorSpace(BulbHandler::ColorSpace::RGB);
+	bulbHandler.generateNewGoalColor();
+	bulbHandler.generateNewGoalColor();
+	bulbHandler.generateNewGoalColor();
 
 	while(running)
 	{
@@ -87,10 +98,8 @@ int main(int argc, char* argv[])
 	logger.LogEvent("quit"); // logger.quit(); perhaps...
 
 	///////////////// JOIN / WAIT FOR THREADS - NO MORE WORK AFTER THIS/////////////////////
-	moveHandlerThread.join();
+	//moveHandlerThread.join();
 	loggerThread.join(); // Wait for the background thread(s) to finish. 
 	
-	std::cout << "\nFinished, press any key to exit.";
-	getchar();
 	return 0;	
 }

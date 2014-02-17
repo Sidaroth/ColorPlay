@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 
 	bulbHandler.setBulbAdress(url);
 	
-	bulbMath.cmyk2rgb(0.2f, 0.5f, 0.6f, 0.7f);
+	bulbMath.xyz2hsv(75.6f, 23.6f, 10.1f);
 
 	if(windowHandler.init())
 	{

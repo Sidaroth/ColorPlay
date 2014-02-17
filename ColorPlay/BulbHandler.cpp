@@ -202,16 +202,11 @@ void BulbHandler::processEvents()
 }
 
 
-int callback_func(void *getInfo, size_t size, size_t count, void *stream)
+void callback_func(void *getInfo, size_t size, size_t count, void *stream)
 {
-	char* tempString;
-	char search = 'x';
-	int i, j, found, found2;
-	std::stringstream hue;
-
-	std::cout << "\n\nSTART\n";
-	tempString = (char*)getInfo;
-
+	int hueInt, bulbIdInt, found, found2;
+	std::string hue;
+	std::string bulbId;
 	std::string output((char*)getInfo);
 
 	std::cout << "\n HER --...->" << output << std::endl;
@@ -221,31 +216,30 @@ int callback_func(void *getInfo, size_t size, size_t count, void *stream)
 
 	std::cout << "\nFound: " << found << " " << found2 << std::endl;
 
-/*
-	for (i = 0; search != 'h'; i++)
+	hue = output.substr(found + 5, found2 - found - 5);
+
+	found = output.find("Hue Lamp");
+	found2 = output.find(",", found);
+
+	bulbId = output.substr(found + 9, 1);
+
+	hueInt = atoi(hue.c_str());
+	bulbIdInt = atoi(bulbId.c_str());
+
+//	std::cout << "------>>" << hueInt << "<<----  " << bulbIdInt << std::endl;
+
+	if (bulbIdInt == 1)
 	{
-		search = tempString[i];
+		Bulb1HSV.x = hueInt;
 	}
-	j = i + 4;
-
-
-	for (i; search != ','; i++)
+	else if (bulbIdInt == 2)
 	{
-		search = tempString[i];
+		Bulb2HSV.x = hueInt;
 	}
-	i = i - 2;
-
-	for (j - 1; j != i + 1; j++) //Skrive ut HUE, TODO, legge hue inn i array for å returnere i steden
+	else
 	{
-		hue << tempString[j];
+		Bulb3HSV.x = hueInt;
 	}
-	std::cout << std::endl;
-	*/
-	std::cout << "------>>" << hue.str() << "<<----" << std::endl;
-
-	Bulb1HSV.x = 100.0f;
-
-	return 1337;
 }
 
 void BulbHandler::commandGet(int bulbId)

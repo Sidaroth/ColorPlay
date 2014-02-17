@@ -61,6 +61,7 @@ bool MoveHandler::connectControllers()
 	if(this->connections == 0)
 	{
 		logger->LogEvent("No controllers connected. \nAborting!");
+		return false;
 	}
 	
 	for(int i = 0; i < this->connections; i++)
@@ -138,10 +139,16 @@ bool MoveHandler::connectTracker()
             if (psmove_tracker_enable(this->tracker, this->controllers[i]) == Tracker_CALIBRATED) 
             {
         		string.str("");
-				string << "Enable automatic LED update for connection #" << i;
-				logger->LogEvent(string.str());
-				psmove_tracker_set_auto_update_leds(this->tracker, this->controllers[i], PSMove_True);
 				
+				string << "Enable automatic LED update for connection #" << i;
+				psmove_tracker_set_auto_update_leds(this->tracker, this->controllers[i], PSMove_True);
+
+				//string << "Disable automatic LED update for connection #" << i;
+				//psmove_tracker_set_auto_update_leds(this->tracker, this->controllers[i], PSMove_False);
+				//psmove_set_leds(this->controllers[i], 255, 0, 0);
+				//psmove_update_leds(this->controllers[i]);
+
+				logger->LogEvent(string.str());
 				break;
             }
             else

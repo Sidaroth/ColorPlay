@@ -29,7 +29,7 @@ private:
 	unsigned char r;
 	unsigned char g;
 	unsigned char b;
-	unsigned int buttons;
+	std::vector<unsigned int> buttons;
 
 	//Tracker
 	PSMoveTracker *tracker;
@@ -42,5 +42,10 @@ private:
 	BulbHandler *bulbHandler;
 
 	bool connect();
+	bool connectControllers();
+	bool connectTracker();
+	void updateControllers();
+	void updateTracker();
+	void processInput();
 	void disconnect();
 };

@@ -184,34 +184,42 @@ int callback_func(void *getInfo, size_t size, size_t count, void *stream)
 {
 	char* tempString;
 	char search = 'x';
-	int i, j;
-
-	std::cout << "Inni: " << &getInfo << std::endl;
+	int i, j, found, found2;
+	std::stringstream hue;
 
 	std::cout << "\n\nSTART\n";
 	tempString = (char*)getInfo;
 
-	//std::cout << tempString << std::endl << std::endl;
+	std::string output((char*)getInfo);
 
+	std::cout << "\n HER --...->" << output << std::endl;
+
+	found = output.find("hue");
+	found2 = output.find(",", found);
+
+	std::cout << "\nFound: " << found << " " << found2 << std::endl;
+
+/*
 	for (i = 0; search != 'h'; i++)
 	{
 		search = tempString[i];
 	}
 	j = i + 4;
 
+
 	for (i; search != ','; i++)
 	{
 		search = tempString[i];
 	}
 	i = i - 2;
-	std::cout << tempString;
-	std::cout << "\nHUE: ";
+
 	for (j - 1; j != i + 1; j++) //Skrive ut HUE, TODO, legge hue inn i array for å returnere i steden
 	{
-		std::cout << tempString[j];
+		hue << tempString[j];
 	}
 	std::cout << std::endl;
-	std::cout << "\nEND";
+	*/
+	std::cout << "------>>" << hue.str() << "<<----" << std::endl;
 
 	Bulb1HSV.x = 100.0f;
 

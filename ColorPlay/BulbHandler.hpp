@@ -1,7 +1,7 @@
 /*
 	Purpose: This class is responsible for handling the communication to and from the Philips Hue lightbulbs. 
 
-	Last edited: 13. Feb. 2014
+	Last edited: 17. Feb. 2014
 
 	Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun, Harry Nystad
 			 Gjøvik University College.
@@ -18,6 +18,7 @@
 #include <istream>
 #include <ostream>
 
+#include <SFML/Graphics.hpp>
 #include <curl/curl.h>
 #include "StringQueue.hpp"
 #include "EventQueue.hpp"
@@ -53,6 +54,8 @@ public:
 	} Bulb;
 
 
+	void generateNewGoalColor();
+
 	void setBulbAdress(std::string bulbAdress);
 	void setBrightness(int brightness, int bulbId);
 	int  getBrightness(int bulbId);
@@ -62,6 +65,10 @@ public:
 	int  getSaturation(int bulbId);
 
 	void setColorSpace(ColorSpace colorSpace);
+	void setGoalColor(sf::Color color);
+	void setGoalColor(unsigned int r, unsigned int g, unsigned int b, unsigned int a=255);
+
+	sf::Color getGoalColor();
 
 	void processEvents();
 
@@ -69,6 +76,7 @@ public:
 	
 private:
 
+	sf::Color goalColor;
 	CURL* curl;
 	std::string bulbAdress;
 	EventQueue *eventQueue;

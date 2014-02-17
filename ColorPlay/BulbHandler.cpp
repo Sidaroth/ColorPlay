@@ -4,13 +4,16 @@
 BulbHandler::BulbHandler()
 {
 	curl = curl_easy_init();
+	currentColorSpace = ColorSpace::HSV;
+	goalColor = sf::Color(255, 255, 255);
 }
 
 BulbHandler::BulbHandler(EventQueue *eventQueue)
 {
 	curl = curl_easy_init();
+	currentColorSpace = ColorSpace::HSV;
+	
 	this -> eventQueue = eventQueue;
-	this -> currentColorSpace = ColorSpace::HSV;
 }
 
 void BulbHandler::setBulbAdress(std::string bulbAdress)
@@ -125,6 +128,20 @@ void BulbHandler::setColorSpace(ColorSpace colorSpace)
 	this -> currentColorSpace = colorSpace;
 }
 
+void BulbHandler::setGoalColor(sf::Color color)
+{
+	this -> goalColor = color;
+}
+
+void BulbHandler::setGoalColor(unsigned int r, unsigned int g, unsigned int b, unsigned int a /* 255 */)
+{
+	this -> goalColor = sf::Color(r, g, b, a);
+}
+
+sf::Color BulbHandler::getGoalColor()
+{
+	return this -> goalColor;
+}
 
 // Process any events that have been added to the event queue. 
 void BulbHandler::processEvents()

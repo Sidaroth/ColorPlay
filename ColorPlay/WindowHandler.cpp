@@ -10,6 +10,7 @@ WindowHandler::WindowHandler()
 WindowHandler::WindowHandler(std::string windowName,
 							 LogModule* logger,
 							 bool* running,
+							 BulbHandler* bulbHandler,
 							 int width,          /* 1280  */ 
 							 int height, 		 /* 720  */
 							 bool verticalSync , /* true */ 

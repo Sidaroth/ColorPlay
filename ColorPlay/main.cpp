@@ -17,13 +17,13 @@
 int main(int argc, char* argv[])
 {
 	bool running = false;
-
-	EventQueue eventQueue;
-	BulbHandler bulbHandler(&eventQueue);
-	BulbMath bulbMath;
 	LogModule logger;
+	EventQueue eventQueue;
+	BulbMath bulbMath;
+
+	BulbHandler bulbHandler(&eventQueue);
 	MoveHandler moveHandler(&logger, &running);
-	WindowHandler windowHandler("Color Play Game v.0.1", &logger, &running);
+	WindowHandler windowHandler("Color Play Game v.0.1", &logger, &running, &bulbHandler);
 
 	////////////////////// INIT //////////////////////
 	std::string url = "http://192.168.37.114/api/newdeveloper/lights/";
@@ -34,8 +34,12 @@ int main(int argc, char* argv[])
 
 	if(windowHandler.init())
 	{
-		std::cout << "Window initialization failed! Exiting...";
+		std::cout << "Window initialization failed! Exiting...\n";
 		return -1;		
+	}
+	else
+	{
+		std::cout << "Window initialization successful!\n";
 	}
 
 	//bulbHandler.setHue(46000, 1);
@@ -61,7 +65,7 @@ int main(int argc, char* argv[])
 	eventQueue.push(event);
 
 	bulbHandler.setColorSpace(BulbHandler::ColorSpace::RGB);
-	
+
 	while(running)
 	{
 		// Event processing

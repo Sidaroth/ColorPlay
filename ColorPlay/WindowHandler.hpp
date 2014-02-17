@@ -13,6 +13,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "LogModule.hpp"
+#include "BulbHandler.hpp"
 
 
 class WindowHandler
@@ -25,7 +26,7 @@ public:
 	};
 
 	WindowHandler();
-	WindowHandler(std::string windowName, LogModule* logger, bool* running, int width=1280, int height=720, bool verticalSync=true, int frameRateLimit=60 );
+	WindowHandler(std::string windowName, LogModule* logger, bool* running, BulbHandler* bulbHandler,int width=1280, int height=720, bool verticalSync=true, int frameRateLimit=60 );
 	bool init(); 
 	void processEvents();
 	void update();

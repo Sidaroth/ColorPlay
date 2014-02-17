@@ -115,7 +115,7 @@ sf::Vector3f BulbMath::xyz2lab(float X, float Y, float Z)
 	b = 200 * (fy - fz);
 
 	sf::Vector3f LAB(L, a, b);
-	std::cout << "\nL: " << L << " a: " << a << " b: " << b << std::endl;
+	//std::cout << "\nL: " << L << " a: " << a << " b: " << b << std::endl;
 
 	return LAB;
 
@@ -137,7 +137,7 @@ float BulbMath::rgbTreshholdCheck(float x)
 	}
 }
 
-//input XYZ in range 0 - 100, output rgb in range 0 - 255
+//input XYZ in range 0 - 95.047, 0 - 100, 0 - 108.883, output rgb in range 0 - 255
 //calculates rgb for d65 whitepoint and sRGB model, works according to bruce lindbloom calc 
 //OPS sometimes calculates different values from the calculator when calculating outside the scope ie for rgb values under 0 or over 255, ask shida about this.
 sf::Vector3f BulbMath::xyz2rgb(float x, float y, float z)
@@ -165,9 +165,16 @@ sf::Vector3f BulbMath::xyz2rgb(float x, float y, float z)
 	else                     
 		var_B = 12.92 * var_B;
 
-	R = var_R * 255;
-	G = var_G * 255;
-	B = var_B * 255;	
+	std::cout << "\nvR: " << var_R << " vG: " << var_G << " vB: " << var_B << std::endl;
+
+	var_R = rgbTreshholdCheck(var_R);
+	var_G = rgbTreshholdCheck(var_G);
+	var_B = rgbTreshholdCheck(var_B);
+
+	//Not sure if these values should be rounded
+	R = round(var_R * 255);
+	G = round(var_G * 255);
+	B = round(var_B * 255);	
 
 	sf::Vector3f RGB(R, G, B);
 
@@ -176,10 +183,11 @@ sf::Vector3f BulbMath::xyz2rgb(float x, float y, float z)
 	return RGB;
 }
 
-//THIS FUNCTION DOES NOT WORK,  but might now be needed as hsv2rgb and rgb2hsv works
-//This function is not tested yet, math and matrix taken from rgb2lab.m documentation from Shida
+//input rgb in range 0 - 255, output XYZ in range 0 - 95.047, 0 - 100, 0 - 108.883. Works for d65 whitepoint and sRGB space
+//NOTE, seems to calculate the wrong values sometimes when calculating outside the rgb breakpoints (under 0 or over 255) not sure if it is relevant as these values are clipped anyway
 sf::Vector3f BulbMath::rgb2xyz(float r, float g, float b)
 {
+	//TODO currently returns xyz rounded to 2 decimals, might need more accuracy.
 	float var_R, var_G, var_B, X, Y, Z;
 
 	var_R = ( r / 255 );        //R from 0 to 255
@@ -387,6 +395,24 @@ sf::Vector3f BulbMath::rgb2cmyk(float r, float g, float b)
 
 sf::Vector3f BulbMath::hsv2lab(float h, float s, float v)
 {
-	sf::Vector3f HSV;
-	return HSV;
+	float temp1, temp2, temp3;
+	sf::Vector3f Lab;
+
+	Lab = hsv2rgb(h, s, v);
+
+	temp1 = Lab.x;
+	temp2 = Lab.y;
+	temp3 = Lab.z;
+
+	Lab = rgb2xyz(temp1, temp2, temp3);
+
+	temp1 = Lab.x;
+	temp2 = Lab.y;
+	temp3 = Lab.z;
+
+	Lab = xyz2lab(temp1, temp2, temp3);
+
+	std::cout << "\nL: " << Lab.x << " a: " << Lab.y << " b: " << Lab.z << std::endl;
+
+	return Lab;
 }

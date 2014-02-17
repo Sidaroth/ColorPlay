@@ -1,9 +1,10 @@
 #include "MoveHandler.hpp"
 
 //PUBLIC###########################################################################################
-MoveHandler::MoveHandler(LogModule *logger, bool *running)
+MoveHandler::MoveHandler(LogModule *logger, BulbHandler* bulbHandler, bool *running)
 {
 	this->logger = logger;
+	this->bulbHandler = bulbHandler;
 
 	this->running = running;
 
@@ -24,6 +25,12 @@ bool MoveHandler::connect()
 	logger->LogEvent("Initializeing controller(s)...");
 	
 	this->connections = psmove_count_connected();
+
+	if(this->connections == 0)
+	{
+		logger->LogEvent("No controllers connected. \nAborting!");
+	}
+	
 	for(int i = 0; i < this->connections; i++)
 	{
 		PSMove* connection = nullptr;

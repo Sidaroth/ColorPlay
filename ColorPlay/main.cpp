@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 	BulbMath bulbMath;
 
 	BulbHandler bulbHandler(&eventQueue);
-	MoveHandler moveHandler(&logger, &running);
+	MoveHandler moveHandler(&logger, &bulbHandler, &running);
 	WindowHandler windowHandler("Color Play Game v.0.1", &logger, &running, &bulbHandler);
 
 	////////////////////// INIT //////////////////////

@@ -9,13 +9,14 @@
 
 #include "struct.hpp"
 #include "LogModule.hpp"
+#include "BulbHandler.hpp"
 
 #define DEBUG 1
 
 class MoveHandler
 {
 public:
-	MoveHandler(LogModule *logger, bool *running);
+	MoveHandler(LogModule *logger, BulbHandler* bulbHandler, bool *running);
 	void run();
 
 private:
@@ -37,8 +38,8 @@ private:
 	float y = 0.0f; 
 	float radius = 0.0f;
 
-
 	LogModule *logger;
+	BulbHandler *bulbHandler;
 
 	bool connect();
 	void disconnect();

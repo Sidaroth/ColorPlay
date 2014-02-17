@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "globals.hpp"
 #include "BulbHandler.hpp"
 #include "BulbMath.hpp"
 #include "LogModule.hpp"
@@ -13,6 +14,12 @@
 #include "EventQueue.hpp"
 
 #define DEBUG 1
+
+//tHis isn't even here
+sf::Vector3f Bulb1HSV(0,0,0);
+sf::Vector3f Bulb2HSV(0,0,0);
+sf::Vector3f Bulb3HSV(0,0,0);
+
 
 int main(int argc, char* argv[])
 {
@@ -32,6 +39,7 @@ int main(int argc, char* argv[])
 	
 	//bulbMath.xyz2hsv(75.6f, 23.6f, 10.1f);
 	bulbHandler.getHue(1);
+	std::cout << "\n----------->" << Bulb1HSV.x << "<----------" << std::endl;
 	if(windowHandler.init())
 	{
 		std::cout << "Window initialization failed! Exiting...\n";

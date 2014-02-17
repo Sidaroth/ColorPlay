@@ -180,7 +180,7 @@ void BulbHandler::processEvents()
 }
 
 
-int BulbHandler::callback_func(void *getInfo, size_t size, size_t count, void *stream)
+int callback_func(void *getInfo, size_t size, size_t count, void *stream)
 {
 	char* tempString;
 	char search = 'x';
@@ -212,6 +212,8 @@ int BulbHandler::callback_func(void *getInfo, size_t size, size_t count, void *s
 	}
 	std::cout << std::endl;
 	std::cout << "\nEND";
+
+	Bulb1HSV.x = 100.0f;
 
 	return 1337;
 }
@@ -247,9 +249,9 @@ void BulbHandler::commandGet(int bulbId)
 	 	//curl_easy_setopt(curl, CURLOPT_POSTFIELDS, &body[0]);
 
 	 	std::cout << "Før: " << &getInfo << std::endl;
-	 	//curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback_func);
+	 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback_func);
 	 	//curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, std::bind(&BulbHandler::callback_func, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
-	 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &BulbHandler::callback_func);
+	 	//curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &BulbHandler::callback_func);
 
 
 	 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &getInfo);

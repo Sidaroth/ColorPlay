@@ -36,8 +36,9 @@ int main(int argc, char* argv[])
 	std::string url = "http://192.168.37.114/api/newdeveloper/lights/";
 
 	bulbHandler.setBulbAdress(url);
-	
-	bulbMath.xyz2lab(0.5f, 0.5f, 32.2f);
+
+	bulbMath.rgb2hsv(255.0f, 0.0f, 0.0f);
+
 	//bulbHandler.setVariables(2);
 	
 	std::cout << "\n----------->" << Bulb1HSV.x << "<----------" << std::endl;

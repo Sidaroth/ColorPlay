@@ -365,9 +365,11 @@ sf::Vector3f BulbMath::rgb2hsv(float r, float g, float b)
 	hsv.y = hsv.y * 100.0f;
 	hsv.z = hsv.z * 100.0f;
 
-	if (hsv.x > 360)
+	hsv.x = hsv.x * 182.04167;
+
+	if (hsv.x > 65535)
 	{
-		hsv.x = 360.0f;
+		hsv.x = 65535.0f;
 	}
 	else if (hsv.x < 0)
 	{
@@ -377,7 +379,7 @@ sf::Vector3f BulbMath::rgb2hsv(float r, float g, float b)
 	hsv.y = hsvThresholdCheck(hsv.y);
 	hsv.z = hsvThresholdCheck(hsv.z);
 
-	std::cout << "\n H: " << hsv.x << " s: " << hsv.y << " v: " << hsv.z << std::endl;
+	std::cout << "\n RGB2HSV------->> H: " << hsv.x << " s: " << hsv.y << " v: " << hsv.z << std::endl;
 
 	return hsv;
 }
@@ -387,6 +389,7 @@ sf::Vector3f BulbMath::rgb2hsv(float r, float g, float b)
 //However the calculators online rounds to rgb by flooring, so the exact accuracy of the function is unknown
 sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 {
+
 	sf::Vector3f RGB;
 	float f, p, q, t, hh, ss, vv;
 	int i;
@@ -405,6 +408,7 @@ sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 		return RGB;
 	}
 
+	hh = H / 182.04167;
 	hh = H / 60.0f;
 	i = floor(hh);
 	f = hh - i;

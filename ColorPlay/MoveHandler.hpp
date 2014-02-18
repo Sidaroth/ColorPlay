@@ -1,3 +1,11 @@
+/*
+	Purpose: This class is responsible for handling the communication to and from the PlayStation Move Controller.
+
+	Last edited: 18. Feb. 2014
+
+	Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun, Harry Nystad
+			 Gj�vik University College.
+*/
 #pragma once
 
 #include <sstream>
@@ -26,7 +34,7 @@ public:
 				bool *running);
 	~MoveHandler();
 	
-	void run();
+	void run();							//Called when the thread is started. Contains main loop. 
 
 private:
 	bool *running;
@@ -35,33 +43,29 @@ private:
 	LogModule *logger;
 	
 	//PSMove
-	int connections;
-	std::vector<PSMove*> controllers;
-	PSMove* USBController;
-	PSMove* BTController;
-	enum PSMove_Connection_Type connectionType;
-	unsigned char r;
-	unsigned char g;
-	unsigned char b;
-	std::vector<unsigned int> buttons;
+	int connections;					//Number of connectections to Move controller.
+	std::vector<PSMove*> controllers;	//Vector of connectections to Move controller.
+	PSMove* USBController;				//Pointer to the USB Move connection if one exists.
+	PSMove* BTController;				//Pointer to the Bluetooth Move connection if one exists.
+	std::vector<unsigned int> buttons;	//Buttons signaled pressed from the Move connections.
 
 	//Tracker
 	PSMoveTracker *tracker;
-	void *frame;
-	float x; 
-	float y; 
-	float radius;
+	void *frame;						//Camera live stream frame, used for debugging. 
+	float x;							//Move controller x position in the camera frame. 
+	float y;							//Move controller y position in the camera frame.
+	float radius;						//Move controller LED ball radius in the camera frame.
 
 	//Bulb interaction
-	BulbHandler *bulbHandler;
-	EventQueue *eventQueue;
-	Timer timer;
+	BulbHandler *bulbHandler;			//Class used to communicate with the Phillips Hue light bulbs.
+	EventQueue *eventQueue;				//Queue used to organize events to the bulbHandler.
+	Timer timer;						//Timer used to slowdown events to the bulbHandler.
 
-	bool connect();
+	bool connect();						//Runs connectControllers and connectTracker.
 	bool connectControllers();
 	bool connectTracker();
-	void updateControllers();
-	void updateTracker();
-	void processInput();
-	void disconnect();
+	void updateControllers();			//Updates the button input from the controller.
+	void updateTracker();				//Update the controller posistion tracking.
+	void processInput();				//Process the input form the buttons and the tracker.
+	void disconnect();					//Disconnects from the tracker and Move controller.
 };

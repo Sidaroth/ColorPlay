@@ -20,9 +20,6 @@ MoveHandler::MoveHandler(	LogModule *logger,
 	this->connections = 0;
 	this->BTController = nullptr;
 	this->USBController = nullptr;
-	r = 0;
-	g = 0;
-	b = 0;
 	
 	this->tracker = nullptr;
 	this->frame = nullptr;
@@ -77,6 +74,7 @@ bool MoveHandler::connect()
 bool MoveHandler::connectControllers()
 {
 	std::stringstream string;
+	enum PSMove_Connection_Type connectionType;
 
 	logger->LogEvent("Initializeing controller(s)...");
 	
@@ -120,10 +118,10 @@ bool MoveHandler::connectControllers()
 		}
 		logger->LogEvent(string.str());
 		
-		this->connectionType = psmove_connection_type(this->controllers[i]);
+		connectionType = psmove_connection_type(this->controllers[i]);
 		string.str("");
 		string << "Connection #" << i << " connection type: ";
-		if(this->connectionType==Conn_Bluetooth)
+		if(connectionType==Conn_Bluetooth)
 		{
 			string << "Bluetooth";
 			this->BTController = this->controllers[i]; 
@@ -165,16 +163,10 @@ bool MoveHandler::connectTracker()
             if (psmove_tracker_enable(this->tracker, this->controllers[i]) == Tracker_CALIBRATED) 
             {
         		string.str("");
-				
 				string << "Enable automatic LED update for connection #" << i;
-				psmove_tracker_set_auto_update_leds(this->tracker, this->controllers[i], PSMove_True);
-
-				//string << "Disable automatic LED update for connection #" << i;
-				//psmove_tracker_set_auto_update_leds(this->tracker, this->controllers[i], PSMove_False);
-				//psmove_set_leds(this->controllers[i], 255, 0, 0);
-				//psmove_update_leds(this->controllers[i]);
-
 				logger->LogEvent(string.str());
+				
+				psmove_tracker_set_auto_update_leds(this->tracker, this->controllers[i], PSMove_True);
 				break;
             }
             else
@@ -229,7 +221,7 @@ void MoveHandler::updateTracker()
 void MoveHandler::processInput()
 {
 	ActionEvent event(0, 1);
-
+	
 	for(int i = 0; i < connections; i++)
 	{
 		if(this->buttons[i] & Btn_MOVE)
@@ -240,6 +232,7 @@ void MoveHandler::processInput()
 
 	if(this->timer.secondsElapsed() >= 2)
 	{	
+		
 		if(this->x <213)
 		{
 			event.setBulbID(1);

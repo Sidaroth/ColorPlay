@@ -52,11 +52,11 @@ int main(int argc, char* argv[])
 		std::cout << "Window initialization successful!\n";
 	}
 
-	bulbHandler.setHue(20000, 1);
+	bulbHandler.setHue(0, 1);
 	bulbHandler.setBrightness(126, 1);
-	bulbHandler.setHue(40000, 2);
+	bulbHandler.setHue(25500, 2);
 	bulbHandler.setBrightness(126, 2);
-	bulbHandler.setHue(60000, 3);
+	bulbHandler.setHue(46920, 3);
 	bulbHandler.setBrightness(126, 3);
 	bulbHandler.setHue(65000, 4);
 	bulbHandler.setBrightness(126, 4);

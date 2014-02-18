@@ -1,7 +1,7 @@
 /*
 	Purpose: This class is responsible for handling the communication to and from the Philips Hue lightbulbs. 
 
-	Last edited: 17. Feb. 2014
+	Last edited: 18. Feb. 2014
 
 	Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun, Harry Nystad
 			 Gj�vik University College.
@@ -10,13 +10,11 @@
 #pragma once // Include guard
 
 #include <vector>
-#include <string.h>
+#include <string>
 #include <sstream>
 #include <chrono>
 #include <thread>
 #include <iostream>
-#include <istream>
-#include <ostream>
 #include <random>
 
 #include <SFML/Graphics.hpp>
@@ -25,9 +23,16 @@
 #include "EventQueue.hpp"
 #include "ActionEvent.hpp"
 #include "LogModule.hpp"
+#include "BulbMath.hpp"
 #include "globals.hpp"
 
 #define SEED 314159265358979323
+#define RGBINC 5
+#define HSVINC 182
+#define LABINC 1
+#define CMYINC 1
+#define XYZINC 1
+
 #define DEBUG 1
 
 class BulbHandler
@@ -47,18 +52,7 @@ public:
 		HSV
 	};
 
-	// Will this struct be used? - Remains to be seen.
-	typedef struct Bulb{
-		short id;
-		short hue;
-		short sat;
-		short bri;
-		bool on; 
-	} Bulb;
-
-
 	void generateNewGoalColor();
-
 	void setBulbAdress(std::string bulbAdress);
 	void setBrightness(int brightness, int bulbId);
 	void setHue(int hue, int bulbId);
@@ -71,11 +65,12 @@ public:
 	sf::Color getGoalColor();
 
 	void setVariables(int bulbId);
-
+	void updateBulb(unsigned short bulbId, short inc);
 	void processEvents();
 
 private:
 
+	std::stringstream message;
 	sf::Color goalColor;
 	CURL* curl;
 	std::string bulbAdress;
@@ -84,6 +79,9 @@ private:
 	ColorSpace currentColorSpace;
 
 	LogModule* logger;
+	short increaseInterval;
+
+	BulbMath mathSuite; 
 
 	std::mt19937 gen;
 	std::uniform_int_distribution<> rgbDistribution;

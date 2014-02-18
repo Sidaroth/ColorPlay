@@ -2,7 +2,7 @@
 /*
 * Purpose: Handle the swapping, loading and unloading of windows / scenes. 
 *
-* Last edited: 13. Feb. 2014
+* Last edited: 18. Feb. 2014
 *
 * Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun, Harry Nystad
 *		   Gjøvik University College
@@ -22,7 +22,7 @@ public:
 	enum class WindowType{
 		Config,
 		Game,
-		Shield
+		Shield		// For shield pattern
 	};
 
 	WindowHandler();

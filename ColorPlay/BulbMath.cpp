@@ -410,6 +410,9 @@ sf::Vector3f BulbMath::rgb2hsv(float r, float g, float b)
 	hsv = hsvThresholdCheck(hsv);
 
 	hsv.x = hsv.x * 182.04167;
+	hsv.y = (hsv.y / 100) * 255;
+	hsv.z = (hsv.z / 100) * 255;
+
 
 	hsv.x = round(hsv.x);
 	hsv.y = round(hsv.y);
@@ -433,18 +436,13 @@ sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 	float f, p, q, t, hh, ss, vv;
 	int i;
 
+	RGB.y = ((RGB.y / 255) * 100);
+	RGB.z = ((RGB.z / 255) * 100);
+
+
 	RGB.x = RGB.x / 182.04167;
 	RGB = hsvThresholdCheck(RGB);
-	/*
-	hh = H / 182.04167;
 
-	ss = hsvThresholdCheck(s);
-	vv = hsvThresholdCheck(v);
-	if (hh < 0)
-		hh = 0.0f;
-	else if (hh > 360)
-		hh = 360.0f;
-	*/
 	std::cout << "\n AT HSV2RGB------->> H: " << RGB.x << " s: " << RGB.y << " v: " << RGB.z << std::endl;
 
 

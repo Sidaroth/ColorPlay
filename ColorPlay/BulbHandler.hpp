@@ -61,11 +61,8 @@ public:
 
 	void setBulbAdress(std::string bulbAdress);
 	void setBrightness(int brightness, int bulbId);
-	int  getBrightness(int bulbId);
 	void setHue(int hue, int bulbId);
-	int  getHue(int bulbId);
 	void setSaturation(int saturation, int bulbId);
-	int  getSaturation(int bulbId);
 
 	void setColorSpace(ColorSpace colorSpace);
 	void setGoalColor(sf::Color color);

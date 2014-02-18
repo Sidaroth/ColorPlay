@@ -37,8 +37,9 @@ int main(int argc, char* argv[])
 
 	bulbHandler.setBulbAdress(url);
 	
-	//bulbMath.xyz2hsv(75.6f, 23.6f, 10.1f);
-	bulbHandler.setVariables(2);
+	bulbMath.rgb2xyz(23.3f, 205.0f, 174.8f);
+	//bulbHandler.setVariables(2);
+	
 	std::cout << "\n----------->" << Bulb1HSV.x << "<----------" << std::endl;
 	if(windowHandler.init())
 	{

@@ -44,4 +44,5 @@ private:
 	float rgbThresholdCheck(float x);
 	float xyzThresholdCheck(float x);
 	float labThresholdCheck(float x);
+	float hsvThresholdCheck(float x);
 };

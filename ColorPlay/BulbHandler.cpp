@@ -315,7 +315,7 @@ void callback_func(void *getInfo, size_t size, size_t count, void *stream)
 	std::string bulbId;
 	std::string output((char*)getInfo);
 
-	std::cout << "\n HER --...->" << output << std::endl;
+	//std::cout << "\n HER --...->" << output << std::endl;
 
 	found = output.find("hue");
 	found2 = output.find(",", found);

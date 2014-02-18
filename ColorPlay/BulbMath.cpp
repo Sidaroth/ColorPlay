@@ -39,6 +39,23 @@ float BulbMath::xyzThresholdCheck(float x)
 	}
 }
 
+//Threshold check for the s and v values of HSV
+float BulbMath::hsvThresholdCheck(float x)
+{
+	if (x < 0)
+	{
+		return 0.0f;
+	}
+	else if (x > 100)
+	{
+		return 100.0f;
+	}
+	else
+	{
+		return x;
+	}
+}
+
 //Threshold check for the a and b values of Lab
 float BulbMath::labThresholdCheck(float x)
 {
@@ -348,6 +365,18 @@ sf::Vector3f BulbMath::rgb2hsv(float r, float g, float b)
 	hsv.y = hsv.y * 100.0f;
 	hsv.z = hsv.z * 100.0f;
 
+	if (hsv.x > 360)
+	{
+		hsv.x = 360.0f;
+	}
+	else if (hsv.x < 0)
+	{
+		hsv.x = 0.0f;
+	}
+
+	hsv.y = hsvThresholdCheck(hsv.y);
+	hsv.z = hsvThresholdCheck(hsv.z);
+
 	std::cout << "\n H: " << hsv.x << " s: " << hsv.y << " v: " << hsv.z << std::endl;
 
 	return hsv;
@@ -372,7 +401,7 @@ sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 		RGB.y = RGB.y * 255.0f;
 		RGB.z = RGB.z * 255.0f;
 
-//		std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
+		std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
 		return RGB;
 	}
 

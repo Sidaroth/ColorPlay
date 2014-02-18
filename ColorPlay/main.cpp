@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
 
 	///////////////// START THREADS /////////////////
 	std::thread loggerThread(&LogModule::run, &logger);	// Run the logger module in a background thread.
-	//std::thread moveHandlerThread(&MoveHandler::run, &moveHandler);
+	std::thread moveHandlerThread(&MoveHandler::run, &moveHandler);
 	
 	///////////////// START WORK IN THE MAIN THREAD //////////////////
 	std::cout << "Main thread: " << std::this_thread::get_id() << std::endl;
@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
 	logger.LogEvent("quit"); // logger.quit(); perhaps...
 
 	///////////////// JOIN / WAIT FOR THREADS - NO MORE WORK AFTER THIS/////////////////////
-	//moveHandlerThread.join();
+	moveHandlerThread.join();
 	loggerThread.join(); // Wait for the background thread(s) to finish. 
 	
 	return 0;	

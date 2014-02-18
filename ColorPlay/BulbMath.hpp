@@ -41,8 +41,9 @@ public:
 
 
 private:
-	float rgbThresholdCheck(float x);
+	sf::Vector3f rgbThresholdCheck(sf::Vector3f rgb);
 	sf::Vector3f xyzThresholdCheck(sf::Vector3f xyz);
-	float labThresholdCheck(float x);
+	sf::Vector3f labThresholdCheck(sf::Vector3f lab);
 	sf::Vector3f hsvThresholdCheck(sf::Vector3f hsv);
+	sf::Vector3f cmyThresholdCheck(sf::Vector3f cmy);
 };

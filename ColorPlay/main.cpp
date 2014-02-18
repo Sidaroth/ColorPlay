@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
 
 	bulbHandler.setBulbAdress(url);
 
-	bulbMath.lab2xyz(20.0f, 120.0f, 50.0f);
+	bulbMath.lab2xyz(10.0f, -50.0f, 10.0f);
 
 	//bulbHandler.setVariables(2);
 	

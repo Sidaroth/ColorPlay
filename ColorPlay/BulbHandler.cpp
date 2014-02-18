@@ -245,13 +245,17 @@ void BulbHandler::updateBulb(unsigned short bulbId, short inc)
 		else if(bulbId == 2)		// G
 		{
 			values = mathSuite.hsv2rgb(Bulb2HSV.x, Bulb2HSV.y, Bulb2HSV.z);
+			std::cout << "\n values ----------->" << values.x << " " << values.y << " " << values.z << std::endl;
+			std::cout << "\n inc------->" << inc << std::endl;
 			values.y = values.y + inc;
 			values.x = 0;
 			values.z = 0;
+			std::cout << "\n values222 ----------->" << values.x << " " << values.y << " " << values.z << std::endl;
+
 			Bulb2HSV = mathSuite.rgb2hsv(values.x, values.y, values.z);
 
 			message  << "\"hue\": " << Bulb2HSV.x << ", \"sat\": " << Bulb2HSV.y << ", \"bri\": " << Bulb2HSV.z << "}";
-			std::cout << message.str();
+			std::cout << "bulb2 start " << message.str() << " bulb2 end ";
 		}
 		else if(bulbId == 3)		// B
 		{

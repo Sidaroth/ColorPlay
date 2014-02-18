@@ -73,7 +73,7 @@ public:
 
 	sf::Color getGoalColor();
 
-
+	void setVariables(int bulbId);
 
 	void processEvents();
 
@@ -92,5 +92,4 @@ private:
 	std::uniform_int_distribution<> rgbDistribution;
 
 	void command(std::string body, int bulbId);
-	void commandGet(int bulbId);
 };

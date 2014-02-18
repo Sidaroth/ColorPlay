@@ -59,6 +59,7 @@ void BulbHandler::setHue(int hue, int bulbId)
 	command(message.str(), bulbId);
 }
 
+//All the get functions do not work for now. Use setVariables(bulbId) then copy the vaules from the global Vector3f object
 int BulbHandler::getHue(int bulbId)
 {
 	std::stringstream message;
@@ -264,8 +265,8 @@ void callback_func(void *getInfo, size_t size, size_t count, void *stream)
 	}
 }
 
-//TODO modify this so it can be used to get saturation and brightness as well
-void BulbHandler::commandGet(int bulbId)
+//updates a bulb's global variables to match the current values the bulb is showing.
+void BulbHandler::setVariables(int bulbId)
 {
 	 CURLcode res;
 	 CURLcode res2;

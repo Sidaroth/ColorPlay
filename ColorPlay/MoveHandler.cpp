@@ -1,22 +1,42 @@
 #include "MoveHandler.hpp"
 
 //PUBLIC###########################################################################################
-MoveHandler::MoveHandler(LogModule *logger, BulbHandler* bulbHandler, bool *running)
+MoveHandler::MoveHandler()
 {
-	this->logger = logger;
-	this->bulbHandler = bulbHandler;
+	#if DEBUG
+		std::cout << "This MoveHandler constructor should not be called";
+	#endif
+}
 
+MoveHandler::MoveHandler(	LogModule *logger,
+							BulbHandler* bulbHandler,
+							EventQueue * eventQueue,
+							bool *running)
+{
 	this->running = running;
+	
+	this->logger = logger;
 
 	this->connections = 0;
+	this->BTController = nullptr;
+	this->USBController = nullptr;
 	r = 0;
 	g = 0;
 	b = 0;
 	
-	this->USBController = nullptr;
-	this->BTController = nullptr;
 	this->tracker = nullptr;
 	this->frame = nullptr;
+	this->x = 0.0f; 
+	this->y = 0.0f; 
+	this->radius = 0.0f;
+
+	this->bulbHandler = bulbHandler;
+	this->eventQueue = eventQueue;
+}
+
+MoveHandler::~MoveHandler()
+{
+	
 }
 
 void MoveHandler::run()
@@ -37,6 +57,7 @@ void MoveHandler::run()
 	}	
 }
 
+//PRIVATE##########################################################################################
 bool MoveHandler::connect()
 {
 	if(!this->connectControllers())
@@ -210,42 +231,41 @@ void MoveHandler::updateTracker()
 
 void MoveHandler::processInput()
 {
-	int bulb = 1;
+	ActionEvent event(0, 1);
 
 	for(int i = 0; i < connections; i++)
 	{
 		if(this->buttons[i] & Btn_MOVE)
 		{
-			this->running = false;
+			event.setAction(ActionEvent::Action::Finish);
 		}
 	}
 	
 	if(this->x <213)
 	{
-		bulb = 1;
+		event.setBulbID(1);
 	}
 	else if (this->x > 427)
 	{
-		bulb = 3;
+		event.setBulbID(3);
 	}
 	else
 	{
-		bulb = 2;
+		event.setBulbID(2);
 	}
 
 	if(this->y < 160)
 	{
-		this->bulbHandler->setHue(20000, bulb);
+		//this->bulbHandler->setHue(20000, bulb);
+		event.setAction(ActionEvent::Action::Up);
 	}
 	else if (this->y > 320)
-	{	
-		this->bulbHandler->setHue(60000, bulb);	
-	}
-	else
 	{
-		this->bulbHandler->setHue(40000, bulb);		
+		event.setAction(ActionEvent::Action::Down);
 	}
 
+
+	this->eventQueue->push(event);
 }
 
 void MoveHandler::disconnect()
@@ -260,4 +280,3 @@ void MoveHandler::disconnect()
 	}
 	psmove_tracker_free(this->tracker);
 }
-

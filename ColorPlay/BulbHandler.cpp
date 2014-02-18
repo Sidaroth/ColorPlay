@@ -41,11 +41,6 @@ void BulbHandler::setBrightness(int brightness, int bulbId)
 	command(message.str(), bulbId);
 }
 
-int BulbHandler::getBrightness(int bulbId)
-{
-	return 0;
-}
-
 void BulbHandler::setHue(int hue, int bulbId)
 {
 	std::stringstream message;
@@ -57,15 +52,6 @@ void BulbHandler::setHue(int hue, int bulbId)
 	}
 
 	command(message.str(), bulbId);
-}
-
-int BulbHandler::getHue(int bulbId)
-{
-	std::stringstream message;
-
-	commandGet(bulbId);
-
-	return 0;
 }
 
 
@@ -81,12 +67,6 @@ void BulbHandler::setSaturation(int saturation, int bulbId)
 
 	command(message.str(), bulbId);
 }
-
-int BulbHandler::getSaturation(int bulbId)
-{
-	return 0;
-}
-
 
 void BulbHandler::generateNewGoalColor()
 {
@@ -214,8 +194,6 @@ void callback_func(void *getInfo, size_t size, size_t count, void *stream)
 	found = output.find("hue");
 	found2 = output.find(",", found);
 
-	std::cout << "\nFound: " << found << " " << found2 << std::endl;
-
 	hue = output.substr(found + 5, found2 - found - 5);
 
 	found = output.find("Hue Lamp");
@@ -237,8 +215,6 @@ void callback_func(void *getInfo, size_t size, size_t count, void *stream)
 	bulbIdInt = atoi(bulbId.c_str());
 	satInt = atoi(sat.c_str());
 	briInt = atoi(bri.c_str());
-
-	std::cout << "------>> " << hueInt << "------->> " << bulbIdInt << "------->> " << satInt << "------>> " << briInt << std::endl;
 
 	if (bulbIdInt == 1)
 	{
@@ -264,8 +240,8 @@ void callback_func(void *getInfo, size_t size, size_t count, void *stream)
 	}
 }
 
-//TODO modify this so it can be used to get saturation and brightness as well
-void BulbHandler::commandGet(int bulbId)
+//updates a bulb's global variables to match the current values the bulb is showing.
+void BulbHandler::setVariables(int bulbId)
 {
 	 CURLcode res;
 	 CURLcode res2;
@@ -277,11 +253,6 @@ void BulbHandler::commandGet(int bulbId)
 
 	 if (curl)
 	 {
-	 	if (DEBUG >= 1)
-	 	{
-	 		printf("Sending request \n");
-	 	}
-
 	 	// Set headers. 
 	 	headers = curl_slist_append(headers, "Accept: application/json");
 	 	headers = curl_slist_append(headers, "Content-Type: application/json");

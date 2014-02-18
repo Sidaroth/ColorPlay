@@ -61,11 +61,8 @@ public:
 
 	void setBulbAdress(std::string bulbAdress);
 	void setBrightness(int brightness, int bulbId);
-	int  getBrightness(int bulbId);
 	void setHue(int hue, int bulbId);
-	int  getHue(int bulbId);
 	void setSaturation(int saturation, int bulbId);
-	int  getSaturation(int bulbId);
 
 	void setColorSpace(ColorSpace colorSpace);
 	void setGoalColor(sf::Color color);
@@ -73,7 +70,7 @@ public:
 
 	sf::Color getGoalColor();
 
-
+	void setVariables(int bulbId);
 
 	void processEvents();
 
@@ -92,5 +89,4 @@ private:
 	std::uniform_int_distribution<> rgbDistribution;
 
 	void command(std::string body, int bulbId);
-	void commandGet(int bulbId);
 };

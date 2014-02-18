@@ -202,16 +202,11 @@ void BulbHandler::processEvents()
 }
 
 
-int callback_func(void *getInfo, size_t size, size_t count, void *stream)
+void callback_func(void *getInfo, size_t size, size_t count, void *stream)
 {
-	char* tempString;
-	char search = 'x';
-	int i, j, found, found2;
-	std::stringstream hue;
-
-	std::cout << "\n\nSTART\n";
-	tempString = (char*)getInfo;
-
+	int hueInt, briInt, satInt, bulbIdInt, found, found2;
+	std::string hue, sat, bri;
+	std::string bulbId;
 	std::string output((char*)getInfo);
 
 	std::cout << "\n HER --...->" << output << std::endl;
@@ -221,33 +216,55 @@ int callback_func(void *getInfo, size_t size, size_t count, void *stream)
 
 	std::cout << "\nFound: " << found << " " << found2 << std::endl;
 
-/*
-	for (i = 0; search != 'h'; i++)
+	hue = output.substr(found + 5, found2 - found - 5);
+
+	found = output.find("Hue Lamp");
+	found2 = output.find(",", found);
+
+	bulbId = output.substr(found + 9, 1);
+
+	found = output.find("sat");
+	found2 = output.find(",", found);
+
+	sat = output.substr(found + 5, found2 - found - 5);
+
+	found = output.find("bri");
+	found2 = output.find(",", found);
+
+	bri = output.substr(found + 5, found2 - found - 5);
+
+	hueInt = atoi(hue.c_str());
+	bulbIdInt = atoi(bulbId.c_str());
+	satInt = atoi(sat.c_str());
+	briInt = atoi(bri.c_str());
+
+	std::cout << "------>> " << hueInt << "------->> " << bulbIdInt << "------->> " << satInt << "------>> " << briInt << std::endl;
+
+	if (bulbIdInt == 1)
 	{
-		search = tempString[i];
+		Bulb1HSV.x = hueInt;
+		Bulb1HSV.y = satInt;
+		Bulb1HSV.z = briInt;
 	}
-	j = i + 4;
-
-
-	for (i; search != ','; i++)
+	else if (bulbIdInt == 2)
 	{
-		search = tempString[i];
+		Bulb2HSV.x = hueInt;
+		Bulb2HSV.y = satInt;
+		Bulb2HSV.z = briInt;
 	}
-	i = i - 2;
-
-	for (j - 1; j != i + 1; j++) //Skrive ut HUE, TODO, legge hue inn i array for å returnere i steden
+	else if(bulbIdInt == 3)
 	{
-		hue << tempString[j];
+		Bulb3HSV.x = hueInt;
+		Bulb3HSV.y = satInt;
+		Bulb3HSV.z = briInt;
 	}
-	std::cout << std::endl;
-	*/
-	std::cout << "------>>" << hue.str() << "<<----" << std::endl;
-
-	Bulb1HSV.x = 100.0f;
-
-	return 1337;
+	else
+	{
+		std::cout << "\nERROR: Callback function got no ID";
+	}
 }
 
+//TODO modify this so it can be used to get saturation and brightness as well
 void BulbHandler::commandGet(int bulbId)
 {
 	 CURLcode res;
@@ -274,23 +291,15 @@ void BulbHandler::commandGet(int bulbId)
 		message << bulbAdress << bulbId;
 
 	 	curl_easy_setopt(curl, CURLOPT_URL, &message.str()[0]);
-	 	//TODO: This should be customizable I think...
 	 	curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
-	 	//curl_easy_setopt(curl, CURLOPT_POSTFIELDS, &body[0]);
 
-	 	std::cout << "Før: " << &getInfo << std::endl;
 	 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback_func);
-	 	//curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, std::bind(&BulbHandler::callback_func, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
-	 	//curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &BulbHandler::callback_func);
 
 
 	 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &getInfo);
-	 	std::cout << "Etter: " << &getInfo << std::endl;
 
 	 	res = curl_easy_perform(curl);
-	 	std::cout << "EtterETER: " << &getInfo << std::endl;
 
-	 	//std::cout << " HER :    " << res;
 	 	curl_slist_free_all(headers);
 
 	 	curl_easy_cleanup(curl);

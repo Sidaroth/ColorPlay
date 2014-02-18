@@ -13,6 +13,8 @@ MoveHandler::MoveHandler(LogModule *logger, BulbHandler* bulbHandler, bool *runn
 	g = 0;
 	b = 0;
 	
+	this->USBController = nullptr;
+	this->BTController = nullptr;
 	this->tracker = nullptr;
 	this->frame = nullptr;
 }
@@ -102,10 +104,12 @@ bool MoveHandler::connectControllers()
 		if(this->connectionType==Conn_Bluetooth)
 		{
 			string << "Bluetooth";
+			this->BTController = this->controllers[i]; 
 		}
 		else
 		{
 			string << "USB";
+			this->USBController = this->controllers[i];
 		}	
 		logger->LogEvent(string.str());
 	}
@@ -194,7 +198,7 @@ void MoveHandler::updateTracker()
 		}
 	#endif
 
-	psmove_tracker_get_position(this->tracker, this->controllers[0], &xPos, &yPos, &ledRadius);
+	psmove_tracker_get_position(this->tracker, this->USBController, &xPos, &yPos, &ledRadius);
 	this->x = xPos;
 	this->y = yPos;
 	this->radius = ledRadius;
@@ -216,11 +220,11 @@ void MoveHandler::processInput()
 		}
 	}
 	
-	if(this->x <200)
+	if(this->x <213)
 	{
 		bulb = 1;
 	}
-	else if (this->x > 400)
+	else if (this->x > 427)
 	{
 		bulb = 3;
 	}
@@ -229,11 +233,11 @@ void MoveHandler::processInput()
 		bulb = 2;
 	}
 
-	if(this->y < 200)
+	if(this->y < 160)
 	{
 		this->bulbHandler->setHue(20000, bulb);
 	}
-	else if (this->y > 400)
+	else if (this->y > 320)
 	{	
 		this->bulbHandler->setHue(60000, bulb);	
 	}

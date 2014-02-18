@@ -25,6 +25,8 @@ private:
 	//PSMove
 	int connections;
 	std::vector<PSMove*> controllers;
+	PSMove* USBController;
+	PSMove* BTController;
 	enum PSMove_Connection_Type connectionType;
 	unsigned char r;
 	unsigned char g;

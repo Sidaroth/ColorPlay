@@ -27,6 +27,7 @@ public:
 	// RGB -> 
 	sf::Vector3f rgb2xyz(float r, float g, float b);
 	sf::Vector3f rgb2cmyk(float r, float g, float b);
+	sf::Vector3f rgb2hsv(float r, float g, float b);
 
 	// HSV -> 
 	sf::Vector3f hsv2rgb(float H, float s, float v);

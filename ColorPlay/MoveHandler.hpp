@@ -1,3 +1,11 @@
+/*
+	Purpose: This class is responsible for handling the communication to and from the PlayStation Move Controller.
+
+	Last edited: 18. Feb. 2014
+
+	Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun, Harry Nystad
+			 Gj�vik University College.
+*/
 #pragma once
 
 #include <sstream>
@@ -35,14 +43,10 @@ private:
 	LogModule *logger;
 	
 	//PSMove
-	int connections;
-	std::vector<PSMove*> controllers;
+	int connections;								//Number of connectections to Move controller.
+	std::vector<PSMove*> controllers;				//Vector of connectections to Move controller.
 	PSMove* USBController;
 	PSMove* BTController;
-	enum PSMove_Connection_Type connectionType;
-	unsigned char r;
-	unsigned char g;
-	unsigned char b;
 	std::vector<unsigned int> buttons;
 
 	//Tracker

@@ -64,7 +64,7 @@ int BulbHandler::getHue(int bulbId)
 {
 	std::stringstream message;
 
-	commandGet(bulbId);
+	//commandGet(bulbId);
 
 	return 0;
 }

@@ -87,7 +87,7 @@ void BulbHandler::command(std::string body, int bulbId)
 {
 
 	message.str(std::string());
-	CURLcode res;
+	//CURLcode res;
 	struct curl_slist *headers = NULL;
 	curl = curl_easy_init();
 
@@ -120,7 +120,8 @@ void BulbHandler::command(std::string body, int bulbId)
 		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, &body[0]);
 
-		res = curl_easy_perform(curl);
+		//res = curl_easy_perform(curl);
+		curl_easy_perform(curl);
 		curl_slist_free_all(headers);
 		curl_easy_cleanup(curl);
 	}
@@ -369,8 +370,8 @@ void callback_func(void *getInfo, size_t size, size_t count, void *stream)
 //updates a bulb's global variables to match the current values the bulb is showing.
 void BulbHandler::setVariables(int bulbId)
 {
-	 CURLcode res;
-	 CURLcode res2;
+	 //CURLcode res;
+	 //CURLcode res2;
 	 struct curl_slist *headers = NULL;
 	 curl = curl_easy_init();
 	 char* getInfo;
@@ -395,7 +396,8 @@ void BulbHandler::setVariables(int bulbId)
 
 	 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &getInfo);
 
-	 	res = curl_easy_perform(curl);
+	 	//res = curl_easy_perform(curl);
+	 	curl_easy_perform(curl);
 
 	 	curl_slist_free_all(headers);
 

@@ -6,20 +6,35 @@ BulbMath::BulbMath()
 }
 
 //Makes sure rgb is within range
-float BulbMath::rgbThresholdCheck(float x)
+sf::Vector3f BulbMath::rgbThresholdCheck(sf::Vector3f rgb)
 {
-	if (x < 0)
+	if (rgb.x < 0)
 	{
-		return 0.0f;
+		rgb.x = 0.0f;
 	}
-	else if (x > 255)
+	else if (rgb.x > 255)
 	{
-		return 255.0f;
+		rgb.x = 255.0f;
 	}
-	else
+
+	if (rgb.y < 0)
 	{
-		return x;
+		rgb.y = 0.0f;
 	}
+	else if (rgb.y > 255)
+	{
+		rgb.y = 255.0f;
+	}
+
+	if (rgb.z < 0)
+	{
+		rgb.z = 0.0f;
+	}
+	else if (rgb.z > 255)
+	{
+		rgb.z = 255.0f;
+	}
+	return rgb;
 }
 
 //Makes sure XYZ is within range
@@ -29,9 +44,9 @@ sf::Vector3f BulbMath::xyzThresholdCheck(sf::Vector3f xyz)
 	{
 		xyz.x = 0.0f;
 	}
-	else if (xyz.x > 100)
+	else if (xyz.x > 95.047)
 	{
-		xyz.x = 100.0f;
+		xyz.x = 95.047f;
 	}
 
 	if (xyz.y < 0)
@@ -47,9 +62,9 @@ sf::Vector3f BulbMath::xyzThresholdCheck(sf::Vector3f xyz)
 	{
 		xyz.z = 0.0f;
 	}
-	else if (xyz.x > 100)
+	else if (xyz.x > 108.883)
 	{
-		xyz.z = 100.0f;
+		xyz.z = 108.883f;
 	}
 
 	return xyz;
@@ -58,53 +73,97 @@ sf::Vector3f BulbMath::xyzThresholdCheck(sf::Vector3f xyz)
 //Threshold check for the s and v values of HSV
 sf::Vector3f BulbMath::hsvThresholdCheck(sf::Vector3f hsv)
 {
-	sf::Vector3f hsv2 = hsv;
-
 	if (hsv.x < 0)
 	{
-		hsv2.x = 0.0f;
+		hsv.x = 0.0f;
 	}
 	else if (hsv.x > 360)
 	{
-		hsv2.x = 360.0f;
+		hsv.x = 360.0f;
 	}
 
 	if (hsv.y < 0)
 	{
-		hsv2.y = 0.0f;
+		hsv.y = 0.0f;
 	}
 	else if (hsv.y > 100)
 	{
-		hsv2.y = 100.0f;
+		hsv.y = 100.0f;
 	}
 
 	if (hsv.z < 0)
 	{
-		hsv2.z = 0.0f;
+		hsv.z = 0.0f;
 	}
 	else if (hsv.z > 100)
 	{
-		hsv2.z = 100.0f;
+		hsv.z = 100.0f;
 	}
 
-	return hsv2;
+	return hsv;
 }
 
 //Threshold check for the a and b values of Lab
-float BulbMath::labThresholdCheck(float x)
+sf::Vector3f BulbMath::labThresholdCheck(sf::Vector3f lab)
 {
-	if (x < -180)
+	if (lab.x < 0)
 	{
-		return -180.0f;		
+		lab.x = 0.0f;
 	}
-	else if (x > 180)
+	else if (lab.x > 100)
 	{
-		return 180.0f;
+		lab.x = 100.0f;
 	}
-	else
+
+	if (lab.y < -180)
 	{
-		return x;
+		lab.y = -180.0f;
 	}
+	else if (lab.y > 180)
+	{
+		lab.y = 180.0f;
+	}
+
+	if (lab.z < -180)
+	{
+		lab.z = -180.0f;
+	}
+	else if (lab.z > 180)
+	{
+		lab.z = 180.0f;
+	}
+	return lab;
+}
+
+sf::Vector3f BulbMath::cmyThresholdCheck(sf::Vector3f cmy)
+{
+	if (cmy.x < 0)
+	{
+		cmy.x = 0.0f;
+	}
+	else if (cmy.x > 1)
+	{
+		cmy.x = 1.0f;
+	}
+
+	if (cmy.y < 0)
+	{
+		cmy.y = 0.0f;
+	}
+	else if (cmy.y > 1)
+	{
+		cmy.y = 1.0f;
+	}
+
+	if (cmy.z < 0)
+	{
+		cmy.z = 0.0f;
+	}
+	else if (cmy.z > 1)
+	{
+		cmy.z = 1.0f;
+	}
+	return cmy;
 }
 
 //Returns XYZ in range 0 - 100. input, L in range 0 - 100, a and b in range -128 - 128
@@ -112,20 +171,23 @@ float BulbMath::labThresholdCheck(float x)
 //remember to set reference white to D65 and rgb space to sRGB when using calculator
 sf::Vector3f BulbMath::lab2xyz(float L, float a, float b)
 {
-	
+	sf::Vector3f XYZ(L, a, b);
+
+	XYZ = labThresholdCheck(XYZ);
+
 	//Tristimulus values of reference white D(65)
-	float Xn = 95.047/100;
-	float Yn = 100.0/100;
-	float Zn = 108.883/100;
+	float Xn = 95.047/100.0f;
+	float Yn = 100.0/100.0f;
+	float Zn = 108.883/100.0f;
 	float fx, fy, fz, xr, yr, zr, X, Y, Z;
 
 	//Tresholds
 	float T1 = 0.008856;
 	float T2 = 903.3;
 
-	fy = (L + 16) / 116;
-	fz = fy - b / 200;
-	fx = a / 500 + fy;
+	fy = (XYZ.x + 16.0f) / 116.0f;
+	fz = fy - XYZ.z / 200.0f;
+	fx = XYZ.y / 500.0f + fy;
 
 	if (pow(fx, 3) > T1)
 	{
@@ -133,16 +195,16 @@ sf::Vector3f BulbMath::lab2xyz(float L, float a, float b)
 	}
 	else
 	{
-		xr = (116 * fx - 16) / T2;
+		xr = (116.0f * fx - 16.0f) / T2;
 	}
 
 	if (L > (T1 * T2))
 	{
-		yr = pow(((L + 16) / 116), 3);
+		yr = pow(((XYZ.x + 16.0f) / 116.0f), 3);
 	}
 	else
 	{
-		yr = L / T2;
+		yr = XYZ.x / T2;
 	}
 
 	if (pow (fz, 3) > T1)
@@ -151,14 +213,17 @@ sf::Vector3f BulbMath::lab2xyz(float L, float a, float b)
 	}
 	else
 	{
-		zr = (116 * fz - 16) / T2;
+		zr = (116.0f * fz - 16.0f) / T2;
 	}
 	X = xr * Xn;
 	Y = yr * Yn;
 	Z = zr * Zn;
 
 
-	sf::Vector3f XYZ(X*100, Y*100, Z*100);
+
+	XYZ.x = X * 100.0f;
+	XYZ.y = Y * 100.0f;
+	XYZ.z = Z * 100.0f;
 
 	XYZ = xyzThresholdCheck(XYZ);
 
@@ -176,6 +241,10 @@ sf::Vector3f BulbMath::xyz2lab(float X, float Y, float Z)
 {
 	float xr, yr, zr, fx, fy, fz, L, a, b;
 
+	sf::Vector3f LAB(X, Y, Z);
+
+	LAB = xyzThresholdCheck(LAB);
+
 	//D65 Tristimulus values
 	float Xn = 95.047;
 	float Yn = 100.0;
@@ -185,9 +254,9 @@ sf::Vector3f BulbMath::xyz2lab(float X, float Y, float Z)
 	float T1 = 0.008856;
 	float T2 = 903.3;
 
-	xr = X / Xn;
-	yr = Y / Yn;
-	zr = Z / Zn;
+	xr = LAB.x / Xn;
+	yr = LAB.y / Yn;
+	zr = LAB.z / Zn;
 
 	if (xr > T1)
 	{
@@ -195,7 +264,7 @@ sf::Vector3f BulbMath::xyz2lab(float X, float Y, float Z)
 	}
 	else
 	{
-		fx = (T2 * xr + 16) / 116;
+		fx = (T2 * xr + 16.0f) / 116.0f;
 	}
 
 	if (yr > T1)
@@ -204,7 +273,7 @@ sf::Vector3f BulbMath::xyz2lab(float X, float Y, float Z)
 	}
 	else
 	{
-		fy = (T2 * yr + 16) / 116;
+		fy = (T2 * yr + 16.0f) / 116.0f;
 	}
 
 	if (zr > T1)
@@ -213,26 +282,20 @@ sf::Vector3f BulbMath::xyz2lab(float X, float Y, float Z)
 	}
 	else
 	{
-		fz = (T2 * zr + 16) / 116;
+		fz = (T2 * zr + 16.0f) / 116.0f;
 	}
 
-	L = 116 * fy - 16;
-	a = 500 * (fx - fy);
-	b = 200 * (fy - fz);
+	L = 116.0f * fy - 16.0f;
+	a = 500.0f * (fx - fy);
+	b = 200.0f * (fy - fz);
 
-	if (L < 0)
-	{
-		L = 0;
-	}
-	else if (L > 100)
-	{
-		L = 100;
-	}
 
-	a = labThresholdCheck(a);
-	b = labThresholdCheck(b);
+	LAB.x = L;
+	LAB.y = a;
+	LAB.z = b;
 
-	sf::Vector3f LAB(L, a, b);
+	LAB = labThresholdCheck(LAB);
+
 	std::cout << "\nL: " << LAB.x << " a: " << LAB.y << " b: " << LAB.z << std::endl;
 
 	return LAB;
@@ -247,9 +310,13 @@ sf::Vector3f BulbMath::xyz2rgb(float x, float y, float z)
 {
 	float var_X, var_Y, var_Z, var_R, var_G, var_B, R, G, B;
 
-	var_X = x / 100;        //X from 0 to  95.047      (Observer = 2°, Illuminant = D65)
-	var_Y = y / 100;        //Y from 0 to 100.000
-	var_Z = z / 100;        //Z from 0 to 108.883
+	sf::Vector3f RGB(x, y, z);
+
+	RGB = xyzThresholdCheck(RGB);
+
+	var_X = RGB.x / 100;        //X from 0 to  95.047      (Observer = 2°, Illuminant = D65)
+	var_Y = RGB.y / 100;        //Y from 0 to 100.000
+	var_Z = RGB.z / 100;        //Z from 0 to 108.883
 
 	var_R = var_X *  3.2406 + var_Y * -1.5372 + var_Z * -0.4986;
 	var_G = var_X * -0.9689 + var_Y *  1.8758 + var_Z *  0.0415;
@@ -275,11 +342,12 @@ sf::Vector3f BulbMath::xyz2rgb(float x, float y, float z)
 	G = (var_G * 255);
 	B = (var_B * 255);	
 
-	var_R = rgbThresholdCheck(var_R);
-	var_G = rgbThresholdCheck(var_G);
-	var_B = rgbThresholdCheck(var_B);
 
-	sf::Vector3f RGB(R, G, B);
+	RGB.x = R;
+	RGB.y = G;
+	RGB.z = B;
+
+	RGB = rgbThresholdCheck(RGB);
 
 	std::cout << "\nR: " << R << " G: " << G << " B: " << B << std::endl;
 
@@ -292,11 +360,15 @@ sf::Vector3f BulbMath::xyz2rgb(float x, float y, float z)
 sf::Vector3f BulbMath::rgb2xyz(float r, float g, float b)
 {
 	//TODO currently returns xyz rounded to 2 decimals, might need more accuracy.
-	float var_R, var_G, var_B, X, Y, Z;
+	float var_R, var_G, var_B;
 
-	var_R = ( r / 255 );        //R from 0 to 255
-	var_G = ( g / 255 );        //G from 0 to 255
-	var_B = ( b / 255 );        //B from 0 to 255
+	sf::Vector3f XYZ(r, g, b);
+
+	XYZ = rgbThresholdCheck(XYZ);
+
+	var_R = ( XYZ.x / 255.0f );        //R from 0 to 255
+	var_G = ( XYZ.y / 255.0f );        //G from 0 to 255
+	var_B = ( XYZ.z / 255.0f );        //B from 0 to 255
 
 	if ( var_R > 0.04045 )
 	{
@@ -323,18 +395,18 @@ sf::Vector3f BulbMath::rgb2xyz(float r, float g, float b)
 		var_B = var_B / 12.92;
 	}                   
 
-	var_R = var_R * 100;
-	var_G = var_G * 100;
-	var_B = var_B * 100;
+	var_R = var_R * 100.0f;
+	var_G = var_G * 100.0f;
+	var_B = var_B * 100.0f;
 
 	//Observer. = 2°, Illuminant = D65
-	X = var_R * 0.4124 + var_G * 0.3576 + var_B * 0.1805;
-	Y = var_R * 0.2126 + var_G * 0.7152 + var_B * 0.0722;
-	Z = var_R * 0.0193 + var_G * 0.1192 + var_B * 0.9505;
+	XYZ.x = var_R * 0.4124 + var_G * 0.3576 + var_B * 0.1805;
+	XYZ.y = var_R * 0.2126 + var_G * 0.7152 + var_B * 0.0722;
+	XYZ.z = var_R * 0.0193 + var_G * 0.1192 + var_B * 0.9505;
 
-	std::cout << "\nX: " << X << " Y: " << Y << " Z: " << Z << std::endl;
+	XYZ = xyzThresholdCheck(XYZ);
 
-	sf::Vector3f XYZ(X, Y, Z);
+	std::cout << "\nX: " << XYZ.x << " Y: " << XYZ.y << " Z: " << XYZ.z << std::endl;
 
 	return XYZ;
 }
@@ -346,20 +418,17 @@ sf::Vector3f BulbMath::rgb2hsv(float r, float g, float b)
 {
 	std::cout << "\n IN RGB2HSV------->> R: " << r << " G: " << g << " B: " << b << std::endl;
 
-	sf::Vector3f hsv;
+	sf::Vector3f hsv(r, g, b);
+	hsv = rgbThresholdCheck(hsv);
 
-	float min, max, delta;
+	float min, max, delta, rr, gg, bb;
 
-	float rr = rgbThresholdCheck(r);
-	float gg = rgbThresholdCheck(g);
-	float bb = rgbThresholdCheck(b);
-
-	std::cout << "\n AT RGB2HSV------->> R: " << rr << " G: " << gg << " B: " << bb << std::endl;
+	std::cout << "\n AT RGB2HSV------->> R: " << hsv.x << " G: " << hsv.y << " B: " << hsv.z << std::endl;
 
 
-	rr = (float)rr/255.0f;
-	gg = (float)gg/255.0f;
-	bb = (float)bb/255.0f;
+	rr = hsv.x/255.0f;
+	gg = hsv.y/255.0f;
+	bb = hsv.z/255.0f;
 
 
 	max = std::max(std::max(rr, gg), std::max(gg, bb));
@@ -436,8 +505,8 @@ sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 	float f, p, q, t, hh, ss, vv;
 	int i;
 
-	RGB.y = ((RGB.y / 255) * 100);
-	RGB.z = ((RGB.z / 255) * 100);
+	RGB.y = ((RGB.y / 255.0f) * 100.0f);
+	RGB.z = ((RGB.z / 255.0f) * 100.0f);
 
 
 	RGB.x = RGB.x / 182.04167;
@@ -504,9 +573,7 @@ sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 	RGB.y = (RGB.y * 255.0f);
 	RGB.z = (RGB.z * 255.0f);
 
-	RGB.x = rgbThresholdCheck(RGB.x);
-	RGB.y = rgbThresholdCheck(RGB.y);
-	RGB.z = rgbThresholdCheck(RGB.z);
+	RGB = rgbThresholdCheck(RGB);
 
 	std::cout << "\n OUT HSV2RGB------->> R: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
 
@@ -519,13 +586,26 @@ sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 //math from http://www.rapidtables.com/convert/color/cmyk-to-rgb.htm, verified using calculator from same site
 sf::Vector3f BulbMath::cmyk2rgb(float c, float m, float y, float k)
 {
-	float R, G, B;
+	sf::Vector3f RGB(c, m, y);
 
-	R = 255 * (1 - c) * (1 - k);
-	G = 255 * (1 - m) * (1 - k);
-	B = 255 * (1 - y) * (1 - k);
+	RGB = cmyThresholdCheck(RGB);
 
-	sf::Vector3f RGB(R, G, B);
+	float kk = k;
+
+	if (k < 0)
+	{
+		kk = 0.0f;
+	}
+	else if (k > 1)
+	{
+		kk = 1.0f;
+	}
+
+	RGB.x = 255 * (1 - RGB.x) * (1 - kk);
+	RGB.y = 255 * (1 - RGB.y) * (1 - kk);
+	RGB.z = 255 * (1 - RGB.z) * (1 - kk);
+
+	RGB = rgbThresholdCheck(RGB);
 
 	std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
 
@@ -537,20 +617,25 @@ sf::Vector3f BulbMath::cmyk2rgb(float c, float m, float y, float k)
 sf::Vector3f BulbMath::rgb2cmyk(float r, float g, float b)
 {
 
-	float rr, gg, bb, C, M, Y, K;
+	float rr, gg, bb, K;
 
-	rr = r / 255.0f;
-	gg = g / 255.0f;
-	bb = b / 255.0f;
+	sf::Vector3f CMY(r, g, b);
+
+	CMY = rgbThresholdCheck(CMY);
+
+	rr = CMY.x / 255.0f;
+	gg = CMY.y / 255.0f;
+	bb = CMY.z / 255.0f;
 
 	K = 1 - (std::max(std::max(rr, gg), std::max(gg, bb)));
-	C = (1 - rr - K) / (1 - K);
-	M = (1 - gg - K) / (1 - K);
-	Y = (1 - bb - K) / (1 - K);
+	CMY.x = (1 - rr - K) / (1 - K);
+	CMY.y = (1 - gg - K) / (1 - K);
+	CMY.z = (1 - bb - K) / (1 - K);
 
-	std::cout << "\nC: " << C << " M: " << M << " Y: " << Y << " K: " << K << std::endl;
+	std::cout << "\nC: " << CMY.x << " M: " << CMY.y << " Y: " << CMY.z << " K: " << K << std::endl;
 
-	sf::Vector3f CMY(C, M, Y);
+
+	CMY = cmyThresholdCheck(CMY);
 
 	return CMY;
 }

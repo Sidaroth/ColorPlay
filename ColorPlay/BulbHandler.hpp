@@ -65,13 +65,13 @@ public:
 	sf::Color getGoalColor();
 
 	void setVariables(int bulbId);
-	void updateBulb(unsigned short bulbId, short inc);
 	void processEvents();
 
 private:
 
 	std::stringstream message;
 	sf::Color goalColor;
+	sf::Vector3f values;
 	CURL* curl;
 	std::string bulbAdress;
 	EventQueue *eventQueue;
@@ -86,5 +86,11 @@ private:
 	std::mt19937 gen;
 	std::uniform_int_distribution<> rgbDistribution;
 
+	void RGBColorAdjustment(unsigned short bulbId, short inc);
+	void HSVColorAdjustment(unsigned short bulbId, short inc);
+	void CMYColorAdjustment(unsigned short bulbId, short inc);
+	void XYZColorAdjustment(unsigned short bulbId, short inc);
+	void LabColorAdjustment(unsigned short bulbId, short inc);
+	void updateBulb(unsigned short bulbId, short inc);
 	void command(std::string body, int bulbId);
 };

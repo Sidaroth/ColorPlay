@@ -186,87 +186,141 @@ sf::Color BulbHandler::getGoalColor()
 	return this -> goalColor;
 }
 
-/// This is where the magic happens. Checks colorspace, and acts accordingly. 
+/// Depending on the event received, change the corresponding bulb (H, S, or V value)
+void BulbHandler::HSVColorAdjustment(unsigned short bulbId, short inc)
+{
+	if(bulbId == 1)			// H
+	{
+		Bulb1HSV.x = Bulb1HSV.x + inc;
+		Bulb2HSV.x = Bulb1HSV.x;
+		Bulb3HSV.x = Bulb1HSV.x;
+		message << "\"hue\": " << Bulb1HSV.x << "}";
+
+		// Update the other lightbulbs
+		command(message.str(), 2);
+		command(message.str(), 3);
+
+	}
+	else if(bulbId == 2)		// S
+	{
+		Bulb2HSV.y = Bulb2HSV.y + inc;
+		Bulb1HSV.y = Bulb2HSV.y;
+		Bulb3HSV.y = Bulb2HSV.y;
+		message << "\"sat\": " << Bulb2HSV.y << "}";
+
+		command(message.str(), 1);
+		command(message.str(), 3);
+	}
+	else if(bulbId == 3)   // V
+	{
+		Bulb3HSV.z = Bulb3HSV.z + inc;
+		Bulb1HSV.z = Bulb3HSV.z;
+		Bulb2HSV.z = Bulb3HSV.z;
+		message << "\"bri\": " << Bulb3HSV.z << "}";
+
+		command(message.str(), 1);
+		command(message.str(), 2);
+	}
+
+	// Update the data on this light bulb. 
+	command(message.str(), bulbId);
+
+	// Update the data on the 4th "Target" bulb. 
+	command(message.str(), 4);
+}
+
+/// Depending on the event received, change the corresponding bulb (R, G, or B value)
+void BulbHandler::RGBColorAdjustment(unsigned short bulbId, short inc)
+{
+	if(bulbId == 1)		// R
+	{
+		values = mathSuite.hsv2rgb(Bulb1HSV.x, Bulb1HSV.y, Bulb1HSV.z);
+		values.x = values.x + inc;
+		values.y = 0;
+		values.z = 0;
+		Bulb1HSV = mathSuite.rgb2hsv(values.x, values.y, values.z);
+
+		message  << "\"hue\": " << Bulb1HSV.x << ", \"sat\": " << Bulb1HSV.y << ", \"bri\": " << Bulb1HSV.z << "}";
+	}
+	else if(bulbId == 2)		// G
+	{
+		values = mathSuite.hsv2rgb(Bulb2HSV.x, Bulb2HSV.y, Bulb2HSV.z);
+		values.y = values.y + inc;
+		values.x = 0;
+		values.z = 0;
+
+		Bulb2HSV = mathSuite.rgb2hsv(values.x, values.y, values.z);
+
+		message  << "\"hue\": " << Bulb2HSV.x << ", \"sat\": " << Bulb2HSV.y << ", \"bri\": " << Bulb2HSV.z << "}";
+	}
+	else if(bulbId == 3)		// B
+	{
+		values = mathSuite.hsv2rgb(Bulb3HSV.x, Bulb3HSV.y, Bulb3HSV.z);
+		values.z = values.z + inc;
+		values.x = 0;
+		values.y = 0;
+		Bulb3HSV = mathSuite.rgb2hsv(values.x, values.y, values.z);
+
+		message  << "\"hue\": " << Bulb3HSV.x << ", \"sat\": " << Bulb3HSV.y << ", \"bri\": " << Bulb3HSV.z << "}";
+	}
+
+	// Update the data on this light bulb. 
+	command(message.str(), bulbId);
+}
+
+/// Depending on the event received, change the corresponding bulb (C, M, or Y value)
+void BulbHandler::CMYColorAdjustment(unsigned short bulbId, short inc)
+{
+	// nothing yet.
+}
+
+
+/// Depending on the event received, change the corresponding bulb (X, Y, or Z value)
+void BulbHandler::XYZColorAdjustment(unsigned short bulbId, short inc)
+{
+	// nothing yet
+}
+
+/// Depending on the event received, change the corresponding bulb (L, a, or b value)
+void BulbHandler::LabColorAdjustment(unsigned short bulbId, short inc)
+{
+	// nothing yet. 
+}
+
+/// Checks colorspace, and calls the corresponding function. Update the Target bulb after. 
 void BulbHandler::updateBulb(unsigned short bulbId, short inc)
 {
 	message.str(std::string());
-	sf::Vector3f values;
-
 	message << "{\"on\":true, ";
-
-	if(currentColorSpace == ColorSpace::HSV)
+	switch(currentColorSpace)
 	{
-		
-		if(bulbId == 1)
-		{
-			Bulb1HSV.x = Bulb1HSV.x + inc;
-			Bulb2HSV.x = Bulb1HSV.x;
-			Bulb3HSV.x = Bulb1HSV.x;
-			message << "\"hue\": " << Bulb1HSV.x << "}";
+		case ColorSpace::HSV:
+			HSVColorAdjustment(bulbId, inc);
+			break;
 
-			// Update the other lightbulbs
-			command(message.str(), 2);
-			command(message.str(), 3);
+		case ColorSpace::RGB:
+			RGBColorAdjustment(bulbId, inc);
+			break;
 
-		}
-		else if(bulbId == 2)
-		{
-			Bulb2HSV.y = Bulb2HSV.y + inc;
-			Bulb1HSV.y = Bulb2HSV.y;
-			Bulb3HSV.y = Bulb2HSV.y;
-			message << "\"sat\": " << Bulb2HSV.y << "}";
+		case ColorSpace::CMY:
+			CMYColorAdjustment(bulbId, inc);
+			break;
 
-			command(message.str(), 1);
-			command(message.str(), 3);
-		}
-		else if(bulbId == 3)
-		{
-			Bulb3HSV.z = Bulb3HSV.z + inc;
-			Bulb1HSV.z = Bulb3HSV.z;
-			Bulb2HSV.z = Bulb3HSV.z;
-			message << "\"bri\": " << Bulb3HSV.z << "}";
+		case ColorSpace::XYZ:
+			XYZColorAdjustment(bulbId, inc);
+			break;
 
-			command(message.str(), 1);
-			command(message.str(), 2);
-		}
+		case ColorSpace::Lab:
+			LabColorAdjustment(bulbId, inc);
+			break;
+
+		default: break;
 	}
-	else if(currentColorSpace == ColorSpace::RGB)
-	{
-		if(bulbId == 1)		// R
-		{
-			values = mathSuite.hsv2rgb(Bulb1HSV.x, Bulb1HSV.y, Bulb1HSV.z);
-			values.x = values.x + inc;
-			values.y = 0;
-			values.z = 0;
-			Bulb1HSV = mathSuite.rgb2hsv(values.x, values.y, values.z);
 
-			message  << "\"hue\": " << Bulb1HSV.x << ", \"sat\": " << Bulb1HSV.y << ", \"bri\": " << Bulb1HSV.z << "}";
-		}
-		else if(bulbId == 2)		// G
-		{
-			values = mathSuite.hsv2rgb(Bulb2HSV.x, Bulb2HSV.y, Bulb2HSV.z);
-			values.y = values.y + inc;
-			values.x = 0;
-			values.z = 0;
-
-			Bulb2HSV = mathSuite.rgb2hsv(values.x, values.y, values.z);
-
-			message  << "\"hue\": " << Bulb2HSV.x << ", \"sat\": " << Bulb2HSV.y << ", \"bri\": " << Bulb2HSV.z << "}";
-		}
-		else if(bulbId == 3)		// B
-		{
-			values = mathSuite.hsv2rgb(Bulb3HSV.x, Bulb3HSV.y, Bulb3HSV.z);
-			values.z = values.z + inc;
-			values.x = 0;
-			values.y = 0;
-			Bulb3HSV = mathSuite.rgb2hsv(values.x, values.y, values.z);
-
-			message  << "\"hue\": " << Bulb3HSV.x << ", \"sat\": " << Bulb3HSV.y << ", \"bri\": " << Bulb3HSV.z << "}";
-		}
-		
-	}
-	// Update the data on the light bulb. 
-	command(message.str(), bulbId);
+	// Update the data on the 4th "Target" bulb. 
+	message.str(std::string());
+	message << "\"hue\": " << Bulb1HSV.x << ", \"sat\": " << Bulb2HSV.y << ", \"bri\": " << Bulb3HSV.z << "}";
+	command(message.str(), 4);
 }
 
 // Process any events that have been added to the event queue. 

@@ -13,7 +13,7 @@ public:
 	sf::Vector3f xyz2rgb(float x, float y, float z);
 	sf::Vector3f rgb2xyz(float r, float g, float b);
 	sf::Vector3f xyz2lab(float x, float y, float z);
-	sf::Vector3f rgb2hsv(int r, int g, int b);
+	sf::Vector3f rgb2hsv(float r, float g, float b);
 	sf::Vector3f hsv2rgb(float H, float s, float v);
 	sf::Vector3f cmyk2rgb(float c, float m, float y, float k);
 	sf::Vector3f rgb2cmyk(float r, float g, float b);
@@ -28,4 +28,5 @@ public:
 private:
 	float rgbThresholdCheck(float x);
 	float xyzThresholdCheck(float x);
+	float labThresholdCheck(float x);
 };

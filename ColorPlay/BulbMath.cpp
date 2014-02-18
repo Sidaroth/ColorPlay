@@ -12,9 +12,9 @@ float BulbMath::rgbThresholdCheck(float x)
 	{
 		return 0.0f;
 	}
-	else if (x > 1)
+	else if (x > 255)
 	{
-		return 1.0f;
+		return 255.0f;
 	}
 	else
 	{
@@ -39,9 +39,26 @@ float BulbMath::xyzThresholdCheck(float x)
 	}
 }
 
-//Returns XYZ in range 0 - 100.
-//Works according to calculator at www.google.no/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0CC0QFjAA&url=http%3A%2F%2Fwww.brucelindbloom.com%2F&ei=qFr7UpDgGKP9ywO-qILgBw&usg=AFQjCNF2xEuBjOP60Afxlj2BMU8lhYlaMA&bvm=bv.61190604,d.bGQ
-//remember to set reference white to D65 when using calculator
+//Threshold check for the a and b values of Lab
+float BulbMath::labThresholdCheck(float x)
+{
+	if (x < -180)
+	{
+		return -180.0f;		
+	}
+	else if (x > 180)
+	{
+		return 180.0f;
+	}
+	else
+	{
+		return x;
+	}
+}
+
+//Returns XYZ in range 0 - 100. input, L in range 0 - 100, a and b in range -128 - 128
+//Tested - Works according to calculator at http://www.brucelindbloom.com/
+//remember to set reference white to D65 and rgb space to sRGB when using calculator
 sf::Vector3f BulbMath::lab2xyz(float L, float a, float b)
 {
 	
@@ -61,34 +78,28 @@ sf::Vector3f BulbMath::lab2xyz(float L, float a, float b)
 
 	if (pow(fx, 3) > T1)
 	{
-		std::cout << "\n- - - - - - - - - - STEP 1 - - - - - - - - - -" << std::endl;
 		xr = pow(fx, 3);
 	}
 	else
 	{
-		std::cout << "\n- - - - - - - - - - STEP 2 - - - - - - - - - -" << std::endl;
 		xr = (116 * fx - 16) / T2;
 	}
 
 	if (L > (T1 * T2))
 	{
-		std::cout << "\n- - - - - - - - - - STEP 3 - - - - - - - - - -" << std::endl;
 		yr = pow(((L + 16) / 116), 3);
 	}
 	else
 	{
-		std::cout << "\n- - - - - - - - - - STEP 4 - - - - - - - - - -" << std::endl;
 		yr = L / T2;
 	}
 
 	if (pow (fz, 3) > T1)
 	{
-		std::cout << "\n- - - - - - - - - - STEP 5 - - - - - - - - - -" << std::endl;
 		zr = pow(fz, 3);
 	}
 	else
 	{
-		std::cout << "\n- - - - - - - - - - STEP 6 - - - - - - - - - -" << std::endl;
 		zr = (116 * fz - 16) / T2;
 	}
 	X = xr * Xn;
@@ -109,8 +120,8 @@ sf::Vector3f BulbMath::lab2xyz(float L, float a, float b)
 }
 
 
-//Working. Tested with bruce lindbloom calculator (remember to set d65 white point)
-//input XYZ in rage 0 - 100
+//input XYZ in rage 0 - 100, output L in range 0 - 100, a and b in range -180 - 180
+//Tested - works according to bruce lindbloom calculator
 sf::Vector3f BulbMath::xyz2lab(float X, float Y, float Z)
 {
 	float xr, yr, zr, fx, fy, fz, L, a, b;
@@ -159,8 +170,20 @@ sf::Vector3f BulbMath::xyz2lab(float X, float Y, float Z)
 	a = 500 * (fx - fy);
 	b = 200 * (fy - fz);
 
+	if (L < 0)
+	{
+		L = 0;
+	}
+	else if (L > 100)
+	{
+		L = 100;
+	}
+
+	a = labThresholdCheck(a);
+	b = labThresholdCheck(b);
+
 	sf::Vector3f LAB(L, a, b);
-	//std::cout << "\nL: " << L << " a: " << a << " b: " << b << std::endl;
+	std::cout << "\nL: " << LAB.x << " a: " << LAB.y << " b: " << LAB.z << std::endl;
 
 	return LAB;
 
@@ -197,14 +220,14 @@ sf::Vector3f BulbMath::xyz2rgb(float x, float y, float z)
 
 	std::cout << "\nvR: " << var_R << " vG: " << var_G << " vB: " << var_B << std::endl;
 
-	var_R = rgbThresholdCheck(var_R);
-	var_G = rgbThresholdCheck(var_G);
-	var_B = rgbThresholdCheck(var_B);
-
 	//Not sure if these values should be rounded
 	R = (var_R * 255);
 	G = (var_G * 255);
 	B = (var_B * 255);	
+
+	var_R = rgbThresholdCheck(var_R);
+	var_G = rgbThresholdCheck(var_G);
+	var_B = rgbThresholdCheck(var_B);
 
 	sf::Vector3f RGB(R, G, B);
 
@@ -215,6 +238,7 @@ sf::Vector3f BulbMath::xyz2rgb(float x, float y, float z)
 
 //input rgb in range 0 - 255, output XYZ in range 0 - 95.047, 0 - 100, 0 - 108.883. Works for d65 whitepoint and sRGB space
 //NOTE, seems to calculate the wrong values sometimes when calculating outside the rgb breakpoints (under 0 or over 255) not sure if it is relevant as these values are clipped anyway
+//Tested - sometimes returns vaules that are off by around 0.2, seems to be in the var > 0.04045 part of the ifs
 sf::Vector3f BulbMath::rgb2xyz(float r, float g, float b)
 {
 	//TODO currently returns xyz rounded to 2 decimals, might need more accuracy.
@@ -227,31 +251,25 @@ sf::Vector3f BulbMath::rgb2xyz(float r, float g, float b)
 	if ( var_R > 0.04045 )
 	{
 		var_R = ( pow((( var_R + 0.055 ) / 1.055 ), 2.4));
-		std::cout << "\n----------------->  STEP 1 <---------------" << std::endl;		
 	} 
 	else                   
 	{
 		var_R = var_R / 12.92;
-		std::cout << "\n----------------->  STEP 2 <---------------" << std::endl;		
 	}
 	if ( var_G > 0.04045 )
 	{
-		std::cout << "\n----------------->  STEP 3 <---------------" << std::endl;		
 		var_G = ( pow((( var_G + 0.055 ) / 1.055 ), 2.4));
 	} 
 	else
 	{
-		std::cout << "\n----------------->  STEP 4 <---------------" << std::endl;		
 		var_G = var_G / 12.92;
 	}                   
 	if ( var_B > 0.04045 )
 	{
-		std::cout << "\n----------------->  STEP 5 <---------------" << std::endl;		
 		var_B = ( pow((( var_B + 0.055 ) / 1.055 ), 2.4));
 	} 
 	else
 	{
-		std::cout << "\n----------------->  STEP 6 <---------------" << std::endl;		
 		var_B = var_B / 12.92;
 	}                   
 
@@ -273,16 +291,16 @@ sf::Vector3f BulbMath::rgb2xyz(float r, float g, float b)
 
 
 //Input = rgb in range 0 - 255, output = H in range 0 - 360, s and v in range 0 - 100
-//works according to http://www.rapidtables.com/convert/color/rgb-to-hsv.htm but not according to http://colormine.org/convert/xyz-to-hsv
-sf::Vector3f BulbMath::rgb2hsv(int r, int g, int b)
+//Tested - works according to http://www.javascripter.net/faq/rgb2hsv.htm (only does hue to one decimal)
+sf::Vector3f BulbMath::rgb2hsv(float r, float g, float b)
 {
 	sf::Vector3f hsv;
 
 	float min, max, delta;
 
-	float rr = (float)r/255;
-	float gg = (float)g/255;
-	float bb = (float)b/255;
+	float rr = (float)r/255.0f;
+	float gg = (float)g/255.0f;
+	float bb = (float)b/255.0f;
 
 
 	max = std::max(std::max(rr, gg), std::max(gg, bb));
@@ -298,7 +316,7 @@ sf::Vector3f BulbMath::rgb2hsv(int r, int g, int b)
 	else
 	{
 		//This means r, g and b are all 0, which means s = 0 and v is undefined
-		hsv.x = -1;
+		hsv.x = 0;		
 		hsv.y = 0;
 	}
 
@@ -321,40 +339,44 @@ sf::Vector3f BulbMath::rgb2hsv(int r, int g, int b)
 			hsv.x = 4 + (rr - gg) / delta;
 		}
 	}
-	hsv.x = hsv.x * 60;
+	hsv.x = hsv.x * 60.0f;
 	if (hsv.x < 0)
 	{
-		hsv.x = hsv.x + 360;
+		hsv.x = hsv.x + 360.0f;
 	}
 
-	//std::cout << "\n H: " << round(hsv.x) << " s: " << round(hsv.y * 100) << " v: " << round(hsv.z * 100) << std::endl;
+	hsv.y = hsv.y * 100.0f;
+	hsv.z = hsv.z * 100.0f;
+
+	std::cout << "\n H: " << hsv.x << " s: " << hsv.y << " v: " << hsv.z << std::endl;
 
 	return hsv;
 }
 
 //H in value 0 - 360, s and v in range 0 - 100; return rgb in range 0 - 255.
-//Tested and works according to calculator @ http://www.csgnetwork.com/csgcolorsel4.html
+//Tested and works according to calculator @ http://www.rapidtables.com/convert/color/hsv-to-rgb.htm
+//However the calculators online rounds to rgb by flooring, so the exact accuracy of the function is unknown
 sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 {
 	sf::Vector3f RGB;
 	float f, p, q, t, hh, ss, vv;
 	int i;
 
-	ss = s / 100;
-	vv = v / 100;
+	ss = s / 100.0f;
+	vv = v / 100.0f;
 
 	if (s == 0)		//This means the color is grey
 	{
 		RGB.x = RGB.y = RGB.z = vv;
-		RGB.x = round(RGB.x * 255);
-		RGB.y = round(RGB.y * 255);
-		RGB.z = round(RGB.z * 255);
+		RGB.x = RGB.x * 255.0f;
+		RGB.y = RGB.y * 255.0f;
+		RGB.z = RGB.z * 255.0f;
 
-		//std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
+//		std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
 		return RGB;
 	}
 
-	hh = H / 60;
+	hh = H / 60.0f;
 	i = floor(hh);
 	f = hh - i;
 	p = vv * (1 - ss);
@@ -394,10 +416,15 @@ sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 				break;
 	}
 
-	RGB.x = (RGB.x * 255);
-	RGB.y = (RGB.y * 255);
-	RGB.z = (RGB.z * 255);
-	std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
+	RGB.x = (RGB.x * 255.0f);
+	RGB.y = (RGB.y * 255.0f);
+	RGB.z = (RGB.z * 255.0f);
+
+	RGB.x = rgbThresholdCheck(RGB.x);
+	RGB.y = rgbThresholdCheck(RGB.y);
+	RGB.z = rgbThresholdCheck(RGB.z);
+
+//	std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
 	return RGB;
 }
 

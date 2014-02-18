@@ -224,18 +224,36 @@ sf::Vector3f BulbMath::rgb2xyz(float r, float g, float b)
 	var_G = ( g / 255 );        //G from 0 to 255
 	var_B = ( b / 255 );        //B from 0 to 255
 
-	if ( var_R > 0.04045 ) 
+	if ( var_R > 0.04045 )
+	{
 		var_R = ( pow((( var_R + 0.055 ) / 1.055 ), 2.4));
+		std::cout << "\n----------------->  STEP 1 <---------------" << std::endl;		
+	} 
 	else                   
+	{
 		var_R = var_R / 12.92;
-	if ( var_G > 0.04045 ) 
+		std::cout << "\n----------------->  STEP 2 <---------------" << std::endl;		
+	}
+	if ( var_G > 0.04045 )
+	{
+		std::cout << "\n----------------->  STEP 3 <---------------" << std::endl;		
 		var_G = ( pow((( var_G + 0.055 ) / 1.055 ), 2.4));
-	else                   
+	} 
+	else
+	{
+		std::cout << "\n----------------->  STEP 4 <---------------" << std::endl;		
 		var_G = var_G / 12.92;
-	if ( var_B > 0.04045 ) 
+	}                   
+	if ( var_B > 0.04045 )
+	{
+		std::cout << "\n----------------->  STEP 5 <---------------" << std::endl;		
 		var_B = ( pow((( var_B + 0.055 ) / 1.055 ), 2.4));
-	else                   
+	} 
+	else
+	{
+		std::cout << "\n----------------->  STEP 6 <---------------" << std::endl;		
 		var_B = var_B / 12.92;
+	}                   
 
 	var_R = var_R * 100;
 	var_G = var_G * 100;

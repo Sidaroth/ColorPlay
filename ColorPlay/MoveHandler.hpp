@@ -10,18 +10,29 @@
 #include "struct.hpp"
 #include "LogModule.hpp"
 #include "BulbHandler.hpp"
+#include "EventQueue.hpp"
+#include "ActionEvent.hpp"
 
 #define DEBUG 1
 
 class MoveHandler
 {
 public:
-	MoveHandler(LogModule *logger, BulbHandler* bulbHandler, bool *running);
+	MoveHandler();
+	MoveHandler(LogModule *logger,
+				BulbHandler *bulbHandler,
+				EventQueue * eventQueue,
+				bool *running);
+	~MoveHandler();
+	
 	void run();
 
 private:
 	bool *running;
 
+	//Logger
+	LogModule *logger;
+	
 	//PSMove
 	int connections;
 	std::vector<PSMove*> controllers;
@@ -36,12 +47,14 @@ private:
 	//Tracker
 	PSMoveTracker *tracker;
 	void *frame;
-	float x = 0.0f; 
-	float y = 0.0f; 
-	float radius = 0.0f;
+	float x; 
+	float y; 
+	float radius;
 
-	LogModule *logger;
+	//Bulb interaction
 	BulbHandler *bulbHandler;
+	EventQueue *eventQueue;
+
 
 	bool connect();
 	bool connectControllers();

@@ -5,10 +5,12 @@ ActionEvent::ActionEvent()
 
 }
 
-ActionEvent::ActionEvent(unsigned short value, Action action)
+ActionEvent::ActionEvent(unsigned short value, unsigned short bulbID, Action action)
 {
 	this -> action = action;
 	this -> value = value;
+	this -> bulbID = bulbID;
+
 }
 
 void ActionEvent::setValue(unsigned short value)
@@ -21,7 +23,17 @@ void ActionEvent::setAction(Action action)
 	this -> action = action;
 }
 
-unsigned short ActionEvent::getValue()
+void ActionEvent::setBulbID(unsigned short bulbID)
+{
+	this -> bulbID = bulbID;
+}
+
+unsigned short ActionEvent::getValue() const
 {
 	return this -> value;
+}
+
+unsigned short ActionEvent::getBulbID() const
+{
+	return this -> bulbID;
 }

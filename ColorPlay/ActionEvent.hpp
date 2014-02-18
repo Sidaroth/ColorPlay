@@ -20,14 +20,19 @@ public:
 		None
 	};
 
-	Action action;
 	ActionEvent();
-	ActionEvent(unsigned short value, Action action=Action::None);
+	ActionEvent(unsigned short value, unsigned short bulbID, Action action=Action::None);
 
-	void setAction(Action action);
+	Action action;
+	
 	void setValue(unsigned short value);
-	unsigned short getValue();
+	void setAction(Action action);
+	void setBulbID(unsigned short bulbID);
+	
+	unsigned short getValue() const;
+	unsigned short getBulbID() const;
 
 private:
 	unsigned short value;
+	unsigned short bulbID;
 };

@@ -32,12 +32,6 @@ ActionEvent EventQueue::pop()
 {
 	std::lock_guard<std::mutex> lock(mutex);
 
-	if(events.empty())
-	{
-		std::cerr << "EventQueue.pop() Called on empty queue!" << std::endl;
-		return NULL; 
-	}
-
 	ActionEvent event = events.front();
 	events.pop();
 

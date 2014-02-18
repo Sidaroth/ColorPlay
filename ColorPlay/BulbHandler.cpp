@@ -18,6 +18,7 @@ BulbHandler::BulbHandler(EventQueue *eventQueue, LogModule* logger)
 	
 	this -> eventQueue = eventQueue;
 	gen = std::mt19937(SEED);
+	increaseInterval = 250;
 	rgbDistribution = std::uniform_int_distribution<>(0, 255);
 
 	this -> logger = logger;
@@ -30,7 +31,7 @@ void BulbHandler::setBulbAdress(std::string bulbAdress)
 
 void BulbHandler::setBrightness(int brightness, int bulbId)
 {
-	std::stringstream message;
+	message.str(std::string());
 	message << "{\"on\":true, \"bri\":" << brightness << "}";
 
 	if (DEBUG >= 1)
@@ -43,7 +44,7 @@ void BulbHandler::setBrightness(int brightness, int bulbId)
 
 void BulbHandler::setHue(int hue, int bulbId)
 {
-	std::stringstream message;
+	message.str(std::string());
 	message << "{\"on\":true,\"hue\":" << hue << ",\"sat\":255" << "}";
 	
 	if (DEBUG >= 1)
@@ -57,7 +58,7 @@ void BulbHandler::setHue(int hue, int bulbId)
 
 void BulbHandler::setSaturation(int saturation, int bulbId)
 {
-	std::stringstream message;
+	message.str(std::string());
 	message << "{\"on\":true, \"sat\":" << saturation << "}";
 	
 	if (DEBUG >= 1)
@@ -76,7 +77,7 @@ void BulbHandler::generateNewGoalColor()
 	g = rgbDistribution(gen);
 	b = rgbDistribution(gen);
 
-	std::stringstream message;
+	message.str(std::string());
 	message << "Generated new goal color (RGB): (" << r << ", " << g << ", " << b << ")"; 
 	this -> logger -> LogEvent(message.str());
 	setGoalColor(r, g, b);
@@ -85,7 +86,7 @@ void BulbHandler::generateNewGoalColor()
 void BulbHandler::command(std::string body, int bulbId)
 {
 
-	std::stringstream message; 
+	message.str(std::string());
 	CURLcode res;
 	struct curl_slist *headers = NULL;
 	curl = curl_easy_init();
@@ -131,6 +132,43 @@ void BulbHandler::command(std::string body, int bulbId)
 void BulbHandler::setColorSpace(ColorSpace colorSpace)
 {
 	this -> currentColorSpace = colorSpace;
+
+	message.str(std::string());
+	message << "ColorSpace changed to: ";
+
+	switch(currentColorSpace)
+	{
+		case ColorSpace::RGB:
+			increaseInterval = RGBINC;
+			message << "RGB.";
+			break;
+
+		case ColorSpace::HSV:
+			increaseInterval = HSVINC;
+			message << "HSV.";
+			break;
+
+		case ColorSpace::XYZ:
+			increaseInterval = XYZINC;
+			message << "XYZ.";
+			break;
+
+		case ColorSpace::CMY:
+			increaseInterval = CMYINC;
+			message << "CMY.";
+			break;
+
+		case ColorSpace::Lab:
+			increaseInterval = LABINC;
+			message << "Lab.";
+			break;
+
+		default:
+			std::cerr << "Something went wrong in BulbHandler::setColorSpace(). Unkown ColorSpace";
+			break;
+	}
+
+	logger -> LogEvent(message.str());
 }
 
 void BulbHandler::setGoalColor(sf::Color color)
@@ -148,21 +186,106 @@ sf::Color BulbHandler::getGoalColor()
 	return this -> goalColor;
 }
 
+/// This is where the magic happens. Checks colorspace, and acts accordingly. 
+void BulbHandler::updateBulb(unsigned short bulbId, short inc)
+{
+	message.str(std::string("{\"on\":true, "));
+	sf::Vector3f values;
+
+	if(currentColorSpace == ColorSpace::HSV)
+	{
+		
+		if(bulbId == 1)
+		{
+			Bulb1HSV.x = Bulb1HSV.x + inc;
+			Bulb2HSV.x = Bulb1HSV.x;
+			Bulb3HSV.x = Bulb1HSV.x;
+			message << "\"hue\": " << Bulb1HSV.x << "}";
+
+			// Update the other lightbulbs
+			command(message.str(), 2);
+			command(message.str(), 3);
+
+		}
+		else if(bulbId == 2)
+		{
+			Bulb2HSV.y = Bulb2HSV.y + inc;
+			Bulb1HSV.y = Bulb2HSV.y;
+			Bulb3HSV.y = Bulb2HSV.y;
+			message << "\"sat\": " << Bulb2HSV.y << "}";
+
+			command(message.str(), 1);
+			command(message.str(), 3);
+		}
+		else if(bulbId == 3)
+		{
+			Bulb3HSV.z = Bulb3HSV.z + inc;
+			Bulb1HSV.z = Bulb3HSV.z;
+			Bulb2HSV.z = Bulb3HSV.z;
+			message << "\"bri\": " << Bulb3HSV.z << "}";
+
+			command(message.str(), 1);
+			command(message.str(), 2);
+		}
+	}
+	else if(currentColorSpace == ColorSpace::RGB)
+	{
+		if(bulbId == 1)		// R
+		{
+			values = mathSuite.hsv2rgb(Bulb1HSV.x, Bulb1HSV.y, Bulb1HSV.z);
+			values.x = values.x + inc;
+			values.y = 0;
+			values.z = 0;
+			Bulb1HSV = mathSuite.rgb2hsv(values.x, values.y, values.z);
+
+			message  << "\"hue\": " << Bulb1HSV.x << ", \"sat\": " << Bulb1HSV.y << ", \"bri\": " << Bulb1HSV.z << "}";
+		}
+		else if(bulbId == 2)		// G
+		{
+			values = mathSuite.hsv2rgb(Bulb2HSV.x, Bulb2HSV.y, Bulb2HSV.z);
+			values.y = values.y + inc;
+			values.x = 0;
+			values.z = 0;
+			Bulb2HSV = mathSuite.rgb2hsv(values.x, values.y, values.z);
+
+			message  << "\"hue\": " << Bulb2HSV.x << ", \"sat\": " << Bulb2HSV.y << ", \"bri\": " << Bulb2HSV.z << "}";
+		}
+		else if(bulbId == 3)		// B
+		{
+			values = mathSuite.hsv2rgb(Bulb3HSV.x, Bulb3HSV.y, Bulb3HSV.z);
+			values.z = values.z + inc;
+			values.x = 0;
+			values.y = 0;
+			Bulb3HSV = mathSuite.rgb2hsv(values.x, values.y, values.z);
+
+			message  << "\"hue\": " << Bulb3HSV.x << ", \"sat\": " << Bulb3HSV.y << ", \"bri\": " << Bulb3HSV.z << "}";
+		}
+		
+	}
+	// Update the data on the light bulb. 
+	command(message.str(), bulbId);
+}
+
 // Process any events that have been added to the event queue. 
 void BulbHandler::processEvents()
 {
+	unsigned short bulb = 0;
 	while(!this -> eventQueue -> empty())
 	{
 	 	currentAction = eventQueue -> pop();
 
-		switch(currentAction.action)
+		switch(currentAction.getAction())
 		{
 			case ActionEvent::Action::Up:
 				std::cout << "UP!\n";
+				bulb = currentAction.getBulbId();
+				updateBulb(bulb, intervalIncrease);
 				break;
 
 			case ActionEvent::Action::Down:
 				std::cout << "Down!\n";
+				bulb = currentAction.getBulbId();
+				updateBulb(bulb, intervalIncrease * -1);
 				break;
 
 			case ActionEvent::Action::Finish:
@@ -249,7 +372,7 @@ void BulbHandler::setVariables(int bulbId)
 	 curl = curl_easy_init();
 	 char* getInfo;
 
-	 std::stringstream message;
+	 message.str(std::string());
 
 	 if (curl)
 	 {

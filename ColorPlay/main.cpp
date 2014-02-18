@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 	BulbMath bulbMath;
 
 	BulbHandler bulbHandler(&eventQueue, &logger);
-	MoveHandler moveHandler(&logger, &bulbHandler, &running);
+	MoveHandler moveHandler(&logger, &bulbHandler, &eventQueue, &running);
 	WindowHandler windowHandler("Color Play Game v.0.1", &logger, &running, &bulbHandler);
 
 	////////////////////// INIT //////////////////////
@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 	///////////////// START WORK IN THE MAIN THREAD //////////////////
 	std::cout << "Main thread: " << std::this_thread::get_id() << std::endl;
 	running = true;
-
+/*
 	ActionEvent event(12, ActionEvent::Action::Up);
 	eventQueue.push(event);
 	event.setAction(ActionEvent::Action::None);
@@ -75,7 +75,7 @@ int main(int argc, char* argv[])
 	eventQueue.push(event);
 	event.setAction(ActionEvent::Action::Down);
 	eventQueue.push(event);
-
+*/
 	bulbHandler.setColorSpace(BulbHandler::ColorSpace::RGB);
 	bulbHandler.generateNewGoalColor();
 	bulbHandler.generateNewGoalColor();

@@ -7,3 +7,4 @@
 extern sf::Vector3f Bulb1HSV;
 extern sf::Vector3f Bulb2HSV;
 extern sf::Vector3f Bulb3HSV;
+extern sf::Vector3f Bulb4HSV;

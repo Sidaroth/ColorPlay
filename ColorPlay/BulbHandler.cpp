@@ -370,7 +370,13 @@ void callback_func(void *getInfo, size_t size, size_t count, void *stream)
 	std::string bulbId;
 	std::string output((char*)getInfo);
 
-	//std::cout << "\n HER --...->" << output << std::endl;
+	char *test = (char*)getInfo;
+	//*test = strndup(getInfo, (size_t)(size *count));
+	//*test = (char*)getInfo;
+
+	std::cout << "\nMEH-------------->" << (char*)getInfo << std::endl;
+	
+	std::cout << "\n HER --...->" << output << std::endl;
 
 	found = output.find("hue");
 	found2 = output.find(",", found);
@@ -415,9 +421,15 @@ void callback_func(void *getInfo, size_t size, size_t count, void *stream)
 		Bulb3HSV.y = satInt;
 		Bulb3HSV.z = briInt;
 	}
+	else if (bulbIdInt == 4)
+	{
+		Bulb4HSV.x = hueInt;
+		Bulb4HSV.y = hueInt;
+		Bulb4HSV.z = hueInt;
+	}
 	else
 	{
-		std::cout << "\nERROR: Callback function got no ID";
+		std::cout << "\nERROR: Callback function got no ID" << std::endl;
 	}
 }
 

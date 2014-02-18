@@ -82,10 +82,6 @@ int main(int argc, char* argv[])
 	eventQueue.push(event);
 	eventQueue.push(event);
 
-	bulbHandler.generateNewGoalColor();
-	bulbHandler.generateNewGoalColor();
-	bulbHandler.generateNewGoalColor();
-
 	while(running)
 	{
 		// Event processing

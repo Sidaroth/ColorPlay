@@ -45,7 +45,7 @@ void LogModule::run()
 		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 	}
 
-	std::cout << "Logger shutting down!";
+	std::cout << "Logger shutting down!\n";
 }
 
 void LogModule::LogEvent(std::string message)

@@ -189,8 +189,10 @@ sf::Color BulbHandler::getGoalColor()
 /// This is where the magic happens. Checks colorspace, and acts accordingly. 
 void BulbHandler::updateBulb(unsigned short bulbId, short inc)
 {
-	message.str(std::string("{\"on\":true, "));
+	message.str(std::string());
 	sf::Vector3f values;
+
+	message << "{\"on\":true, ";
 
 	if(currentColorSpace == ColorSpace::HSV)
 	{
@@ -249,6 +251,7 @@ void BulbHandler::updateBulb(unsigned short bulbId, short inc)
 			Bulb2HSV = mathSuite.rgb2hsv(values.x, values.y, values.z);
 
 			message  << "\"hue\": " << Bulb2HSV.x << ", \"sat\": " << Bulb2HSV.y << ", \"bri\": " << Bulb2HSV.z << "}";
+			std::cout << message.str();
 		}
 		else if(bulbId == 3)		// B
 		{
@@ -274,18 +277,18 @@ void BulbHandler::processEvents()
 	{
 	 	currentAction = eventQueue -> pop();
 
-		switch(currentAction.getAction())
+		switch(currentAction.action)
 		{
 			case ActionEvent::Action::Up:
 				std::cout << "UP!\n";
-				bulb = currentAction.getBulbId();
-				updateBulb(bulb, intervalIncrease);
+				bulb = currentAction.getBulbID();
+				updateBulb(bulb, increaseInterval);
 				break;
 
 			case ActionEvent::Action::Down:
 				std::cout << "Down!\n";
-				bulb = currentAction.getBulbId();
-				updateBulb(bulb, intervalIncrease * -1);
+				bulb = currentAction.getBulbID();
+				updateBulb(bulb, increaseInterval * -1);
 				break;
 
 			case ActionEvent::Action::Finish:

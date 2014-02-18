@@ -267,6 +267,18 @@ void BulbHandler::RGBColorAdjustment(unsigned short bulbId, short inc)
 
 	// Update the data on this light bulb. 
 	command(message.str(), bulbId);
+
+	// Update the data on the 4th "Target" bulb. 
+	sf::Vector3f temp1, temp2, temp3; 
+	temp1 = mathSuite.hsv2rgb(Bulb1HSV.x, Bulb1HSV.y, Bulb1HSV.z);
+	temp2 = mathSuite.hsv2rgb(Bulb2HSV.x, Bulb2HSV.y, Bulb2HSV.z);
+	temp3 = mathSuite.hsv2rgb(Bulb3HSV.x, Bulb3HSV.y, Bulb3HSV.z);
+
+	values.x = Bulb1HSV.x + Bulb2HSV.x + Bulb3HSV.x;
+	values.y = Bulb1HSV.y + Bulb2HSV.y + Bulb3HSV.y;
+	values.z = Bulb1HSV.z + Bulb2HSV.z + Bulb3HSV.z;
+
+	values = mathSuite.rgb2hsv(values.x, values.y, values.z);
 }
 
 /// Depending on the event received, change the corresponding bulb (C, M, or Y value)
@@ -318,9 +330,8 @@ void BulbHandler::updateBulb(unsigned short bulbId, short inc)
 		default: break;
 	}
 
-	// Update the data on the 4th "Target" bulb. 
 	message.str(std::string());
-	message << "{\"on\":true, " << "\"hue\": " << Bulb1HSV.x << ", \"sat\": " << Bulb2HSV.y << ", \"bri\": " << Bulb3HSV.z << "}";
+	message << "{\"on\":true, " << "\"hue\": " << values.x << ", \"sat\": " << values.y << ", \"bri\": " <<  values.z << "}";
 	command(message.str(), 4);
 }
 

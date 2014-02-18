@@ -224,10 +224,6 @@ void MoveHandler::updateTracker()
 	this->x = xPos;
 	this->y = yPos;
 	this->radius = ledRadius;
-
-	#if DEBUG			
-		printf("x: %10.2f, y: %10.2f, r: %10.2f\n", this->x, this->y, this->radius);
-	#endif
 }
 
 void MoveHandler::processInput()
@@ -241,7 +237,6 @@ void MoveHandler::processInput()
 			event.setAction(ActionEvent::Action::Finish);
 		}
 	}
-
 
 	if(this->timer.secondsElapsed() >= 2)
 	{	

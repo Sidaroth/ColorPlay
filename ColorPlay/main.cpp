@@ -66,17 +66,22 @@ int main(int argc, char* argv[])
 	///////////////// START WORK IN THE MAIN THREAD //////////////////
 	std::cout << "Main thread: " << std::this_thread::get_id() << std::endl;
 	running = true;
-/*
-	ActionEvent event(12, ActionEvent::Action::Up);
-	eventQueue.push(event);
-	event.setAction(ActionEvent::Action::None);
-	eventQueue.push(event);
-	event.setAction(ActionEvent::Action::Finish);
-	eventQueue.push(event);
-	event.setAction(ActionEvent::Action::Down);
-	eventQueue.push(event);
-*/
+	bulbHandler.setVariables(1);
+	bulbHandler.setVariables(2);
+	bulbHandler.setVariables(3);
 	bulbHandler.setColorSpace(BulbHandler::ColorSpace::RGB);
+
+	ActionEvent event(12, 1, ActionEvent::Action::Up);
+	eventQueue.push(event);
+	eventQueue.push(event);
+	eventQueue.push(event);
+
+	event.setAction(ActionEvent::Action::Down);
+	event.setBulbID(2);
+	eventQueue.push(event);
+	eventQueue.push(event);
+	eventQueue.push(event);
+
 	bulbHandler.generateNewGoalColor();
 	bulbHandler.generateNewGoalColor();
 	bulbHandler.generateNewGoalColor();

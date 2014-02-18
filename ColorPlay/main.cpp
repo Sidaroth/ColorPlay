@@ -58,7 +58,8 @@ int main(int argc, char* argv[])
 	bulbHandler.setBrightness(126, 2);
 	bulbHandler.setHue(60000, 3);
 	bulbHandler.setBrightness(126, 3);
-	//bulbHandler.setHue(56000, 4);
+	bulbHandler.setHue(65000, 4);
+	bulbHandler.setBrightness(126, 4);
 
 	///////////////// START THREADS /////////////////
 	std::thread loggerThread(&LogModule::run, &logger);	// Run the logger module in a background thread.
@@ -70,6 +71,7 @@ int main(int argc, char* argv[])
 	bulbHandler.setVariables(1);
 	bulbHandler.setVariables(2);
 	bulbHandler.setVariables(3);
+	bulbHandler.setVariables(4);
 	bulbHandler.setColorSpace(BulbHandler::ColorSpace::RGB);
 
 	ActionEvent event(12, 1, ActionEvent::Action::Up);

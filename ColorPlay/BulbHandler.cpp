@@ -320,7 +320,7 @@ void BulbHandler::updateBulb(unsigned short bulbId, short inc)
 
 	// Update the data on the 4th "Target" bulb. 
 	message.str(std::string());
-	message << "\"hue\": " << Bulb1HSV.x << ", \"sat\": " << Bulb2HSV.y << ", \"bri\": " << Bulb3HSV.z << "}";
+	message << "{\"on\":true, " << "\"hue\": " << Bulb1HSV.x << ", \"sat\": " << Bulb2HSV.y << ", \"bri\": " << Bulb3HSV.z << "}";
 	command(message.str(), 4);
 }
 

@@ -36,13 +36,14 @@ MoveHandler::MoveHandler(	LogModule *logger,
 
 MoveHandler::~MoveHandler()
 {
-	
+
 }
 
 void MoveHandler::run()
 {
 	if(this->connect())
 	{	
+		this->timer.start();
 		while(this->running && (cvWaitKey(1) & 0xFF) != 27)
 		{	
 			this->updateControllers();			
@@ -225,7 +226,7 @@ void MoveHandler::updateTracker()
 	this->radius = ledRadius;
 
 	#if DEBUG			
-		printf("\nx: %10.2f, y: %10.2f, r: %10.2f\n", this->x, this->y, this->radius);
+		printf("x: %10.2f, y: %10.2f, r: %10.2f\n", this->x, this->y, this->radius);
 	#endif
 }
 
@@ -240,32 +241,35 @@ void MoveHandler::processInput()
 			event.setAction(ActionEvent::Action::Finish);
 		}
 	}
-	
-	if(this->x <213)
-	{
-		event.setBulbID(1);
-	}
-	else if (this->x > 427)
-	{
-		event.setBulbID(3);
-	}
-	else
-	{
-		event.setBulbID(2);
-	}
-
-	if(this->y < 160)
-	{
-		//this->bulbHandler->setHue(20000, bulb);
-		event.setAction(ActionEvent::Action::Up);
-	}
-	else if (this->y > 320)
-	{
-		event.setAction(ActionEvent::Action::Down);
-	}
 
 
-	this->eventQueue->push(event);
+	if(this->timer.secondsElapsed() >= 2)
+	{	
+		if(this->x <213)
+		{
+			event.setBulbID(1);
+		}
+		else if (this->x > 427)
+		{
+			event.setBulbID(3);
+		}
+		else
+		{
+			event.setBulbID(2);
+		}
+
+		if(this->y < 160)
+		{
+			event.setAction(ActionEvent::Action::Up);
+		}
+		else if (this->y > 320)
+		{
+			event.setAction(ActionEvent::Action::Down);
+		}
+
+		this->eventQueue->push(event);
+		this->timer.start();
+	}
 }
 
 void MoveHandler::disconnect()

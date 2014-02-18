@@ -12,6 +12,7 @@
 #include "BulbHandler.hpp"
 #include "EventQueue.hpp"
 #include "ActionEvent.hpp"
+#include "Timer.hpp"
 
 #define DEBUG 1
 
@@ -54,7 +55,7 @@ private:
 	//Bulb interaction
 	BulbHandler *bulbHandler;
 	EventQueue *eventQueue;
-
+	Timer timer;
 
 	bool connect();
 	bool connectControllers();

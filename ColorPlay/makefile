@@ -23,7 +23,7 @@ PSMOVEFLAGS= -lpsmoveapi -lpsmoveapi_tracker -lopencv_highgui -lopencv_core
 LFLAGS=-lpthread $(SFMLFLAGS) $(CURLFLAGS) $(PSMOVEFLAGS)
 
 # Source files (Add your files here for compilation. *Only the .cpp files*)
-SOURCES=main.cpp LogModule.cpp StringQueue.cpp BulbHandler.cpp MoveHandler.cpp WindowHandler.cpp BulbMath.cpp ArrowButton.cpp ActionEvent.cpp EventQueue.cpp
+SOURCES=main.cpp LogModule.cpp StringQueue.cpp BulbHandler.cpp MoveHandler.cpp WindowHandler.cpp BulbMath.cpp ArrowButton.cpp ActionEvent.cpp EventQueue.cpp Timer.cpp
 
 
 ### !!!! DO NOT TOUCH ANYTHING BELOW THIS LINE EXCEPT CLEAN!!!! ###

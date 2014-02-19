@@ -106,5 +106,6 @@ private:
 	static sf::Vector3f Bulb3HSV;
 	static sf::Vector3f Bulb4HSV;
 	static bool isSetVariablesUpdated;
+	static std::vector<std::string> bulbOutput;
 
 };

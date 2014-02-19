@@ -7,6 +7,8 @@ sf::Vector3f BulbHandler::Bulb2HSV(0,0,0);
 sf::Vector3f BulbHandler::Bulb3HSV(0,0,0);
 sf::Vector3f BulbHandler::Bulb4HSV(0,0,0);
 bool BulbHandler::isSetVariablesUpdated = false;
+std::vector<std::string> BulbHandler::bulbOutput;
+
 
 BulbHandler::BulbHandler()
 {
@@ -419,81 +421,90 @@ size_t BulbHandler::callback_func(void *getInfo, size_t size, size_t count, void
 	int hueInt, briInt, satInt, bulbIdInt, found, found2;
 	std::string hue, sat, bri;
 	std::string bulbId;
-	std::string output((char*)getInfo);
+	//std::string output((char*)getInfo);
+	std::string callbackOutput;
 
-	std::vector<std::string> lol;
+	bulbOutput.push_back(std::string(static_cast<const char*>(getInfo), size * count));
 
-	//lol.push_back(std::string(static_cast<const char*>(getInfo), size * count));
-	//lol.push_back((char*)getInfo);
-	lol.push_back(std::string(static_cast<const char*>(getInfo), size * count));
-	//std::cout << "\n----------------->" << lol.size() << "  " << lol[0] << std::endl;
-
-	found = output.find("hue");
-	found2 = output.find(",", found);
-
-	hue = output.substr(found + 5, found2 - found - 5);
-
-	found = output.find("Hue Lamp");
-	if (found > 1)
+	callbackOutput = bulbOutput[0];
+	if (bulbOutput.size() > 1)
 	{
-		found2 = output.find(",", found);
-
-		bulbId = output.substr(found + 9, 1);
-	}
-	found = output.find("sat");
-	found2 = output.find(",", found);
-
-	sat = output.substr(found + 5, found2 - found - 5);
-
-	found = output.find("bri");
-	found2 = output.find(",", found);
-
-	bri = output.substr(found + 5, found2 - found - 5);
-
-	hueInt = atoi(hue.c_str());
-	bulbIdInt = atoi(bulbId.c_str());
-	satInt = atoi(sat.c_str());
-	briInt = atoi(bri.c_str());
-
-	if (bulbIdInt == 1)
-	{
-		BulbHandler::Bulb1HSV.x = hueInt;
-		BulbHandler::Bulb1HSV.y = satInt;
-		BulbHandler::Bulb1HSV.z = briInt;
-		std::cout << "\n11111111111111111111" << std::endl;
-		BulbHandler::isSetVariablesUpdated = true;
-	}
-	else if (bulbIdInt == 2)
-	{
-		BulbHandler::Bulb2HSV.x = hueInt;
-		BulbHandler::Bulb2HSV.y = satInt;
-		BulbHandler::Bulb2HSV.z = briInt;
-		std::cout << "\n222222222222222222" << std::endl;
-		BulbHandler::isSetVariablesUpdated = true;
-	}
-	else if(bulbIdInt == 3)
-	{
-		BulbHandler::Bulb3HSV.x = hueInt;
-		BulbHandler::Bulb3HSV.y = satInt;
-		BulbHandler::Bulb3HSV.z = briInt;
-		BulbHandler::isSetVariablesUpdated = true;
-		std::cout << "\n33333333333333333" << std::endl;
-	}
-	else if (bulbIdInt == 4)
-	{
-		BulbHandler::Bulb4HSV.x = hueInt;
-		BulbHandler::Bulb4HSV.y = hueInt;
-		BulbHandler::Bulb4HSV.z = hueInt;
-		BulbHandler::isSetVariablesUpdated = true;
-		std::cout << "\n44444444444444444444" << std::endl;
-	}
-	else
-	{
-		std::cout << "\nERROR: Callback function got no ID" << std::endl;
+		for (int i = 1; i < bulbOutput.size(); i++)
+		{
+			callbackOutput.append(bulbOutput[i]);
+			//std::cout << "\n -------------FOR LOOP------------------" << std::endl;
+		}
 	}
 
-	found = 0;
-	bulbId = "";
+	//std::cout << "\n ----------- callbackOutput" << callbackOutput << std::endl;
+
+	found = callbackOutput.find("}}");
+
+	if (found > 0)
+	{
+
+		found = callbackOutput.find("hue");
+		found2 = callbackOutput.find(",", found);
+
+		hue = callbackOutput.substr(found + 5, found2 - found - 5);
+
+		found = callbackOutput.find("Hue Lamp");
+		found2 = callbackOutput.find(",", found);
+
+		bulbId = callbackOutput.substr(found + 9, 1);
+		
+		found = callbackOutput.find("sat");
+		found2 = callbackOutput.find(",", found);
+
+		sat = callbackOutput.substr(found + 5, found2 - found - 5);
+
+		found = callbackOutput.find("bri");
+		found2 = callbackOutput.find(",", found);
+
+		bri = callbackOutput.substr(found + 5, found2 - found - 5);
+
+		hueInt = atoi(hue.c_str());
+		bulbIdInt = atoi(bulbId.c_str());
+		satInt = atoi(sat.c_str());
+		briInt = atoi(bri.c_str());
+
+		if (bulbIdInt == 1)
+		{
+			BulbHandler::Bulb1HSV.x = hueInt;
+			BulbHandler::Bulb1HSV.y = satInt;
+			BulbHandler::Bulb1HSV.z = briInt;
+			BulbHandler::isSetVariablesUpdated = true;
+			//std::cout << "\n11111111111111111111" << std::endl;
+		}
+		else if (bulbIdInt == 2)
+		{
+			BulbHandler::Bulb2HSV.x = hueInt;
+			BulbHandler::Bulb2HSV.y = satInt;
+			BulbHandler::Bulb2HSV.z = briInt;
+			BulbHandler::isSetVariablesUpdated = true;
+			//std::cout << "\n222222222222222222" << std::endl;
+		}
+		else if(bulbIdInt == 3)
+		{
+			BulbHandler::Bulb3HSV.x = hueInt;
+			BulbHandler::Bulb3HSV.y = satInt;
+			BulbHandler::Bulb3HSV.z = briInt;
+			BulbHandler::isSetVariablesUpdated = true;
+			//std::cout << "\n33333333333333333" << std::endl;
+		}
+		else if (bulbIdInt == 4)
+		{
+			BulbHandler::Bulb4HSV.x = hueInt;
+			BulbHandler::Bulb4HSV.y = hueInt;
+			BulbHandler::Bulb4HSV.z = hueInt;
+			BulbHandler::isSetVariablesUpdated = true;
+			//std::cout << "\n44444444444444444444" << std::endl;
+		}
+		else
+		{
+			std::cout << "\nERROR: Callback function got no ID" << std::endl;
+		}
+	}
 	return size * count;
 }
 
@@ -530,7 +541,8 @@ void BulbHandler::setVariables(int bulbId)
 	 	//res = curl_easy_perform(curl);
 	 	//while(BulbHandler::isSetVariablesUpdated == false)
 	 	//{
-	 		curl_easy_perform(curl);
+	 	curl_easy_perform(curl);
+	 	BulbHandler::bulbOutput.clear();
 	 	//}
 	 	curl_slist_free_all(headers);
 

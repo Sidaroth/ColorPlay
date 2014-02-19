@@ -18,7 +18,7 @@ BulbHandler::BulbHandler(EventQueue *eventQueue, LogModule* logger)
 	
 	this -> eventQueue = eventQueue;
 	gen = std::mt19937(SEED);
-	increaseInterval = 250;
+	increaseInterval = HSVINC;
 	rgbDistribution = std::uniform_int_distribution<>(0, 255);
 
 	this -> logger = logger;

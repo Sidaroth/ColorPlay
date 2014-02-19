@@ -381,13 +381,19 @@ void callback_func(void *getInfo, size_t size, size_t count, void *stream)
 	std::string bulbId;
 	std::string output((char*)getInfo);
 
-	char *test = (char*)getInfo;
-	//*test = strndup(getInfo, (size_t)(size *count));
-	//*test = (char*)getInfo;
+	//lol.push_back(std::string(static_cast<const char*>(getInfo), size * count));
 
-	std::cout << "\nMEH-------------->" << (char*)getInfo << std::endl;
+//	std::string output = static_cast<std::string>(getInfo);
+
+//	char **test = (char**)stream;
+//	*test = strndup(getInfo, (size_t)(size* count));
+
+
+	//((std::string*)stream)->append((char*)getInfo, size * count);
+
+	//std::cout << "\nMEH-------------->" << size * count << std::endl;
 	
-	std::cout << "\n HER --...->" << output << std::endl;
+	//std::cout << "\n HER --...->" << output << std::endl;
 
 	found = output.find("hue");
 	found2 = output.find(",", found);
@@ -419,24 +425,28 @@ void callback_func(void *getInfo, size_t size, size_t count, void *stream)
 		Bulb1HSV.x = hueInt;
 		Bulb1HSV.y = satInt;
 		Bulb1HSV.z = briInt;
+		isSetVariablesUpdated = true;
 	}
 	else if (bulbIdInt == 2)
 	{
 		Bulb2HSV.x = hueInt;
 		Bulb2HSV.y = satInt;
 		Bulb2HSV.z = briInt;
+		isSetVariablesUpdated = true;
 	}
 	else if(bulbIdInt == 3)
 	{
 		Bulb3HSV.x = hueInt;
 		Bulb3HSV.y = satInt;
 		Bulb3HSV.z = briInt;
+		isSetVariablesUpdated = true;
 	}
 	else if (bulbIdInt == 4)
 	{
 		Bulb4HSV.x = hueInt;
 		Bulb4HSV.y = hueInt;
 		Bulb4HSV.z = hueInt;
+		isSetVariablesUpdated = true;
 	}
 	else
 	{
@@ -452,6 +462,7 @@ void BulbHandler::setVariables(int bulbId)
 	 struct curl_slist *headers = NULL;
 	 curl = curl_easy_init();
 	 char* getInfo;
+	 isSetVariablesUpdated = false;
 
 	 message.str(std::string());
 
@@ -474,8 +485,10 @@ void BulbHandler::setVariables(int bulbId)
 	 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &getInfo);
 
 	 	//res = curl_easy_perform(curl);
+	 	while(isSetVariablesUpdated == false)
+	 	{
 	 	curl_easy_perform(curl);
-
+	 	}
 	 	curl_slist_free_all(headers);
 
 	 	curl_easy_cleanup(curl);

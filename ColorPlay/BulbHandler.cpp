@@ -414,26 +414,19 @@ void BulbHandler::processEvents()
 }
 
 
-void BulbHandler::callback_func(void *getInfo, size_t size, size_t count, void *stream)
+size_t BulbHandler::callback_func(void *getInfo, size_t size, size_t count, void *stream)
 {
 	int hueInt, briInt, satInt, bulbIdInt, found, found2;
 	std::string hue, sat, bri;
 	std::string bulbId;
 	std::string output((char*)getInfo);
 
+	std::vector<std::string> lol;
+
 	//lol.push_back(std::string(static_cast<const char*>(getInfo), size * count));
-
-//	std::string output = static_cast<std::string>(getInfo);
-
-//	char **test = (char**)stream;
-//	*test = strndup(getInfo, (size_t)(size* count));
-
-
-	//((std::string*)stream)->append((char*)getInfo, size * count);
-
-	//std::cout << "\nMEH-------------->" << size * count << std::endl;
-	
-	//std::cout << "\n HER --...->" << output << std::endl;
+	//lol.push_back((char*)getInfo);
+	lol.push_back(std::string(static_cast<const char*>(getInfo), size * count));
+	//std::cout << "\n----------------->" << lol.size() << "  " << lol[0] << std::endl;
 
 	found = output.find("hue");
 	found2 = output.find(",", found);
@@ -441,10 +434,12 @@ void BulbHandler::callback_func(void *getInfo, size_t size, size_t count, void *
 	hue = output.substr(found + 5, found2 - found - 5);
 
 	found = output.find("Hue Lamp");
-	found2 = output.find(",", found);
+	if (found > 1)
+	{
+		found2 = output.find(",", found);
 
-	bulbId = output.substr(found + 9, 1);
-
+		bulbId = output.substr(found + 9, 1);
+	}
 	found = output.find("sat");
 	found2 = output.find(",", found);
 
@@ -465,6 +460,7 @@ void BulbHandler::callback_func(void *getInfo, size_t size, size_t count, void *
 		BulbHandler::Bulb1HSV.x = hueInt;
 		BulbHandler::Bulb1HSV.y = satInt;
 		BulbHandler::Bulb1HSV.z = briInt;
+		std::cout << "\n11111111111111111111" << std::endl;
 		BulbHandler::isSetVariablesUpdated = true;
 	}
 	else if (bulbIdInt == 2)
@@ -472,6 +468,7 @@ void BulbHandler::callback_func(void *getInfo, size_t size, size_t count, void *
 		BulbHandler::Bulb2HSV.x = hueInt;
 		BulbHandler::Bulb2HSV.y = satInt;
 		BulbHandler::Bulb2HSV.z = briInt;
+		std::cout << "\n222222222222222222" << std::endl;
 		BulbHandler::isSetVariablesUpdated = true;
 	}
 	else if(bulbIdInt == 3)
@@ -480,6 +477,7 @@ void BulbHandler::callback_func(void *getInfo, size_t size, size_t count, void *
 		BulbHandler::Bulb3HSV.y = satInt;
 		BulbHandler::Bulb3HSV.z = briInt;
 		BulbHandler::isSetVariablesUpdated = true;
+		std::cout << "\n33333333333333333" << std::endl;
 	}
 	else if (bulbIdInt == 4)
 	{
@@ -487,11 +485,16 @@ void BulbHandler::callback_func(void *getInfo, size_t size, size_t count, void *
 		BulbHandler::Bulb4HSV.y = hueInt;
 		BulbHandler::Bulb4HSV.z = hueInt;
 		BulbHandler::isSetVariablesUpdated = true;
+		std::cout << "\n44444444444444444444" << std::endl;
 	}
 	else
 	{
 		std::cout << "\nERROR: Callback function got no ID" << std::endl;
 	}
+
+	found = 0;
+	bulbId = "";
+	return size * count;
 }
 
 //updates a bulb's global variables to match the current values the bulb is showing.
@@ -525,10 +528,10 @@ void BulbHandler::setVariables(int bulbId)
 	 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &getInfo);
 
 	 	//res = curl_easy_perform(curl);
-	 	while(BulbHandler::isSetVariablesUpdated == false)
-	 	{
-	 	curl_easy_perform(curl);
-	 	}
+	 	//while(BulbHandler::isSetVariablesUpdated == false)
+	 	//{
+	 		curl_easy_perform(curl);
+	 	//}
 	 	curl_slist_free_all(headers);
 
 	 	curl_easy_cleanup(curl);

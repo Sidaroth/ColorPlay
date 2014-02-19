@@ -69,7 +69,7 @@ public:
 	void processEvents();
 	void updateTargetBulb();
 
-	static void callback_func(void *getInfo, size_t size, size_t count, void *stream);
+	static size_t callback_func(void *getInfo, size_t size, size_t count, void *stream);
 
 private:
 

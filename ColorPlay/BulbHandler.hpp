@@ -24,7 +24,6 @@
 #include "ActionEvent.hpp"
 #include "LogModule.hpp"
 #include "BulbMath.hpp"
-#include "globals.hpp"
 
 #define SEED 314159265358979323
 #define RGBINC 5
@@ -67,6 +66,8 @@ public:
 	void setVariables(int bulbId);
 	void processEvents();
 
+	static void callback_func(void *getInfo, size_t size, size_t count, void *stream);
+
 private:
 
 	std::stringstream message;
@@ -93,4 +94,11 @@ private:
 	void LabColorAdjustment(unsigned short bulbId, short inc);
 	void updateBulb(unsigned short bulbId, short inc);
 	void command(std::string body, int bulbId);
+
+	static sf::Vector3f Bulb1HSV;
+	static sf::Vector3f Bulb2HSV;
+	static sf::Vector3f Bulb3HSV;
+	static sf::Vector3f Bulb4HSV;
+	static bool isSetVariablesUpdated;
+
 };

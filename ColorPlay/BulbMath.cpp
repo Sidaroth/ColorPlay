@@ -91,9 +91,9 @@ sf::Vector3f BulbMath::hsvThresholdCheck(sf::Vector3f hsv)
 		hsv.y = 100.0f;
 	}
 
-	if (hsv.z < 0)
+	if (hsv.z < 0.5)
 	{
-		hsv.z = 0.0f;
+		hsv.z = 0.5f;
 	}
 	else if (hsv.z > 100)
 	{

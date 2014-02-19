@@ -17,11 +17,11 @@
 #define DEBUG 1
 
 //Initializing globals, pretend like you don't see this
-sf::Vector3f Bulb1HSV(0,0,0);
-sf::Vector3f Bulb2HSV(0,0,0);
-sf::Vector3f Bulb3HSV(0,0,0);
-sf::Vector3f Bulb4HSV(0,0,0);
-bool isSetVariablesUpdated = false;
+//sf::Vector3f Bulb1HSV(0,0,0);
+//sf::Vector3f Bulb2HSV(0,0,0);
+//sf::Vector3f Bulb3HSV(0,0,0);
+//sf::Vector3f Bulb4HSV(0,0,0);
+//bool isSetVariablesUpdated = false;
 //std::vector<std::string> lol{""};
 
 
@@ -44,9 +44,9 @@ int main(int argc, char* argv[])
 
 	bulbMath.lab2xyz(10.0f, -50.0f, 10.0f);
 
-	//bulbHandler.setVariables(2);
+//	bulbHandler.setVariables(2);
 	
-	std::cout << "\n----------->" << Bulb1HSV.x << "<----------" << std::endl;
+//	std::cout << "\n----------->" << BulbHandler::Bulb1HSV.x << "<----------" << std::endl;
 	if(windowHandler.init())
 	{
 		std::cout << "Window initialization failed! Exiting...\n";
@@ -95,7 +95,6 @@ int main(int argc, char* argv[])
 		// Event processing
 		windowHandler.processEvents();
 		bulbHandler.processEvents();
-
 		// Updates
 		windowHandler.update();
 		

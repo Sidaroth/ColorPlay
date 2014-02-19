@@ -1,6 +1,13 @@
 #include "BulbHandler.hpp"
 #include <functional>
 
+
+sf::Vector3f BulbHandler::Bulb1HSV(0,0,0);
+sf::Vector3f BulbHandler::Bulb2HSV(0,0,0);
+sf::Vector3f BulbHandler::Bulb3HSV(0,0,0);
+sf::Vector3f BulbHandler::Bulb4HSV(0,0,0);
+bool BulbHandler::isSetVariablesUpdated = false;
+
 BulbHandler::BulbHandler()
 {
 	curl = curl_easy_init();
@@ -192,10 +199,10 @@ void BulbHandler::HSVColorAdjustment(unsigned short bulbId, short inc)
 {
 	if(bulbId == 1)			// H
 	{
-		Bulb1HSV.x = Bulb1HSV.x + inc;
-		Bulb2HSV.x = Bulb1HSV.x;
-		Bulb3HSV.x = Bulb1HSV.x;
-		message << "\"hue\": " << Bulb1HSV.x << "}";
+		BulbHandler::Bulb1HSV.x = BulbHandler::Bulb1HSV.x + inc;
+		BulbHandler::Bulb2HSV.x = BulbHandler::Bulb1HSV.x;
+		BulbHandler::Bulb3HSV.x = BulbHandler::Bulb1HSV.x;
+		message << "\"hue\": " << BulbHandler::Bulb1HSV.x << "}";
 
 		// Update the other lightbulbs
 		command(message.str(), 2);
@@ -204,19 +211,19 @@ void BulbHandler::HSVColorAdjustment(unsigned short bulbId, short inc)
 	}
 	else if(bulbId == 2)		// S
 	{
-		Bulb2HSV.y = Bulb2HSV.y + inc;
-		Bulb1HSV.y = Bulb2HSV.y;
-		Bulb3HSV.y = Bulb2HSV.y;
-		message << "\"sat\": " << Bulb2HSV.y << "}";
+		BulbHandler::Bulb2HSV.y = BulbHandler::Bulb2HSV.y + inc;
+		BulbHandler::Bulb1HSV.y = BulbHandler::Bulb2HSV.y;
+		BulbHandler::Bulb3HSV.y = BulbHandler::Bulb2HSV.y;
+		message << "\"sat\": " << BulbHandler::Bulb2HSV.y << "}";
 
 		command(message.str(), 1);
 		command(message.str(), 3);
 	}
 	else if(bulbId == 3)   // V
 	{
-		Bulb3HSV.z = Bulb3HSV.z + inc;
-		Bulb1HSV.z = Bulb3HSV.z;
-		Bulb2HSV.z = Bulb3HSV.z;
+		BulbHandler::Bulb3HSV.z = BulbHandler::Bulb3HSV.z + inc;
+		BulbHandler::Bulb1HSV.z = BulbHandler::Bulb3HSV.z;
+		BulbHandler::Bulb2HSV.z = BulbHandler::Bulb3HSV.z;
 		message << "\"bri\": " << Bulb3HSV.z << "}";
 
 		command(message.str(), 1);
@@ -235,34 +242,34 @@ void BulbHandler::RGBColorAdjustment(unsigned short bulbId, short inc)
 {
 	if(bulbId == 1)		// R
 	{
-		values = mathSuite.hsv2rgb(Bulb1HSV.x, Bulb1HSV.y, Bulb1HSV.z);
+		values = mathSuite.hsv2rgb(BulbHandler::Bulb1HSV.x, BulbHandler::Bulb1HSV.y, BulbHandler::Bulb1HSV.z);
 		values.x = values.x + inc;
 		values.y = 0;
 		values.z = 0;
-		Bulb1HSV = mathSuite.rgb2hsv(values.x, values.y, values.z);
+		BulbHandler::Bulb1HSV = mathSuite.rgb2hsv(values.x, values.y, values.z);
 
-		message  << "\"hue\": " << Bulb1HSV.x << ", \"sat\": " << Bulb1HSV.y << ", \"bri\": " << Bulb1HSV.z << "}";
+		message  << "\"hue\": " << BulbHandler::Bulb1HSV.x << ", \"sat\": " << BulbHandler::Bulb1HSV.y << ", \"bri\": " << BulbHandler::Bulb1HSV.z << "}";
 	}
 	else if(bulbId == 2)		// G
 	{
-		values = mathSuite.hsv2rgb(Bulb2HSV.x, Bulb2HSV.y, Bulb2HSV.z);
+		values = mathSuite.hsv2rgb(BulbHandler::Bulb2HSV.x, BulbHandler::Bulb2HSV.y, BulbHandler::Bulb2HSV.z);
 		values.y = values.y + inc;
 		values.x = 0;
 		values.z = 0;
 
-		Bulb2HSV = mathSuite.rgb2hsv(values.x, values.y, values.z);
+		BulbHandler::Bulb2HSV = mathSuite.rgb2hsv(values.x, values.y, values.z);
 
-		message  << "\"hue\": " << Bulb2HSV.x << ", \"sat\": " << Bulb2HSV.y << ", \"bri\": " << Bulb2HSV.z << "}";
+		message  << "\"hue\": " << BulbHandler::Bulb2HSV.x << ", \"sat\": " << BulbHandler::Bulb2HSV.y << ", \"bri\": " << BulbHandler::Bulb2HSV.z << "}";
 	}
 	else if(bulbId == 3)		// B
 	{
-		values = mathSuite.hsv2rgb(Bulb3HSV.x, Bulb3HSV.y, Bulb3HSV.z);
+		values = mathSuite.hsv2rgb(BulbHandler::Bulb3HSV.x, BulbHandler::Bulb3HSV.y, BulbHandler::Bulb3HSV.z);
 		values.z = values.z + inc;
 		values.x = 0;
 		values.y = 0;
-		Bulb3HSV = mathSuite.rgb2hsv(values.x, values.y, values.z);
+		BulbHandler::Bulb3HSV = mathSuite.rgb2hsv(values.x, values.y, values.z);
 
-		message  << "\"hue\": " << Bulb3HSV.x << ", \"sat\": " << Bulb3HSV.y << ", \"bri\": " << Bulb3HSV.z << "}";
+		message  << "\"hue\": " << BulbHandler::Bulb3HSV.x << ", \"sat\": " << BulbHandler::Bulb3HSV.y << ", \"bri\": " << BulbHandler::Bulb3HSV.z << "}";
 	}
 
 	// Update the data on this light bulb. 
@@ -270,13 +277,13 @@ void BulbHandler::RGBColorAdjustment(unsigned short bulbId, short inc)
 
 	// Update the data on the 4th "Target" bulb. 
 	sf::Vector3f temp1, temp2, temp3; 
-	temp1 = mathSuite.hsv2rgb(Bulb1HSV.x, Bulb1HSV.y, Bulb1HSV.z);
-	temp2 = mathSuite.hsv2rgb(Bulb2HSV.x, Bulb2HSV.y, Bulb2HSV.z);
-	temp3 = mathSuite.hsv2rgb(Bulb3HSV.x, Bulb3HSV.y, Bulb3HSV.z);
+	temp1 = mathSuite.hsv2rgb(BulbHandler::Bulb1HSV.x, BulbHandler::Bulb1HSV.y, BulbHandler::Bulb1HSV.z);
+	temp2 = mathSuite.hsv2rgb(BulbHandler::Bulb2HSV.x, BulbHandler::Bulb2HSV.y, BulbHandler::Bulb2HSV.z);
+	temp3 = mathSuite.hsv2rgb(BulbHandler::Bulb3HSV.x, BulbHandler::Bulb3HSV.y, BulbHandler::Bulb3HSV.z);
 
-	values.x = Bulb1HSV.x + Bulb2HSV.x + Bulb3HSV.x;
-	values.y = Bulb1HSV.y + Bulb2HSV.y + Bulb3HSV.y;
-	values.z = Bulb1HSV.z + Bulb2HSV.z + Bulb3HSV.z;
+	values.x = temp1.x + temp2.x + temp3.x;
+	values.y = temp1.y + temp2.y + temp3.y;
+	values.z = temp1.z + temp2.z + temp3.z;
 
 	values = mathSuite.rgb2hsv(values.x, values.y, values.z);
 }
@@ -330,6 +337,7 @@ void BulbHandler::updateBulb(unsigned short bulbId, short inc)
 		default: break;
 	}
 
+	//Sending values to bulb 4 /target
 	message.str(std::string());
 	message << "{\"on\":true, " << "\"hue\": " << values.x << ", \"sat\": " << values.y << ", \"bri\": " <<  values.z << "}";
 	command(message.str(), 4);
@@ -374,7 +382,7 @@ void BulbHandler::processEvents()
 }
 
 
-void callback_func(void *getInfo, size_t size, size_t count, void *stream)
+void BulbHandler::callback_func(void *getInfo, size_t size, size_t count, void *stream)
 {
 	int hueInt, briInt, satInt, bulbIdInt, found, found2;
 	std::string hue, sat, bri;
@@ -422,31 +430,31 @@ void callback_func(void *getInfo, size_t size, size_t count, void *stream)
 
 	if (bulbIdInt == 1)
 	{
-		Bulb1HSV.x = hueInt;
-		Bulb1HSV.y = satInt;
-		Bulb1HSV.z = briInt;
-		isSetVariablesUpdated = true;
+		BulbHandler::Bulb1HSV.x = hueInt;
+		BulbHandler::Bulb1HSV.y = satInt;
+		BulbHandler::Bulb1HSV.z = briInt;
+		BulbHandler::isSetVariablesUpdated = true;
 	}
 	else if (bulbIdInt == 2)
 	{
-		Bulb2HSV.x = hueInt;
-		Bulb2HSV.y = satInt;
-		Bulb2HSV.z = briInt;
-		isSetVariablesUpdated = true;
+		BulbHandler::Bulb2HSV.x = hueInt;
+		BulbHandler::Bulb2HSV.y = satInt;
+		BulbHandler::Bulb2HSV.z = briInt;
+		BulbHandler::isSetVariablesUpdated = true;
 	}
 	else if(bulbIdInt == 3)
 	{
-		Bulb3HSV.x = hueInt;
-		Bulb3HSV.y = satInt;
-		Bulb3HSV.z = briInt;
-		isSetVariablesUpdated = true;
+		BulbHandler::Bulb3HSV.x = hueInt;
+		BulbHandler::Bulb3HSV.y = satInt;
+		BulbHandler::Bulb3HSV.z = briInt;
+		BulbHandler::isSetVariablesUpdated = true;
 	}
 	else if (bulbIdInt == 4)
 	{
-		Bulb4HSV.x = hueInt;
-		Bulb4HSV.y = hueInt;
-		Bulb4HSV.z = hueInt;
-		isSetVariablesUpdated = true;
+		BulbHandler::Bulb4HSV.x = hueInt;
+		BulbHandler::Bulb4HSV.y = hueInt;
+		BulbHandler::Bulb4HSV.z = hueInt;
+		BulbHandler::isSetVariablesUpdated = true;
 	}
 	else
 	{
@@ -462,7 +470,7 @@ void BulbHandler::setVariables(int bulbId)
 	 struct curl_slist *headers = NULL;
 	 curl = curl_easy_init();
 	 char* getInfo;
-	 isSetVariablesUpdated = false;
+	 BulbHandler::isSetVariablesUpdated = false;
 
 	 message.str(std::string());
 
@@ -485,7 +493,7 @@ void BulbHandler::setVariables(int bulbId)
 	 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &getInfo);
 
 	 	//res = curl_easy_perform(curl);
-	 	while(isSetVariablesUpdated == false)
+	 	while(BulbHandler::isSetVariablesUpdated == false)
 	 	{
 	 	curl_easy_perform(curl);
 	 	}

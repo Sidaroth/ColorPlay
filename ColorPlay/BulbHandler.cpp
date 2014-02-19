@@ -222,64 +222,85 @@ sf::Color BulbHandler::getGoalColor()
 /// Update the data on the 4th "Target" bulb. 
 void BulbHandler::updateTargetBulb()
 {
-	sf::Vector3f temp1, temp2, temp3; 
-	temp1 = mathSuite.hsv2rgb(BulbHandler::Bulb1HSV.x, BulbHandler::Bulb1HSV.y, BulbHandler::Bulb1HSV.z);
-	temp2 = mathSuite.hsv2rgb(BulbHandler::Bulb2HSV.x, BulbHandler::Bulb2HSV.y, BulbHandler::Bulb2HSV.z);
-	temp3 = mathSuite.hsv2rgb(BulbHandler::Bulb3HSV.x, BulbHandler::Bulb3HSV.y, BulbHandler::Bulb3HSV.z);
 
-	values.x = temp1.x + temp2.x + temp3.x;
-	values.y = temp1.y + temp2.y + temp3.y;
-	values.z = temp1.z + temp2.z + temp3.z;
-
-	values = mathSuite.rgb2hsv(values.x, values.y, values.z);
-
-	//Sending values to bulb 4 /target
-	message.str(std::string());
-	message << "{\"on\":true, " << "\"hue\": " << values.x << ", \"sat\": " << values.y << ", \"bri\": " <<  values.z << "}";
-	command(message.str(), 4);
 }
 
 /// Depending on the event received, change the corresponding bulb (H, S, or V value)
 void BulbHandler::HSVColorAdjustment(unsigned short bulbId, short inc)
 {
+	std::string helper;
+	int val; 
 	if(bulbId == 1)			// H
 	{
-		BulbHandler::Bulb1HSV.x = BulbHandler::Bulb1HSV.x + inc;
+		val = BulbHandler::Bulb1HSV.x + inc;
+		if(val > MAXHUE)
+		{
+			val = MAXHUE;
+		}
+		else if(val < MINHUE)
+		{
+			val = MINHUE;
+		}
+
+		BulbHandler::Bulb1HSV.x = val;
 		BulbHandler::Bulb2HSV.x = BulbHandler::Bulb1HSV.x;
 		BulbHandler::Bulb3HSV.x = BulbHandler::Bulb1HSV.x;
 		message << "\"hue\": " << BulbHandler::Bulb1HSV.x << "}";
 
 		// Update the other lightbulbs
-		command(message.str(), 2);
-		command(message.str(), 3);
+
+		helper = message.str();
+		command(helper, 2);
+		command(helper, 3);
 
 	}
 	else if(bulbId == 2)		// S
 	{
-		BulbHandler::Bulb2HSV.y = BulbHandler::Bulb2HSV.y + inc;
+		val = BulbHandler::Bulb2HSV.y + inc;
+		if(val > MAXSAT)
+		{
+			val = MAXSAT;
+		}
+		else if(val < MINSAT)
+		{
+			val = MINSAT;
+		}
+
+		BulbHandler::Bulb2HSV.y = val;
 		BulbHandler::Bulb1HSV.y = BulbHandler::Bulb2HSV.y;
 		BulbHandler::Bulb3HSV.y = BulbHandler::Bulb2HSV.y;
 		message << "\"sat\": " << BulbHandler::Bulb2HSV.y << "}";
 
-		command(message.str(), 1);
-		command(message.str(), 3);
+		helper = message.str();
+		command(helper, 1);
+		command(helper, 3);	
+
 	}
 	else if(bulbId == 3)   // V
 	{
-		BulbHandler::Bulb3HSV.z = BulbHandler::Bulb3HSV.z + inc;
+		val = BulbHandler::Bulb3HSV.z + inc;
+		if(val > MAXBRI)
+		{
+			val = MAXBRI;
+		}
+		else if(val < MINBRI)
+		{
+			val = MINBRI;	
+		}
+
+		BulbHandler::Bulb3HSV.z = val;
 		BulbHandler::Bulb1HSV.z = BulbHandler::Bulb3HSV.z;
 		BulbHandler::Bulb2HSV.z = BulbHandler::Bulb3HSV.z;
 		message << "\"bri\": " << Bulb3HSV.z << "}";
 
-		command(message.str(), 1);
-		command(message.str(), 2);
+		helper = message.str();
+		command(helper, 1);
+		command(helper, 2);	
 	}
 
 	// Update the data on this light bulb. 
-	command(message.str(), bulbId);
-
-	// Update the data on the 4th "Target" bulb. 
-	command(message.str(), 4);
+	command(helper, bulbId);
+	command(helper, 4);
 }
 
 /// Depending on the event received, change the corresponding bulb (R, G, or B value)
@@ -320,8 +341,22 @@ void BulbHandler::RGBColorAdjustment(unsigned short bulbId, short inc)
 	// Update the data on this light bulb. 
 	command(message.str(), bulbId);
 
-	// Update the data on the 4th "Target" bulb. 
-	updateTargetBulb();
+	// Bulb 4 / target bulb updating for RGB. 
+	sf::Vector3f temp1, temp2, temp3; 
+	temp1 = mathSuite.hsv2rgb(BulbHandler::Bulb1HSV.x, BulbHandler::Bulb1HSV.y, BulbHandler::Bulb1HSV.z);
+	temp2 = mathSuite.hsv2rgb(BulbHandler::Bulb2HSV.x, BulbHandler::Bulb2HSV.y, BulbHandler::Bulb2HSV.z);
+	temp3 = mathSuite.hsv2rgb(BulbHandler::Bulb3HSV.x, BulbHandler::Bulb3HSV.y, BulbHandler::Bulb3HSV.z);
+
+	values.x = temp1.x + temp2.x + temp3.x;
+	values.y = temp1.y + temp2.y + temp3.y;
+	values.z = temp1.z + temp2.z + temp3.z;
+
+	values = mathSuite.rgb2hsv(values.x, values.y, values.z);
+
+	//Sending values to bulb 4 /target
+	message.str(std::string());
+	message << "{\"on\":true, " << "\"hue\": " << values.x << ", \"sat\": " << values.y << ", \"bri\": " <<  values.z << "}";
+	command(message.str(), 4);
 }
 
 

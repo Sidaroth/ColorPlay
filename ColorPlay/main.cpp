@@ -58,11 +58,14 @@ int main(int argc, char* argv[])
 	}
 
 	bulbHandler.setHue(0, 1);
-	bulbHandler.setBrightness(126, 1);
-	bulbHandler.setHue(25500, 2);
-	bulbHandler.setBrightness(126, 2);
-	bulbHandler.setHue(46920, 3);
-	bulbHandler.setBrightness(126, 3);
+	bulbHandler.setHue(0, 2);
+	bulbHandler.setHue(0, 3);
+	bulbHandler.setSaturation(255, 1);
+	bulbHandler.setSaturation(255, 2);
+	bulbHandler.setSaturation(255, 3);
+	bulbHandler.setBrightness(255, 1);
+	bulbHandler.setBrightness(255, 2);
+	bulbHandler.setBrightness(255, 3);
 
 
 	///////////////// START THREADS /////////////////
@@ -76,14 +79,35 @@ int main(int argc, char* argv[])
 	bulbHandler.setVariables(2);
 	bulbHandler.setVariables(3);
 	bulbHandler.setVariables(4);
-	bulbHandler.setColorSpace(BulbHandler::ColorSpace::RGB);
+
+
+	std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	bulbHandler.setColorSpace(BulbHandler::ColorSpace::HSV);
 	bulbHandler.updateTargetBulb();
+
+	ActionEvent action(1, 1, ActionEvent::Action::Up);
 
 	while(running)
 	{
 		// Event processing
 		windowHandler.processEvents();
 		bulbHandler.processEvents();
+
+		action.setAction(ActionEvent::Action::Up);
+		action.setBulbID(1);
+		eventQueue.push(action);
+		std::this_thread::sleep_for(std::chrono::milliseconds(15));
+
+		action.setBulbID(2);
+		eventQueue.push(action);
+		std::this_thread::sleep_for(std::chrono::milliseconds(15));
+
+		action.setAction(ActionEvent::Action::Down);
+		action.setBulbID(3);
+		std::this_thread::sleep_for(std::chrono::milliseconds(15));
+
+		eventQueue.push(action);
+
 		// Updates
 		windowHandler.update();
 		

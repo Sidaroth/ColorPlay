@@ -76,7 +76,7 @@ public:
 	void processEvents();
 	void updateTargetBulb();
 
-	static void callback_func(void *getInfo, size_t size, size_t count, void *stream);
+	static size_t callback_func(void *getInfo, size_t size, size_t count, void *stream);
 
 private:
 
@@ -113,5 +113,6 @@ private:
 	static sf::Vector3f Bulb3HSV;
 	static sf::Vector3f Bulb4HSV;
 	static bool isSetVariablesUpdated;
+	static std::vector<std::string> bulbOutput;
 
 };

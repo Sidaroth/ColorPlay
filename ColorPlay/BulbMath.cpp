@@ -416,14 +416,14 @@ sf::Vector3f BulbMath::rgb2xyz(float r, float g, float b)
 //Tested - works according to http://www.javascripter.net/faq/rgb2hsv.htm (only does hue to one decimal)
 sf::Vector3f BulbMath::rgb2hsv(float r, float g, float b)
 {
-	std::cout << "\n IN RGB2HSV------->> R: " << r << " G: " << g << " B: " << b << std::endl;
+	//std::cout << "\n IN RGB2HSV------->> R: " << r << " G: " << g << " B: " << b << std::endl;
 
 	sf::Vector3f hsv(r, g, b);
 	hsv = rgbThresholdCheck(hsv);
 
 	float min, max, delta, rr, gg, bb;
 
-	std::cout << "\n AT RGB2HSV------->> R: " << hsv.x << " G: " << hsv.y << " B: " << hsv.z << std::endl;
+	//std::cout << "\n AT RGB2HSV------->> R: " << hsv.x << " G: " << hsv.y << " B: " << hsv.z << std::endl;
 
 
 	rr = hsv.x/255.0f;
@@ -487,7 +487,7 @@ sf::Vector3f BulbMath::rgb2hsv(float r, float g, float b)
 	hsv.y = round(hsv.y);
 	hsv.z = round(hsv.z);
 
-	std::cout << "\n RGB2HSV out------->> H: " << hsv.x << " s: " << hsv.y << " v: " << hsv.z << std::endl;
+	//std::cout << "\n RGB2HSV out------->> H: " << hsv.x << " s: " << hsv.y << " v: " << hsv.z << std::endl;
 
 	return hsv;
 }
@@ -497,7 +497,7 @@ sf::Vector3f BulbMath::rgb2hsv(float r, float g, float b)
 //However the calculators online rounds to rgb by flooring, so the exact accuracy of the function is unknown
 sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 {
-	std::cout << "\n IN HSV2RGB------->> H: " << H << " s: " << s << " v: " << v << std::endl;
+	//std::cout << "\n IN HSV2RGB------->> H: " << H << " s: " << s << " v: " << v << std::endl;
 
 
 	sf::Vector3f RGB(H, s, v);
@@ -512,7 +512,7 @@ sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 	RGB.x = RGB.x / 182.04167;
 	RGB = hsvThresholdCheck(RGB);
 
-	std::cout << "\n AT HSV2RGB------->> H: " << RGB.x << " s: " << RGB.y << " v: " << RGB.z << std::endl;
+	//std::cout << "\n AT HSV2RGB------->> H: " << RGB.x << " s: " << RGB.y << " v: " << RGB.z << std::endl;
 
 
 	ss = RGB.y / 100.0f;
@@ -575,7 +575,7 @@ sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 
 	RGB = rgbThresholdCheck(RGB);
 
-	std::cout << "\n OUT HSV2RGB------->> R: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
+	//std::cout << "\n OUT HSV2RGB------->> R: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
 
 
 //	std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;

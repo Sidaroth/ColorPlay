@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 #include "globals.hpp"
 #include "BulbHandler.hpp"
@@ -15,11 +16,14 @@
 
 #define DEBUG 1
 
-//tHis isn't even here
+//Initializing globals, pretend like you don't see this
 sf::Vector3f Bulb1HSV(0,0,0);
 sf::Vector3f Bulb2HSV(0,0,0);
 sf::Vector3f Bulb3HSV(0,0,0);
 sf::Vector3f Bulb4HSV(0,0,0);
+bool isSetVariablesUpdated = false;
+//std::vector<std::string> lol{""};
+
 
 
 int main(int argc, char* argv[])

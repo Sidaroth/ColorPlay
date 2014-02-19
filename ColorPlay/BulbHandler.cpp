@@ -219,6 +219,26 @@ sf::Color BulbHandler::getGoalColor()
 	return this -> goalColor;
 }
 
+/// Update the data on the 4th "Target" bulb. 
+void BulbHandler::updateTargetBulb()
+{
+	sf::Vector3f temp1, temp2, temp3; 
+	temp1 = mathSuite.hsv2rgb(BulbHandler::Bulb1HSV.x, BulbHandler::Bulb1HSV.y, BulbHandler::Bulb1HSV.z);
+	temp2 = mathSuite.hsv2rgb(BulbHandler::Bulb2HSV.x, BulbHandler::Bulb2HSV.y, BulbHandler::Bulb2HSV.z);
+	temp3 = mathSuite.hsv2rgb(BulbHandler::Bulb3HSV.x, BulbHandler::Bulb3HSV.y, BulbHandler::Bulb3HSV.z);
+
+	values.x = temp1.x + temp2.x + temp3.x;
+	values.y = temp1.y + temp2.y + temp3.y;
+	values.z = temp1.z + temp2.z + temp3.z;
+
+	values = mathSuite.rgb2hsv(values.x, values.y, values.z);
+
+	//Sending values to bulb 4 /target
+	message.str(std::string());
+	message << "{\"on\":true, " << "\"hue\": " << values.x << ", \"sat\": " << values.y << ", \"bri\": " <<  values.z << "}";
+	command(message.str(), 4);
+}
+
 /// Depending on the event received, change the corresponding bulb (H, S, or V value)
 void BulbHandler::HSVColorAdjustment(unsigned short bulbId, short inc)
 {
@@ -301,17 +321,9 @@ void BulbHandler::RGBColorAdjustment(unsigned short bulbId, short inc)
 	command(message.str(), bulbId);
 
 	// Update the data on the 4th "Target" bulb. 
-	sf::Vector3f temp1, temp2, temp3; 
-	temp1 = mathSuite.hsv2rgb(BulbHandler::Bulb1HSV.x, BulbHandler::Bulb1HSV.y, BulbHandler::Bulb1HSV.z);
-	temp2 = mathSuite.hsv2rgb(BulbHandler::Bulb2HSV.x, BulbHandler::Bulb2HSV.y, BulbHandler::Bulb2HSV.z);
-	temp3 = mathSuite.hsv2rgb(BulbHandler::Bulb3HSV.x, BulbHandler::Bulb3HSV.y, BulbHandler::Bulb3HSV.z);
-
-	values.x = temp1.x + temp2.x + temp3.x;
-	values.y = temp1.y + temp2.y + temp3.y;
-	values.z = temp1.z + temp2.z + temp3.z;
-
-	values = mathSuite.rgb2hsv(values.x, values.y, values.z);
+	updateTargetBulb();
 }
+
 
 /// Depending on the event received, change the corresponding bulb (C, M, or Y value)
 void BulbHandler::CMYColorAdjustment(unsigned short bulbId, short inc)
@@ -361,11 +373,6 @@ void BulbHandler::updateBulb(unsigned short bulbId, short inc)
 
 		default: break;
 	}
-
-	//Sending values to bulb 4 /target
-	message.str(std::string());
-	message << "{\"on\":true, " << "\"hue\": " << values.x << ", \"sat\": " << values.y << ", \"bri\": " <<  values.z << "}";
-	command(message.str(), 4);
 }
 
 // Process any events that have been added to the event queue. 

@@ -67,6 +67,7 @@ public:
 
 	void setVariables(int bulbId);
 	void processEvents();
+	void updateTargetBulb();
 
 	static void callback_func(void *getInfo, size_t size, size_t count, void *stream);
 

@@ -83,6 +83,31 @@ void BulbHandler::generateNewGoalColor()
 	setGoalColor(r, g, b);
 }
 
+int* BulbHandler::generateStartColors()
+{
+	int *colors = new int[3];
+	std::uniform_int_distribution<> randGend = std::uniform_int_distribution<>(-this->inc * this->maxStartIncFromGoal, this->inc * this->maxStartIncFromGoal);
+
+
+	colors[0] = goalColor.r + randGend(gen);
+	colors[1] = goalColor.g + randGend(gen);
+	colors[2] = goalColor.b + randGend(gen);
+
+	for(int i = 0; i < 3; i++)
+	{
+		if (colors[i] < 1)
+		{
+			colors[i] = 1;
+		}
+		else if (255 < colors[i])
+		{
+			colors[i] = 255;
+		}
+	}
+
+	return colors;
+}
+
 void BulbHandler::command(std::string body, int bulbId)
 {
 

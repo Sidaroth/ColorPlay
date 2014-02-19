@@ -230,7 +230,7 @@ void MoveHandler::processInput()
 		}
 	}
 
-	if(this->timer.secondsElapsed() >= 2)
+	if(this->timer.secondsElapsed() >= 1)
 	{	
 		
 		if(this->x <213)

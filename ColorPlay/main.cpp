@@ -79,17 +79,6 @@ int main(int argc, char* argv[])
 	bulbHandler.setVariables(4);
 	bulbHandler.setColorSpace(BulbHandler::ColorSpace::RGB);
 
-	ActionEvent event(12, 1, ActionEvent::Action::Up);
-	eventQueue.push(event);
-	eventQueue.push(event);
-	eventQueue.push(event);
-
-	event.setAction(ActionEvent::Action::Down);
-	event.setBulbID(2);
-	eventQueue.push(event);
-	eventQueue.push(event);
-	eventQueue.push(event);
-
 	while(running)
 	{
 		// Event processing

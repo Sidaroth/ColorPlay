@@ -51,17 +51,19 @@ public:
 		HSV
 	};
 
-	void generateNewGoalColor();
 	void setBulbAdress(std::string bulbAdress);
 	void setBrightness(int brightness, int bulbId);
 	void setHue(int hue, int bulbId);
 	void setSaturation(int saturation, int bulbId);
 
 	void setColorSpace(ColorSpace colorSpace);
+	
+	sf::Color getGoalColor();
+	void generateNewGoalColor();
+	int* generateStartColors();
 	void setGoalColor(sf::Color color);
 	void setGoalColor(unsigned int r, unsigned int g, unsigned int b, unsigned int a=255);
 
-	sf::Color getGoalColor();
 
 	void setVariables(int bulbId);
 	void processEvents();
@@ -69,6 +71,9 @@ public:
 	static void callback_func(void *getInfo, size_t size, size_t count, void *stream);
 
 private:
+
+	int inc = RGBINC;				//Increment used to calculate random start colors.
+	int maxStartIncFromGoal = 10;	//Max number of increments between start and goal color.
 
 	std::stringstream message;
 	sf::Color goalColor;

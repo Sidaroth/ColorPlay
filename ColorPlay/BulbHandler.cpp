@@ -2,10 +2,10 @@
 #include <functional>
 
 
-sf::Vector3f BulbHandler::Bulb1HSV(0,0,0);
-sf::Vector3f BulbHandler::Bulb2HSV(0,0,0);
-sf::Vector3f BulbHandler::Bulb3HSV(0,0,0);
-sf::Vector3f BulbHandler::Bulb4HSV(0,0,0);
+sf::Vector3f BulbHandler::Bulb1HSV(0, 0, 0);
+sf::Vector3f BulbHandler::Bulb2HSV(0, 0, 0);
+sf::Vector3f BulbHandler::Bulb3HSV(0, 0, 0);
+sf::Vector3f BulbHandler::Bulb4HSV(0, 0, 0);
 bool BulbHandler::isSetVariablesUpdated = false;
 std::vector<std::string> BulbHandler::bulbOutput;
 

@@ -43,9 +43,10 @@ WindowHandler::WindowHandler(std::string windowName,
 
 bool WindowHandler::init()
 {
-	if(!font.loadFromFile("./assets/Leo Arrow.ttf"))
+	if(!font.loadFromFile("./assets/ABeeZee-Regular.otf"))
 	{
 		this -> logger -> LogEvent("ERROR: Loading font failed!");
+
 		return 1;
 	}
 
@@ -161,26 +162,80 @@ void WindowHandler::gameUpdate()
 
 void WindowHandler::gameRender()
 {
-	sf::RectangleShape goalColorBGShape(sf::Vector2f(400, 400));
-	goalColorBGShape.setPosition((this -> width / 2) - goalColorBGShape.getSize().x / 2, (this -> height / 2) - goalColorBGShape.getSize().y / 2);
-	goalColorBGShape.setFillColor(sf::Color(128, 128, 128));
-
-	sf::RectangleShape goalColorShape(sf::Vector2f(200, 200));
-	goalColorShape.setPosition(goalColorBGShape.getPosition().x + goalColorShape.getSize().x / 2, goalColorBGShape.getPosition().y + goalColorShape.getSize().y / 2);
-	goalColorShape.setFillColor(sf::Color(this -> bulbHandler -> getGoalColor()));
-
-	text.setString("Game Render!");
-	text.setCharacterSize(24);
-	text.setColor(sf::Color::Green);
-	text.setPosition(500, 0);
-
 	window.clear(sf::Color::Black);
-	window.draw(goalColorBGShape);
-	window.draw(goalColorShape);
-	window.draw(text);
+	renderGoalColor();
+	renderInstructions();
 	window.display();
 }
 
+void WindowHandler::renderGoalColor()
+{
+	sf::RectangleShape goalColorBGShape(sf::Vector2f(this->width / 2, this->height));
+	goalColorBGShape.setPosition(this -> width / 2, 0);
+	goalColorBGShape.setFillColor(sf::Color(128, 128, 128));
+
+	sf::RectangleShape goalColorShape(sf::Vector2f(this->width / 4, this->height / 2));
+	goalColorShape.setPosition(goalColorBGShape.getPosition().x + goalColorShape.getSize().x / 2, goalColorBGShape.getPosition().y + goalColorShape.getSize().y / 2);
+	goalColorShape.setFillColor(sf::Color(this -> bulbHandler -> getGoalColor()));	
+
+	window.draw(goalColorBGShape);
+	window.draw(goalColorShape);
+}
+
+void WindowHandler::renderInstructions()
+{
+	unsigned int edgeOffset = 5;
+	std::stringstream tempString;
+	sf::String string;
+
+	tempString	<< "Velkommen til Color Play!\n\n"
+				<< "Beveg kontrolleren opp og ned forran pærene for å stille på fargene.\n"
+				<< "Prøv å blande fargen vist til høyre.\n"
+				<< "Avslutt med START knappen.";
+
+	string = wrapText(tempString.str(), (this->width / 2) - edgeOffset, this->font, 30);
+	
+	this->text.setString(string);
+	this->text.setPosition(edgeOffset, edgeOffset);
+	this->window.draw(text);
+}
+
+sf::String WindowHandler::wrapText(sf::String string, unsigned width, const sf::Font &font, unsigned charicterSize, bool bold /*Default: false*/)
+{
+	unsigned currentOffset = 0;
+	bool firstWord = true;
+	std::size_t wordBegining = 0;
+ 
+	for (std::size_t pos(0); pos < string.getSize(); ++pos)
+	{
+		auto currentChar = string[pos];
+		
+		if (currentChar == '\n')
+		{
+			currentOffset = 0;
+			firstWord = true;
+			continue;
+		} 
+		else if (currentChar == ' ')
+		{
+			wordBegining = pos;
+			firstWord = false;
+		}
+ 
+		auto glyph = font.getGlyph(currentChar, charicterSize, bold);
+		currentOffset += glyph.advance;
+ 
+		if (!firstWord && currentOffset > width)
+		{
+			pos = wordBegining;
+			string[pos] = '\n';
+			firstWord = true;
+			currentOffset = 0;
+		}
+	}
+ 
+	return string;
+}
 
 ///////////////// CONFIG RELATED ////////////////
 void WindowHandler::configProcessEvents()

@@ -149,6 +149,18 @@ void WindowHandler::gameProcessEvents()
 						this -> bulbHandler -> setColorSpace(BulbHandler::ColorSpace::HSV);
 						break;
 
+					case sf::Keyboard::D:
+						this -> bulbHandler -> setColorSpace(BulbHandler::ColorSpace::CMY);
+						break;
+
+					case sf::Keyboard::F:
+						this -> bulbHandler -> setColorSpace(BulbHandler::ColorSpace::XYZ);
+						break;
+
+					case sf::Keyboard::G:
+						this -> bulbHandler -> setColorSpace(BulbHandler::ColorSpace::Lab);
+						break;
+
 					case sf::Keyboard::Return:
 						this -> logger -> LogEvent("WindowType Changed to Config!");
 						this -> windowType = WindowType::Config;

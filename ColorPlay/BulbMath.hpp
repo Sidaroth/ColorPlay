@@ -5,10 +5,10 @@
 #include <iostream>
 #include <SFML/System/Vector3.hpp>
 #include <algorithm>
+#include "EventQueue.hpp"
+#include "ActionEvent.hpp"
 
 #include "math.h"
-
-
 
 class BulbMath
 {
@@ -26,13 +26,13 @@ public:
 	
 	// RGB -> 
 	sf::Vector3f rgb2xyz(float r, float g, float b);
-	sf::Vector3f rgb2cmyk(float r, float g, float b);
+	float * rgb2cmyk(float r, float g, float b);
 	sf::Vector3f rgb2hsv(float r, float g, float b);
 
 	// HSV -> 
 	sf::Vector3f hsv2rgb(float H, float s, float v);
 	sf::Vector3f hsv2lab(float h, float s, float v);
-	sf::Vector3f hsv2cmyk(float h, float s, float v);
+	float * hsv2cmyk(float h, float s, float v);
 	sf::Vector3f hsv2xyz(float h, float s, float v);
 
 	// CMYK -> 
@@ -41,6 +41,7 @@ public:
 
 
 private:
+	EventQueue *eventQueue;
 	sf::Vector3f rgbThresholdCheck(sf::Vector3f rgb);
 	sf::Vector3f xyzThresholdCheck(sf::Vector3f xyz);
 	sf::Vector3f labThresholdCheck(sf::Vector3f lab);

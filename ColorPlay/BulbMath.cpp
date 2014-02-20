@@ -5,7 +5,7 @@ BulbMath::BulbMath()
 
 }
 
-//Makes sure rgb is within range
+//Makes sure rgb is within range 0 - 255
 sf::Vector3f BulbMath::rgbThresholdCheck(sf::Vector3f rgb)
 {
 	if (rgb.x < 0)
@@ -37,7 +37,7 @@ sf::Vector3f BulbMath::rgbThresholdCheck(sf::Vector3f rgb)
 	return rgb;
 }
 
-//Makes sure XYZ is within range
+//Makes sure XYZ is within d(65) tristimulus reference white values
 sf::Vector3f BulbMath::xyzThresholdCheck(sf::Vector3f xyz)
 {
 	if (xyz.x < 0)
@@ -70,7 +70,7 @@ sf::Vector3f BulbMath::xyzThresholdCheck(sf::Vector3f xyz)
 	return xyz;
 }
 
-//Threshold check for the s and v values of HSV
+//Threshold check for hsv. H in 0 - 360, s in 0 - 100, v is 0.5 - 100. v is kept at 0.5 to prevent the bulb from turning off
 sf::Vector3f BulbMath::hsvThresholdCheck(sf::Vector3f hsv)
 {
 	if (hsv.x < 0)
@@ -103,7 +103,7 @@ sf::Vector3f BulbMath::hsvThresholdCheck(sf::Vector3f hsv)
 	return hsv;
 }
 
-//Threshold check for the a and b values of Lab
+//Threshold for lab, L in 0 - 100, a and b in -180 - 180
 sf::Vector3f BulbMath::labThresholdCheck(sf::Vector3f lab)
 {
 	if (lab.x < 0)
@@ -135,6 +135,7 @@ sf::Vector3f BulbMath::labThresholdCheck(sf::Vector3f lab)
 	return lab;
 }
 
+//Threshold check for cmy in range 0 - 1
 sf::Vector3f BulbMath::cmyThresholdCheck(sf::Vector3f cmy)
 {
 	if (cmy.x < 0)
@@ -171,6 +172,7 @@ sf::Vector3f BulbMath::cmyThresholdCheck(sf::Vector3f cmy)
 //remember to set reference white to D65 and rgb space to sRGB when using calculator
 sf::Vector3f BulbMath::lab2xyz(float L, float a, float b)
 {
+	//Vector XYZ is first used for LAB threshold checking.
 	sf::Vector3f XYZ(L, a, b);
 
 	XYZ = labThresholdCheck(XYZ);
@@ -219,8 +221,6 @@ sf::Vector3f BulbMath::lab2xyz(float L, float a, float b)
 	Y = yr * Yn;
 	Z = zr * Zn;
 
-
-
 	XYZ.x = X * 100.0f;
 	XYZ.y = Y * 100.0f;
 	XYZ.z = Z * 100.0f;
@@ -228,10 +228,9 @@ sf::Vector3f BulbMath::lab2xyz(float L, float a, float b)
 	XYZ = xyzThresholdCheck(XYZ);
 
 
-	std::cout << "X: " << XYZ.x << " Y: " << XYZ.y << " Z: " << XYZ.z << std::endl;
+	//std::cout << "X: " << XYZ.x << " Y: " << XYZ.y << " Z: " << XYZ.z << std::endl;
 
 	return XYZ;
-
 }
 
 
@@ -243,6 +242,7 @@ sf::Vector3f BulbMath::xyz2lab(float X, float Y, float Z)
 
 	sf::Vector3f LAB(X, Y, Z);
 
+	//LAB vector is first used for XYZ threshold check
 	LAB = xyzThresholdCheck(LAB);
 
 	//D65 Tristimulus values
@@ -289,14 +289,13 @@ sf::Vector3f BulbMath::xyz2lab(float X, float Y, float Z)
 	a = 500.0f * (fx - fy);
 	b = 200.0f * (fy - fz);
 
-
 	LAB.x = L;
 	LAB.y = a;
 	LAB.z = b;
 
 	LAB = labThresholdCheck(LAB);
 
-	std::cout << "\nL: " << LAB.x << " a: " << LAB.y << " b: " << LAB.z << std::endl;
+//	std::cout << "\nL: " << LAB.x << " a: " << LAB.y << " b: " << LAB.z << std::endl;
 
 	return LAB;
 
@@ -312,6 +311,7 @@ sf::Vector3f BulbMath::xyz2rgb(float x, float y, float z)
 
 	sf::Vector3f RGB(x, y, z);
 
+	//RGB vector is first used for xyz threshold check
 	RGB = xyzThresholdCheck(RGB);
 
 	var_X = RGB.x / 100;        //X from 0 to  95.047      (Observer = 2°, Illuminant = D65)
@@ -335,13 +335,9 @@ sf::Vector3f BulbMath::xyz2rgb(float x, float y, float z)
 	else                     
 		var_B = 12.92 * var_B;
 
-	std::cout << "\nvR: " << var_R << " vG: " << var_G << " vB: " << var_B << std::endl;
-
-	//Not sure if these values should be rounded
 	R = (var_R * 255);
 	G = (var_G * 255);
 	B = (var_B * 255);	
-
 
 	RGB.x = R;
 	RGB.y = G;
@@ -349,7 +345,7 @@ sf::Vector3f BulbMath::xyz2rgb(float x, float y, float z)
 
 	RGB = rgbThresholdCheck(RGB);
 
-	std::cout << "\nR: " << R << " G: " << G << " B: " << B << std::endl;
+//	std::cout << "\nR: " << R << " G: " << G << " B: " << B << std::endl;
 
 	return RGB;
 }
@@ -364,6 +360,7 @@ sf::Vector3f BulbMath::rgb2xyz(float r, float g, float b)
 
 	sf::Vector3f XYZ(r, g, b);
 
+	//XYZ vector is first used for rgb threshold check
 	XYZ = rgbThresholdCheck(XYZ);
 
 	var_R = ( XYZ.x / 255.0f );        //R from 0 to 255
@@ -406,7 +403,7 @@ sf::Vector3f BulbMath::rgb2xyz(float r, float g, float b)
 
 	XYZ = xyzThresholdCheck(XYZ);
 
-	std::cout << "\nX: " << XYZ.x << " Y: " << XYZ.y << " Z: " << XYZ.z << std::endl;
+//	std::cout << "\nX: " << XYZ.x << " Y: " << XYZ.y << " Z: " << XYZ.z << std::endl;
 
 	return XYZ;
 }
@@ -416,20 +413,16 @@ sf::Vector3f BulbMath::rgb2xyz(float r, float g, float b)
 //Tested - works according to http://www.javascripter.net/faq/rgb2hsv.htm (only does hue to one decimal)
 sf::Vector3f BulbMath::rgb2hsv(float r, float g, float b)
 {
-	//std::cout << "\n IN RGB2HSV------->> R: " << r << " G: " << g << " B: " << b << std::endl;
-
 	sf::Vector3f hsv(r, g, b);
+
+	//hsv vector is first used for rgb threshold check
 	hsv = rgbThresholdCheck(hsv);
 
 	float min, max, delta, rr, gg, bb;
 
-	//std::cout << "\n AT RGB2HSV------->> R: " << hsv.x << " G: " << hsv.y << " B: " << hsv.z << std::endl;
-
-
 	rr = hsv.x/255.0f;
 	gg = hsv.y/255.0f;
 	bb = hsv.z/255.0f;
-
 
 	max = std::max(std::max(rr, gg), std::max(gg, bb));
 	min = std::min(std::min(rr, gg), std::min(gg, bb));
@@ -467,7 +460,9 @@ sf::Vector3f BulbMath::rgb2hsv(float r, float g, float b)
 			hsv.x = 4 + (rr - gg) / delta;
 		}
 	}
+
 	hsv.x = hsv.x * 60.0f;
+
 	if (hsv.x < 0)
 	{
 		hsv.x = hsv.x + 360.0f;
@@ -478,6 +473,7 @@ sf::Vector3f BulbMath::rgb2hsv(float r, float g, float b)
 
 	hsv = hsvThresholdCheck(hsv);
 
+	//Recalculating hsv to bulb range
 	hsv.x = hsv.x * 182.04167;
 	hsv.y = (hsv.y / 100) * 255;
 	hsv.z = (hsv.z / 100) * 255;
@@ -497,23 +493,18 @@ sf::Vector3f BulbMath::rgb2hsv(float r, float g, float b)
 //However the calculators online rounds to rgb by flooring, so the exact accuracy of the function is unknown
 sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 {
-	//std::cout << "\n IN HSV2RGB------->> H: " << H << " s: " << s << " v: " << v << std::endl;
-
-
 	sf::Vector3f RGB(H, s, v);
 
 	float f, p, q, t, hh, ss, vv;
 	int i;
 
+	//s and v is redefined into 0 - 100 range, H is redefined into 0 - 360 range.
 	RGB.y = ((RGB.y / 255.0f) * 100.0f);
 	RGB.z = ((RGB.z / 255.0f) * 100.0f);
-
-
 	RGB.x = RGB.x / 182.04167;
+
+	//rgb vector first used for hsv threshold check
 	RGB = hsvThresholdCheck(RGB);
-
-	//std::cout << "\n AT HSV2RGB------->> H: " << RGB.x << " s: " << RGB.y << " v: " << RGB.z << std::endl;
-
 
 	ss = RGB.y / 100.0f;
 	vv = RGB.z / 100.0f;
@@ -525,7 +516,7 @@ sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 		RGB.y = RGB.y * 255.0f;
 		RGB.z = RGB.z * 255.0f;
 
-		std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
+		//std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
 		return RGB;
 	}
 
@@ -575,9 +566,6 @@ sf::Vector3f BulbMath::hsv2rgb(float H, float s, float v)
 
 	RGB = rgbThresholdCheck(RGB);
 
-	//std::cout << "\n OUT HSV2RGB------->> R: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
-
-
 //	std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
 	return RGB;
 }
@@ -588,6 +576,7 @@ sf::Vector3f BulbMath::cmyk2rgb(float c, float m, float y, float k)
 {
 	sf::Vector3f RGB(c, m, y);
 
+	//rgb vector first used for cmy threshold check
 	RGB = cmyThresholdCheck(RGB);
 
 	float kk = k;
@@ -607,20 +596,22 @@ sf::Vector3f BulbMath::cmyk2rgb(float c, float m, float y, float k)
 
 	RGB = rgbThresholdCheck(RGB);
 
-	std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
+	//std::cout << "\nR: " << RGB.x << " G: " << RGB.y << " B: " << RGB.z << std::endl;
 
 	return RGB;
 }
 
 //input rgb in rage 0 - 255,output cymk in range 0 - 1
+//note that functions returning cmyk values return a pointer to a float array with cmyk values in order
 //math from http://www.rapidtables.com/convert/color/cmyk-to-rgb.htm, verified using calculator from same site
-sf::Vector3f BulbMath::rgb2cmyk(float r, float g, float b)
+float * BulbMath::rgb2cmyk(float r, float g, float b)
 {
 
 	float rr, gg, bb, K;
 
 	sf::Vector3f CMY(r, g, b);
 
+	//cmy vector first used for rgb threshold check
 	CMY = rgbThresholdCheck(CMY);
 
 	rr = CMY.x / 255.0f;
@@ -632,12 +623,26 @@ sf::Vector3f BulbMath::rgb2cmyk(float r, float g, float b)
 	CMY.y = (1 - gg - K) / (1 - K);
 	CMY.z = (1 - bb - K) / (1 - K);
 
-	std::cout << "\nC: " << CMY.x << " M: " << CMY.y << " Y: " << CMY.z << " K: " << K << std::endl;
-
+//	std::cout << "\nC: " << CMY.x << " M: " << CMY.y << " Y: " << CMY.z << " K: " << K << std::endl;
 
 	CMY = cmyThresholdCheck(CMY);
 
-	return CMY;
+	if (K < 0)
+	{
+		K = 0.0;
+	}
+	else if (K > 1)
+	{
+		K = 1.0f;
+	}
+
+	static float CMYarray[4];
+	CMYarray[0] = CMY.x;
+	CMYarray[1] = CMY.y;
+	CMYarray[2] = CMY.z;
+	CMYarray[3] = K;
+
+	return CMYarray;
 }
 
 //works according to http://colormine.org/convert/lab-to-hsv
@@ -648,7 +653,7 @@ sf::Vector3f BulbMath::hsv2lab(float h, float s, float v)
 	Lab = rgb2xyz(Lab.x, Lab.y, Lab.z);
 	Lab = xyz2lab(Lab.x, Lab.y, Lab.z);
 
-	std::cout << "\nL: " << Lab.x << " a: " << Lab.y << " b: " << Lab.z << std::endl;
+//	std::cout << "\nL: " << Lab.x << " a: " << Lab.y << " b: " << Lab.z << std::endl;
 
 	return Lab;
 }
@@ -661,21 +666,23 @@ sf::Vector3f BulbMath::lab2hsv(float L, float a, float b)
 	HSV = xyz2rgb(HSV.x, HSV.y, HSV.z);
 	HSV = rgb2hsv(HSV.x, HSV.y, HSV.z);
 
-	std::cout << "\nH: " << HSV.x << " S: " << HSV.y << " V: " << HSV.z << std::endl;
+//	std::cout << "\nH: " << HSV.x << " S: " << HSV.y << " V: " << HSV.z << std::endl;
 
 	return HSV;
 }
 
 //Works http://www.rapidtables.com/convert/color/rgb-to-cmyk.htm
-sf::Vector3f BulbMath::hsv2cmyk(float h, float s, float v)
+//note that functions returning cmyk values return a pointer to a float array with cmyk values in order
+float * BulbMath::hsv2cmyk(float h, float s, float v)
 {
+	float *CMYarray;
 	sf::Vector3f CMY;
 	CMY = hsv2rgb(h, s, v);
-	CMY = rgb2cmyk(CMY.x, CMY.y, CMY.z);
+	CMYarray = rgb2cmyk(CMY.x, CMY.y, CMY.z);
 
-	std::cout << "\nC: " << CMY.x << " M: " << CMY.y << " Y: " << CMY.z << std::endl;
+//	std::cout << "\nC: " << CMY.x << " M: " << CMY.y << " Y: " << CMY.z << std::endl;
 
-	return CMY;
+	return CMYarray;
 }
 
 //A little off compaired to http://www.rapidtables.com/convert/color/rgb-to-hsv.htm, might be the calculator doing rounding, look for another one to compair
@@ -685,7 +692,7 @@ sf::Vector3f BulbMath::cmyk2hsv(float c, float m, float y, float k)
 	HSV = cmyk2rgb(c, m ,y, k);
 	HSV = rgb2hsv(HSV.x, HSV.y, HSV.z);
 
-	std::cout << "\nH: " << HSV.x << " S: " << HSV.y << " V: " << HSV.z << std::endl;
+//	std::cout << "\nH: " << HSV.x << " S: " << HSV.y << " V: " << HSV.z << std::endl;
 
 	return HSV;
 }
@@ -697,7 +704,7 @@ sf::Vector3f BulbMath::hsv2xyz(float h, float s, float v)
 	XYZ = hsv2rgb(h, s, v);
 	XYZ = rgb2xyz(XYZ.x, XYZ.y, XYZ.z);
 
-	std::cout << "\nX: " << XYZ.x << " Y: " << XYZ.y << " Z: " << XYZ.z << std::endl;
+//	std::cout << "\nX: " << XYZ.x << " Y: " << XYZ.y << " Z: " << XYZ.z << std::endl;
 
 	return XYZ;
 }
@@ -708,7 +715,7 @@ sf::Vector3f BulbMath::xyz2hsv(float x, float y, float z)
 	HSV = xyz2rgb(x, y, z);
 	HSV = rgb2hsv(HSV.x, HSV.y, HSV.z);
 
-	std::cout << "\nH: " << HSV.x << " S: " << HSV.y << " V: " << HSV.z << std::endl;
+//	std::cout << "\nH: " << HSV.x << " S: " << HSV.y << " V: " << HSV.z << std::endl;
 
 	return HSV;
 }

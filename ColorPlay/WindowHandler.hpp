@@ -2,7 +2,7 @@
 /*
 * Purpose: Handle the swapping, loading and unloading of windows / scenes. 
 *
-* Last edited: 18. Feb. 2014
+* Last edited: 20. Feb. 2014
 *
 * Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun, Harry Nystad
 *		   Gjøvik University College

@@ -274,6 +274,7 @@ void WindowHandler::renderInstructions()
 	
 	this->text.setString(string);
 	this->text.setPosition(edgeOffset, edgeOffset);
+	text.setColor(sf::Color::White);
 	this->window.draw(text);
 }
 

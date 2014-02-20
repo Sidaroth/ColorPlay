@@ -17,6 +17,8 @@
 #include <thread>
 #include <iostream>
 #include <random>
+#include <fstream>
+#include <cstring>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Vector3.hpp>
@@ -84,7 +86,10 @@ public:
 	void updateTargetBulb();
 
 	static size_t callback_func(void *getInfo, size_t size, size_t count, void *stream);
+	
+	void writeScore(float score);
 
+	ColorSpace currentColorSpace;
 private:
 
 	int inc = RGBINC;				//Increment used to calculate random start colors.
@@ -95,14 +100,16 @@ private:
 	sf::Vector3f values;
 	CURL* curl;
 	std::string bulbAdress;
-	EventQueue *eventQueue;
 	ActionEvent currentAction;
-	ColorSpace currentColorSpace;
+	EventQueue *eventQueue;
 
 	LogModule* logger;
 	short increaseInterval;
 
 	BulbMath mathSuite; 
+
+	std::vector<float> scoreVector;
+	char scoreDate[BUFFERSIZE];
 
 	std::mt19937 gen;
 	std::uniform_int_distribution<> rgbDistribution;

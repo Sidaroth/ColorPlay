@@ -80,7 +80,12 @@ int main(int argc, char* argv[])
 	bulbHandler.setVariables(3);
 	bulbHandler.setVariables(4);
 
+	bulbHandler.writeScore(500.0f);
+	bulbHandler.writeScore(200.0f);
+	bulbHandler.writeScore(300.0f);
 
+	//bulbHandler.calculateScore();
+	
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	bulbHandler.setColorSpace(BulbHandler::ColorSpace::HSV);
 

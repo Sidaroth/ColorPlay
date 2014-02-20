@@ -44,6 +44,8 @@ private:
 	sf::Font font;
 	sf::Text text;
 
+	std::vector<std::wstring> instructions;
+
 	BulbHandler* bulbHandler;
 
 	int width;

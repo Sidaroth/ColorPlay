@@ -51,8 +51,12 @@ private:
 
 	void gameProcessEvents();
 	void gameUpdate();
-	void gameRender();
 	
+	void gameRender();
+	void renderGoalColor();
+	void renderInstructions();
+	sf::String wrapText(sf::String string, unsigned width, const sf::Font &font, unsigned charicterSize, bool bold = false);
+
 	void configProcessEvents();
 	void configUpdate();
 	void configRender();

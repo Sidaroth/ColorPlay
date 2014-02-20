@@ -30,7 +30,7 @@
 #define SEED 314159265358979323
 
 #define LABINC 1
-#define CMYINC 1
+#define CMYINC 0.05
 #define XYZINC 1
 			 
 #define RGBINC 5

@@ -549,11 +549,11 @@ void BulbHandler::writeScore(float score)
 
 	if (!std::strcmp(buffer, this -> scoreDate))
 	{
-		std::cout << "\n JAAAAAAAAAAAAAA" << std::endl;
+		//std::cout << "\n JAAAAAAAAAAAAAA" << std::endl;
 	}
 	else
 	{
-		std::cout << "\n NOOOOOOOOOOOOO" << std::endl;
+		//std::cout << "\n NOOOOOOOOOOOOO" << std::endl;
 		std::strcpy(this -> scoreDate, buffer);
 		scoreVector.clear();
 	}

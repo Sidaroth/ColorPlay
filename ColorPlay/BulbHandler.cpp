@@ -180,30 +180,43 @@ void BulbHandler::setColorSpace(ColorSpace colorSpace)
 	message.str(std::string());
 	message << "ColorSpace changed to: ";
 
+	int* colors = generateStartColors();
+
 	switch(currentColorSpace)
 	{
 		case ColorSpace::RGB:
 			increaseInterval = RGBINC;
+			generateNewGoalColor();
+			BulbHandler::Bulb1HSV = sf::Vector3f(colors[0], 0, 0);
+			BulbHandler::Bulb2HSV = sf::Vector3f(0, colors[1], 0);
+			BulbHandler::Bulb3HSV = sf::Vector3f(0, 0, colors[2]);
 			message << "RGB.";
 			break;
 
 		case ColorSpace::HSV:
 			increaseInterval = HSVINC;
+			generateNewGoalColor();
+			BulbHandler::Bulb1HSV = mathSuite.rgb2hsv(colors[0], colors[1], colors[2]);
+			BulbHandler::Bulb2HSV = BulbHandler::Bulb1HSV;
+			BulbHandler::Bulb3HSV = BulbHandler::Bulb1HSV;
 			message << "HSV.";
 			break;
 
 		case ColorSpace::XYZ:
 			increaseInterval = XYZINC;
+			generateNewGoalColor();
 			message << "XYZ.";
 			break;
 
 		case ColorSpace::CMY:
 			increaseInterval = CMYINC;
+			generateNewGoalColor();
 			message << "CMY.";
 			break;
 
 		case ColorSpace::Lab:
 			increaseInterval = LABINC;
+			generateNewGoalColor();
 			message << "Lab.";
 			break;
 

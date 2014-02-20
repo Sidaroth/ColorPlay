@@ -1,7 +1,8 @@
 /*
 	Purpose: This class is responsible for handling the communication to and from the Philips Hue lightbulbs. 
 			 as well as controlling the system concerned with distuinguishing the colorspaces and lightbulb cooperation. 
-	Last edited: 18. Feb. 2014
+	
+	Last edited: 19. Feb. 2014
 
 	Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun, Harry Nystad
 			 Gj�vik University College.
@@ -31,6 +32,12 @@
 #define LABINC 1
 #define CMYINC 1
 #define XYZINC 1
+#define MAXBRI 255
+#define MAXSAT 255
+#define MAXHUE 65535
+#define MINBRI 1
+#define MINSAT 0
+#define MINHUE 0
 
 #define DEBUG 1
 

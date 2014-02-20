@@ -17,6 +17,8 @@
 #include <thread>
 #include <iostream>
 #include <random>
+#include <fstream>
+#include <cstring>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Vector3.hpp>
@@ -27,12 +29,11 @@
 #include "BulbMath.hpp"
 
 // Seed for the mersenne twister (random number generator)
-#define SEED 314159265358979323
+#define SEED 31415926535897932
 
-#define LABINC 1
 #define CMYINC 0.05
+#define LABINC 1
 #define XYZINC 1
-			 
 #define RGBINC 5
 			
 // HSV Space related defines 
@@ -85,6 +86,8 @@ public:
 	void updateTargetBulb();
 
 	static size_t callback_func(void *getInfo, size_t size, size_t count, void *stream);
+	
+	void writeScore(float score);
 
 	ColorSpace currentColorSpace;
 private:
@@ -104,6 +107,9 @@ private:
 	short increaseInterval;
 
 	BulbMath mathSuite; 
+
+	std::vector<float> scoreVector;
+	char scoreDate[BUFFERSIZE];
 
 	std::mt19937 gen;
 	std::uniform_int_distribution<> rgbDistribution;

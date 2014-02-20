@@ -180,30 +180,43 @@ void BulbHandler::setColorSpace(ColorSpace colorSpace)
 	message.str(std::string());
 	message << "ColorSpace changed to: ";
 
+	int* colors = generateStartColors();
+
 	switch(currentColorSpace)
 	{
 		case ColorSpace::RGB:
 			increaseInterval = RGBINC;
+			generateNewGoalColor();
+			BulbHandler::Bulb1HSV = sf::Vector3f(colors[0], 0, 0);
+			BulbHandler::Bulb2HSV = sf::Vector3f(0, colors[1], 0);
+			BulbHandler::Bulb3HSV = sf::Vector3f(0, 0, colors[2]);
 			message << "RGB.";
 			break;
 
 		case ColorSpace::HSV:
 			increaseInterval = HSVINC;
+			generateNewGoalColor();
+			BulbHandler::Bulb1HSV = mathSuite.rgb2hsv(colors[0], colors[1], colors[2]);
+			BulbHandler::Bulb2HSV = BulbHandler::Bulb1HSV;
+			BulbHandler::Bulb3HSV = BulbHandler::Bulb1HSV;
 			message << "HSV.";
 			break;
 
 		case ColorSpace::XYZ:
 			increaseInterval = XYZINC;
+			generateNewGoalColor();
 			message << "XYZ.";
 			break;
 
 		case ColorSpace::CMY:
 			increaseInterval = CMYINC;
+			generateNewGoalColor();
 			message << "CMY.";
 			break;
 
 		case ColorSpace::Lab:
 			increaseInterval = LABINC;
+			generateNewGoalColor();
 			message << "Lab.";
 			break;
 
@@ -518,6 +531,50 @@ void BulbHandler::processEvents()
 	}
 }
 
+//this needs more testing to check date change logging
+void BulbHandler::writeScore(float score)
+{
+	std::sort(scoreVector.begin(), scoreVector.end());
+	std::reverse(scoreVector.begin(), scoreVector.end());
+
+	std::chrono::time_point<std::chrono::system_clock> now;
+	std::stringstream date;
+	char buffer[BUFFERSIZE];
+	struct tm * timeinfo;
+	std::time_t logTime;
+
+	now = std::chrono::system_clock::now();
+	logTime = std::chrono::system_clock::to_time_t(now);
+
+	time(&logTime);
+	timeinfo = localtime(&logTime);
+	strftime(buffer, BUFFERSIZE, "%F",timeinfo);
+
+	if (!std::strcmp(buffer, this -> scoreDate))
+	{
+		std::cout << "\n JAAAAAAAAAAAAAA" << std::endl;
+	}
+	else
+	{
+		std::cout << "\n NOOOOOOOOOOOOO" << std::endl;
+		std::strcpy(this -> scoreDate, buffer);
+		scoreVector.clear();
+	}
+
+	date << buffer << ".txt";
+
+	scoreVector.push_back(score);
+
+	std::ofstream scoreFile(date.str());
+
+	for (int i = 0; i < scoreVector.size(); i++)
+	{
+		scoreFile << scoreVector[i] << std::endl;
+	}
+
+	scoreFile.close();
+}
+
 //Calculates the score based on how far from the goal color the current color in bulb 4 is. All scoring is done in RGB colorSpace for simplicity
 //calculateScore should be called when the player signals that they are done mixing a color
 float BulbHandler::calculateScore()
@@ -554,13 +611,22 @@ float BulbHandler::calculateScore()
 		std::cout << "\nERROR from calculate score: No Colorspace defined in currentColorSpace" << std::endl;
 	}
 
-	(scoreVector.x >= goalColor.r) ? (scoreVector.x = scoreVector.x - goalColor.r) : (scoreVector.x = goalColor.r - scoreVector.x);
-	(scoreVector.y >= goalColor.g) ? (scoreVector.y = scoreVector.y - goalColor.g) : (scoreVector.y = goalColor.g - scoreVector.y);
-	(scoreVector.z >= goalColor.b) ? (scoreVector.z = scoreVector.z - goalColor.b) : (scoreVector.z = goalColor.b - scoreVector.z);
+	//(scoreVector.x >= goalColor.r) ? (scoreVector.x = scoreVector.x - goalColor.r) : (scoreVector.x = goalColor.r - scoreVector.x);
+	//(scoreVector.y >= goalColor.g) ? (scoreVector.y = scoreVector.y - goalColor.g) : (scoreVector.y = goalColor.g - scoreVector.y);
+	//(scoreVector.z >= goalColor.b) ? (scoreVector.z = scoreVector.z - goalColor.b) : (scoreVector.z = goalColor.b - scoreVector.z);
+
+	scoreVector.x = (scoreVector.x >= goalColor.r) ? (scoreVector.x - goalColor.r) : (goalColor.r - scoreVector.x);
+	scoreVector.y = (scoreVector.y >= goalColor.g) ? (scoreVector.y - goalColor.g) : (goalColor.g - scoreVector.y);
+	scoreVector.z = (scoreVector.z >= goalColor.b) ? (scoreVector.z - goalColor.b) : (goalColor.b - scoreVector.z);
 
 	score = 1000.0f - (scoreVector.x + scoreVector.y + scoreVector.z);
+/*
+	std::cout << "\n Score 1 -------------->" << scoreVector.x << " " << scoreVector.y << " "  << scoreVector.z << std::endl;
+	std::cout << "\n Score 2 -------------->" << goalColor.r << " " << goalColor.g << " "  << goalColor.b << std::endl;
+	std::cout << "\n Score 3 -------------->" << score << std::endl;
+*/
 
-	return 1.0f;
+	return score;
 }
 
 //The callback function is called in the curl calls in the setVariables function which sends a get request to a bulb. The callback

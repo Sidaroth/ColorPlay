@@ -99,6 +99,7 @@ void BulbHandler::generateNewGoalColor()
 	message << "Generated new goal color (RGB): (" << r << ", " << g << ", " << b << ")"; 
 	this -> logger -> LogEvent(message.str());
 	setGoalColor(r, g, b);
+	message.str(std::string());
 }
 
 int* BulbHandler::generateStartColors()

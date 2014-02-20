@@ -2,7 +2,7 @@
 	Purpose: This class is responsible for handling the communication to and from the Philips Hue lightbulbs. 
 			 as well as controlling the system concerned with distuinguishing the colorspaces and lightbulb cooperation. 
 	
-	Last edited: 19. Feb. 2014
+	Last edited: 20. Feb. 2014
 
 	Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun, Harry Nystad
 			 Gj�vik University College.
@@ -28,14 +28,19 @@
 #include "LogModule.hpp"
 #include "BulbMath.hpp"
 
+// Seed for the mersenne twister (random number generator)
 #define SEED 314159265358979323
-#define RGBINC 5
-#define HSVINC 182
+
 #define LABINC 1
-#define CMYINC 1
+#define CMYINC 0.05
 #define XYZINC 1
-#define MAXBRI 255
+			 
+#define RGBINC 5
+			
+// HSV Space related defines 
+#define HSVINC 182
 #define MAXSAT 255
+#define MAXBRI 255
 #define MAXHUE 65535
 #define MINBRI 1
 #define MINSAT 0
@@ -85,6 +90,7 @@ public:
 	
 	void writeScore(float score);
 
+	ColorSpace currentColorSpace;
 private:
 
 	int inc = RGBINC;				//Increment used to calculate random start colors.
@@ -95,9 +101,8 @@ private:
 	sf::Vector3f values;
 	CURL* curl;
 	std::string bulbAdress;
-	EventQueue *eventQueue;
 	ActionEvent currentAction;
-	ColorSpace currentColorSpace;
+	EventQueue *eventQueue;
 
 	LogModule* logger;
 	short increaseInterval;

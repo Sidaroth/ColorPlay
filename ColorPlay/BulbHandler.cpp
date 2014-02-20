@@ -1,3 +1,13 @@
+/*
+	Purpose: This class is responsible for handling the communication to and from the Philips Hue lightbulbs. 
+			 as well as controlling the system concerned with distuinguishing the colorspaces and lightbulb cooperation. 
+	
+	Last edited: 20. Feb. 2014
+
+	Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun, Harry Nystad
+			 Gj�vik University College.
+*/
+
 #include "BulbHandler.hpp"
 #include <functional>
 
@@ -29,7 +39,6 @@ BulbHandler::BulbHandler(EventQueue *eventQueue, LogModule* logger)
 	gen = std::mt19937(SEED);
 	increaseInterval = HSVINC;
 	rgbDistribution = std::uniform_int_distribution<>(0, 255);
-
 	this -> logger = logger;
 }
 
@@ -104,9 +113,9 @@ int* BulbHandler::generateStartColors()
 
 	for(int i = 0; i < 3; i++)
 	{
-		if (colors[i] < 1)
+		if (colors[i] < 0)
 		{
-			colors[i] = 1;
+			colors[i] = 0;
 		}
 		else if (255 < colors[i])
 		{
@@ -361,24 +370,83 @@ void BulbHandler::RGBColorAdjustment(unsigned short bulbId, short inc)
 	command(message.str(), 4);
 }
 
-
 /// Depending on the event received, change the corresponding bulb (C, M, or Y value)
 void BulbHandler::CMYColorAdjustment(unsigned short bulbId, short inc)
 {
-	// nothing yet.
-}
+	// float* values;
+	
+	// if(bulbId == 1)		// C
+	// {
+	// 	values = mathSuite.hsv2cmyk(BulbHandler::Bulb1HSV.x, BulbHandler::Bulb1HSV.y, BulbHandler::Bulb1HSV.z);
+	// 	values[0] = values[0] + inc;
+	// 	BulbHandler::Bulb1HSV = mathSuite.cmyk2hsv(values[0], values[1], values[2], values[3]);
+	// }
+	// else if(bulbId == 2) // M
+	// {
+	// 	values = mathSuite.hsv2cmyk(BulbHandler::Bulb2HSV.x, BulbHandler::Bulb2HSV.y, BulbHandler::Bulb2HSV.z);
+	// 	values[1] = values[1] + inc;
+	// 	BulbHandler::Bulb2HSV = mathSuite.cmyk2hsv(values[0], values[1], values[2], values[3]);
+	// }
+	// else if(bulbId == 3) // Y
+	// {
+	// 	values = mathSuite.hsv2cmyk(BulbHandler::Bulb3HSV.x, BulbHandler::Bulb3HSV.y, BulbHandler::Bulb3HSV.z);
+	// 	values[2] = values[2] + inc;
+	// 	BulbHandler::Bulb3HSV = mathSuite.cmyk2hsv(values[0], values[1], values[2], values[3]);
+	// }
 
+	// // Update the data on this light bulb. 
+	// command(message.str(), bulbId);
+
+	// // Bulb 4 / target bulb updating for RGB. 
+	// float* temp1, temp2, temp3;
+	// temp1 = mathSuite.hsv2rgb(BulbHandler::Bulb1HSV.x, BulbHandler::Bulb1HSV.y, BulbHandler::Bulb1HSV.z);
+	// temp2 = mathSuite.hsv2rgb(BulbHandler::Bulb2HSV.x, BulbHandler::Bulb2HSV.y, BulbHandler::Bulb2HSV.z);
+	// temp3 = mathSuite.hsv2rgb(BulbHandler::Bulb3HSV.x, BulbHandler::Bulb3HSV.y, BulbHandler::Bulb3HSV.z);
+
+	// values.x = temp1.x + temp2.x + temp3.x;
+	// values.y = temp1.y + temp2.y + temp3.y;
+	// values.z = temp1.z + temp2.z + temp3.z;
+
+	// values = mathSuite.rgb2hsv(values.x, values.y, values.z);
+	// command(message.str(), 4);
+}
 
 /// Depending on the event received, change the corresponding bulb (X, Y, or Z value)
 void BulbHandler::XYZColorAdjustment(unsigned short bulbId, short inc)
 {
-	// nothing yet
+	if(bulbId == 1) // X
+	{
+		values = mathSuite.hsv2xyz(BulbHandler::Bulb1HSV.x, BulbHandler::Bulb1HSV.y, BulbHandler::Bulb1HSV.z);
+		values.x = values.x + inc;
+	}
+	else if(bulbId == 2) // Y
+	{
+		values = mathSuite.hsv2xyz(BulbHandler::Bulb2HSV.x, BulbHandler::Bulb2HSV.y, BulbHandler::Bulb2HSV.z);
+		values.y = values.y + inc;
+	}
+	else if(bulbId == 3) // Z
+	{
+		values = mathSuite.hsv2xyz(BulbHandler::Bulb3HSV.x, BulbHandler::Bulb3HSV.y, BulbHandler::Bulb3HSV.z);
+		values.z = values.z + inc;
+	}
 }
+
 
 /// Depending on the event received, change the corresponding bulb (L, a, or b value)
 void BulbHandler::LabColorAdjustment(unsigned short bulbId, short inc)
 {
-	// nothing yet. 
+	if(bulbId == 1) // L
+	{
+
+	}
+	else if(bulbId == 2) // a
+	{
+
+	}
+	else if(bulbId == 3) // b
+	{
+
+	}
 }
 
 /// Checks colorspace, and calls the corresponding function. Update the Target bulb after. 

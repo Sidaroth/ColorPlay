@@ -43,6 +43,44 @@ WindowHandler::WindowHandler(std::string windowName,
 
 bool WindowHandler::init()
 {
+	std::wstringstream tempWStringStream;
+
+	//RGB
+	tempWStringStream	<< L"Velkommen til Color Play!\n\n"
+						<< L"Beveg kontrolleren opp og ned forran pærene for å stille på fargene.\n"
+						<< L"Prøv å blande fargen vist til høyre.\n"
+						<< L"Avslutt med MOVE knappen.";
+	this->instructions.push_back(tempWStringStream.str());
+	
+	//HSV
+	tempWStringStream.str(L"");
+	tempWStringStream	<< L"Velkommen til Color Play!\n\n"
+						<< L"Dette fargerommet mangler instruksjoner.\n"
+						<< L"Vennligst legg til instruksjoner i WindowHandler::init().\n";
+	this->instructions.push_back(tempWStringStream.str());
+
+	//CMYK
+	tempWStringStream.str(L"");
+	tempWStringStream	<< L"Velkommen til Color Play!\n\n"
+						<< L"Dette fargerommet mangler instruksjoner.\n"
+						<< L"Vennligst legg til instruksjoner i WindowHandler::init().\n";
+	this->instructions.push_back(tempWStringStream.str());
+
+	//XYZ
+	tempWStringStream.str(L"");
+	tempWStringStream	<< L"Velkommen til Color Play!\n\n"
+						<< L"Dette fargerommet mangler instruksjoner.\n"
+						<< L"Vennligst legg til instruksjoner i WindowHandler::init().\n";
+	this->instructions.push_back(tempWStringStream.str());
+
+	//Lab
+	tempWStringStream.str(L"");
+	tempWStringStream	<< L"Velkommen til Color Play!\n\n"
+						<< L"Dette fargerommet mangler instruksjoner.\n"
+						<< L"Vennligst legg til instruksjoner i WindowHandler::init().\n";
+	this->instructions.push_back(tempWStringStream.str());
+
+
 	if(!font.loadFromFile("./assets/ABeeZee-Regular.otf"))
 	{
 		this -> logger -> LogEvent("ERROR: Loading font failed!");
@@ -150,6 +188,18 @@ void WindowHandler::gameProcessEvents()
 						this -> bulbHandler -> setColorSpace(BulbHandler::ColorSpace::HSV);
 						break;
 
+					case sf::Keyboard::D:
+						this -> bulbHandler -> setColorSpace(BulbHandler::ColorSpace::CMY);
+						break;
+
+					case sf::Keyboard::F:
+						this -> bulbHandler -> setColorSpace(BulbHandler::ColorSpace::XYZ);
+						break;
+
+					case sf::Keyboard::G:
+						this -> bulbHandler -> setColorSpace(BulbHandler::ColorSpace::Lab);
+						break;
+
 					case sf::Keyboard::Return:
 						this -> logger -> LogEvent("WindowType Changed to Config!");
 						this -> windowType = WindowType::Config;
@@ -193,15 +243,34 @@ void WindowHandler::renderGoalColor()
 void WindowHandler::renderInstructions()
 {
 	unsigned int edgeOffset = 5;
-	std::stringstream tempString;
+	std::wstring tempWString;
 	sf::String string;
 
-	tempString	<< "Velkommen til Color Play!\n\n"
-				<< "Beveg kontrolleren opp og ned forran pærene for å stille på fargene.\n"
-				<< "Prøv å blande fargen vist til høyre.\n"
-				<< "Avslutt med START knappen.";
-
-	string = wrapText(tempString.str(), (this->width / 2) - edgeOffset, this->font, 30);
+	if(this->bulbHandler->currentColorSpace == BulbHandler::ColorSpace::RGB)
+	{
+		tempWString = this->instructions[0];
+	}
+	else if(this->bulbHandler->currentColorSpace == BulbHandler::ColorSpace::HSV)
+	{
+		tempWString = this->instructions[1];
+	}
+	else if(this->bulbHandler->currentColorSpace == BulbHandler::ColorSpace::CMY)
+	{
+		tempWString = this->instructions[2];
+	}
+	else if(this->bulbHandler->currentColorSpace == BulbHandler::ColorSpace::XYZ)
+	{
+		tempWString = this->instructions[3];
+	}
+	else if(this->bulbHandler->currentColorSpace == BulbHandler::ColorSpace::Lab)
+	{
+		tempWString = this->instructions[4];
+	}
+	else
+	{
+		tempWString = L"Gjenkjenner ikke fargerommet.";
+	}
+	string = wrapText(tempWString, (this->width / 2) - edgeOffset, this->font, 30);
 	
 	this->text.setString(string);
 	this->text.setPosition(edgeOffset, edgeOffset);

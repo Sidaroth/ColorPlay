@@ -142,6 +142,14 @@ void WindowHandler::gameProcessEvents()
 						this -> bulbHandler -> generateNewGoalColor();
 						break;
 
+					case sf::Keyboard::A:
+						this -> bulbHandler -> setColorSpace(BulbHandler::ColorSpace::RGB);
+						break;
+
+					case sf::Keyboard::S:
+						this -> bulbHandler -> setColorSpace(BulbHandler::ColorSpace::HSV);
+						break;
+
 					case sf::Keyboard::Return:
 						this -> logger -> LogEvent("WindowType Changed to Config!");
 						this -> windowType = WindowType::Config;

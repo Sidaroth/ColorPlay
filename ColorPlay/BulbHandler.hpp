@@ -78,6 +78,7 @@ public:
 
 	static size_t callback_func(void *getInfo, size_t size, size_t count, void *stream);
 
+	ColorSpace currentColorSpace;
 private:
 
 	int inc = RGBINC;				//Increment used to calculate random start colors.
@@ -88,9 +89,8 @@ private:
 	sf::Vector3f values;
 	CURL* curl;
 	std::string bulbAdress;
-	EventQueue *eventQueue;
 	ActionEvent currentAction;
-	ColorSpace currentColorSpace;
+	EventQueue *eventQueue;
 
 	LogModule* logger;
 	short increaseInterval;

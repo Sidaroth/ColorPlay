@@ -104,9 +104,9 @@ int* BulbHandler::generateStartColors()
 
 	for(int i = 0; i < 3; i++)
 	{
-		if (colors[i] < 1)
+		if (colors[i] < 0)
 		{
-			colors[i] = 1;
+			colors[i] = 0;
 		}
 		else if (255 < colors[i])
 		{

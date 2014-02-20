@@ -110,6 +110,7 @@ private:
 
 	std::vector<float> scoreVector;
 	char scoreDate[BUFFERSIZE];
+	float* currentScore;
 
 	std::mt19937 gen;
 	std::uniform_int_distribution<> rgbDistribution;

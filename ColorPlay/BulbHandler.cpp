@@ -535,9 +535,6 @@ void BulbHandler::processEvents()
 //this needs more testing to check date change logging
 void BulbHandler::writeScore(float score)
 {
-	std::sort(scoreVector.begin(), scoreVector.end());
-	std::reverse(scoreVector.begin(), scoreVector.end());
-
 	std::chrono::time_point<std::chrono::system_clock> now;
 	std::stringstream date;
 	char buffer[BUFFERSIZE];
@@ -553,18 +550,25 @@ void BulbHandler::writeScore(float score)
 
 	if (!std::strcmp(buffer, this -> scoreDate))
 	{
-		//std::cout << "\n JAAAAAAAAAAAAAA" << std::endl;
+		std::cout << "\n JAAAAAAAAAAAAAA" << std::endl;
 	}
 	else
 	{
-		//std::cout << "\n NOOOOOOOOOOOOO" << std::endl;
+		std::cout << "\n NOOOOOOOOOOOOO" << std::endl;
 		std::strcpy(this -> scoreDate, buffer);
 		scoreVector.clear();
 	}
 
-	date << buffer << ".txt";
+	date << "Score - " << buffer << ".txt";
 
 	scoreVector.push_back(score);
+	std::sort(scoreVector.begin(), scoreVector.end());
+	std::reverse(scoreVector.begin(), scoreVector.end());
+	
+	if (scoreVector.size() > 50)
+	{
+		scoreVector.pop_back();
+	}
 
 	std::ofstream scoreFile(date.str());
 
@@ -612,21 +616,13 @@ float BulbHandler::calculateScore()
 		std::cout << "\nERROR from calculate score: No Colorspace defined in currentColorSpace" << std::endl;
 	}
 
-	//(scoreVector.x >= goalColor.r) ? (scoreVector.x = scoreVector.x - goalColor.r) : (scoreVector.x = goalColor.r - scoreVector.x);
-	//(scoreVector.y >= goalColor.g) ? (scoreVector.y = scoreVector.y - goalColor.g) : (scoreVector.y = goalColor.g - scoreVector.y);
-	//(scoreVector.z >= goalColor.b) ? (scoreVector.z = scoreVector.z - goalColor.b) : (scoreVector.z = goalColor.b - scoreVector.z);
-
 	scoreVector.x = (scoreVector.x >= goalColor.r) ? (scoreVector.x - goalColor.r) : (goalColor.r - scoreVector.x);
 	scoreVector.y = (scoreVector.y >= goalColor.g) ? (scoreVector.y - goalColor.g) : (goalColor.g - scoreVector.y);
 	scoreVector.z = (scoreVector.z >= goalColor.b) ? (scoreVector.z - goalColor.b) : (goalColor.b - scoreVector.z);
 
 	score = 1000.0f - (scoreVector.x + scoreVector.y + scoreVector.z);
-/*
-	std::cout << "\n Score 1 -------------->" << scoreVector.x << " " << scoreVector.y << " "  << scoreVector.z << std::endl;
-	std::cout << "\n Score 2 -------------->" << goalColor.r << " " << goalColor.g << " "  << goalColor.b << std::endl;
-	std::cout << "\n Score 3 -------------->" << score << std::endl;
-*/
 
+	currentScore = &score;
 	return score;
 }
 

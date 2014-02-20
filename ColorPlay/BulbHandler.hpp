@@ -57,6 +57,8 @@ public:
 	void setSaturation(int saturation, int bulbId);
 
 	void setColorSpace(ColorSpace colorSpace);
+
+	float calculateScore();
 	
 	sf::Color getGoalColor();
 	void generateNewGoalColor();
@@ -64,6 +66,7 @@ public:
 	void setGoalColor(sf::Color color);
 	void setGoalColor(unsigned int r, unsigned int g, unsigned int b, unsigned int a=255);
 
+	void setKValue(float k);
 
 	void setVariables(int bulbId);
 	void processEvents();
@@ -107,5 +110,5 @@ private:
 	static sf::Vector3f Bulb4HSV;
 	static bool isSetVariablesUpdated;
 	static std::vector<std::string> bulbOutput;
-
+	static float K; //the K values of the last rgb2cmyk calculation preformed
 };

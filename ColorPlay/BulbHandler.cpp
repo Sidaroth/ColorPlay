@@ -415,17 +415,64 @@ void BulbHandler::processEvents()
 	}
 }
 
+//Calculates the score based on how far from the goal color the current color in bulb 4 is. All scoring is done in RGB colorSpace for simplicity
+//calculateScore should be called when the player signals that they are done mixing a color
+float BulbHandler::calculateScore()
+{
+	float score;
+	sf::Vector3f scoreVector;
+	sf::Color goalColor = getGoalColor();
 
+//	values = mathSuite.hsv2rgb(BulbHandler::Bulb3HSV.x, BulbHandler::Bulb3HSV.y, BulbHandler::Bulb3HSV.z);
+
+	if (this -> currentColorSpace == ColorSpace::RGB)
+	{
+
+	}
+	else if (this -> currentColorSpace == ColorSpace::HSV)
+	{
+		scoreVector = mathSuite.hsv2rgb(BulbHandler::Bulb4HSV.x, BulbHandler::Bulb4HSV.y, BulbHandler::Bulb4HSV.z);
+	}
+	else if (this -> currentColorSpace == ColorSpace::XYZ)
+	{
+		scoreVector = mathSuite.xyz2rgb(BulbHandler::Bulb4HSV.x, BulbHandler::Bulb4HSV.y, BulbHandler::Bulb4HSV.z);
+	}
+	else if (this -> currentColorSpace == ColorSpace::Lab)
+	{
+		scoreVector = mathSuite.lab2xyz(BulbHandler::Bulb4HSV.x, BulbHandler::Bulb4HSV.y, BulbHandler::Bulb4HSV.z);
+		scoreVector = mathSuite.xyz2rgb(scoreVector.x, scoreVector.y, scoreVector.z);
+	}
+	else if (this -> currentColorSpace == ColorSpace::CMY)
+	{
+		scoreVector = mathSuite.cmyk2rgb(1.0f, BulbHandler::Bulb4HSV.x, BulbHandler::Bulb4HSV.y, BulbHandler::Bulb4HSV.z);
+	}
+	else
+	{
+		std::cout << "\nERROR from calculate score: No Colorspace defined in currentColorSpace" << std::endl;
+	}
+
+	(scoreVector.x >= goalColor.r) ? (scoreVector.x = scoreVector.x - goalColor.r) : (scoreVector.x = goalColor.r - scoreVector.x);
+	(scoreVector.y >= goalColor.g) ? (scoreVector.y = scoreVector.y - goalColor.g) : (scoreVector.y = goalColor.g - scoreVector.y);
+	(scoreVector.z >= goalColor.b) ? (scoreVector.z = scoreVector.z - goalColor.b) : (scoreVector.z = goalColor.b - scoreVector.z);
+
+	score = 1000.0f - (scoreVector.x + scoreVector.y + scoreVector.z);
+
+	return 1.0f;
+}
+
+//The callback function is called in the curl calls in the setVariables function which sends a get request to a bulb. The callback
+//function collects the bulb's response
 size_t BulbHandler::callback_func(void *getInfo, size_t size, size_t count, void *stream)
 {
 	int hueInt, briInt, satInt, bulbIdInt, found, found2;
 	std::string hue, sat, bri;
 	std::string bulbId;
-	//std::string output((char*)getInfo);
 	std::string callbackOutput;
 
+	//The resonse is pushed into the string vector
 	bulbOutput.push_back(std::string(static_cast<const char*>(getInfo), size * count));
 
+	//The string vector is combined into a single string
 	callbackOutput = bulbOutput[0];
 	if (bulbOutput.size() > 1)
 	{
@@ -435,11 +482,12 @@ size_t BulbHandler::callback_func(void *getInfo, size_t size, size_t count, void
 			//std::cout << "\n -------------FOR LOOP------------------" << std::endl;
 		}
 	}
-
 	//std::cout << "\n ----------- callbackOutput" << callbackOutput << std::endl;
 
+	// "}}" is always the last the characters of the string, if it is found it means the whole string has been loaded
 	found = callbackOutput.find("}}");
 
+	//Finds the hue, sat, bri and hue id in the string, casts them to int and updates the static class variables
 	if (found > 0)
 	{
 
@@ -511,8 +559,6 @@ size_t BulbHandler::callback_func(void *getInfo, size_t size, size_t count, void
 //updates a bulb's global variables to match the current values the bulb is showing.
 void BulbHandler::setVariables(int bulbId)
 {
-	 //CURLcode res;
-	 //CURLcode res2;
 	 struct curl_slist *headers = NULL;
 	 curl = curl_easy_init();
 	 char* getInfo;
@@ -538,12 +584,9 @@ void BulbHandler::setVariables(int bulbId)
 
 	 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &getInfo);
 
-	 	//res = curl_easy_perform(curl);
-	 	//while(BulbHandler::isSetVariablesUpdated == false)
-	 	//{
 	 	curl_easy_perform(curl);
 	 	BulbHandler::bulbOutput.clear();
-	 	//}
+
 	 	curl_slist_free_all(headers);
 
 	 	curl_easy_cleanup(curl);

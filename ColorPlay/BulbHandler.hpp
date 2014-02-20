@@ -29,12 +29,11 @@
 #include "BulbMath.hpp"
 
 // Seed for the mersenne twister (random number generator)
-#define SEED 314159265358979323
+#define SEED 31415926535897932
 
-#define LABINC 1
 #define CMYINC 0.05
+#define LABINC 1
 #define XYZINC 1
-			 
 #define RGBINC 5
 			
 // HSV Space related defines 

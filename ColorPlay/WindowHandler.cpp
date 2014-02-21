@@ -133,10 +133,12 @@ void WindowHandler::render()
 {
 	if(this -> windowType == WindowType::Game)
 	{
+
 		this -> gameRender();
 	}
 	else if(this -> windowType == WindowType::Config)
 	{
+
 		this -> configRender();
 	}
 	else
@@ -277,12 +279,15 @@ void WindowHandler::renderInstructions()
 	{
 		tempWString = L"Gjenkjenner ikke fargerommet.";
 	}
+
 	string = wrapText(tempWString, (this->width / 2) - this->edgeOffset, this->font, this->textSize);
 	
 	this->text.setString(string);
 	this->text.setPosition(this->edgeOffset, this->edgeOffset);
 	text.setColor(sf::Color::White);
+
 	this->window.draw(text);
+
 }
 
 void WindowHandler::renderScore()

@@ -457,6 +457,7 @@ void BulbHandler::XYZColorAdjustment(unsigned short bulbId, short inc)
 //NOT TESTED
 void BulbHandler::LabColorAdjustment(unsigned short bulbId, short inc)
 {
+	/*
 	message.str("");
 
 	if(bulbId == 1) // L
@@ -489,6 +490,7 @@ void BulbHandler::LabColorAdjustment(unsigned short bulbId, short inc)
 	{
 		command(message.str(), i);
 	}
+	*/
 }
 
 /// Checks colorspace, and calls the corresponding function. Update the Target bulb after. 
@@ -561,6 +563,8 @@ void BulbHandler::processEvents()
 }
 
 //this needs more testing to check date change logging
+//writes score, the time it took, and how close they where in the given color space, in separate files
+//this files are named Score - <date> for score, Score Time - <date> for time and 
 void BulbHandler::writeScoreAndTime(float score, int timeUsed)
 {
 	std::chrono::time_point<std::chrono::system_clock> now;
@@ -607,6 +611,7 @@ void BulbHandler::writeScoreAndTime(float score, int timeUsed)
 
 	std::ofstream scoreTimeFile(date.str(), std::ios::app);
 	scoreTimeFile << timeUsed << std::endl;
+	scoreTimeFile.close();
 
 }
 

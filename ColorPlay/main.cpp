@@ -83,10 +83,10 @@ int main(int argc, char* argv[])
 	bulbHandler.setVariables(4);
 	*/
 	//This timer has to be started when the user starts a new game.
-	Timer timer;
-	timer.start();
+//	Timer timer;
+//	timer.start();
 
-	bulbHandler.calculateScore(timer);
+	//bulbHandler.calculateScore(timer);
 	
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	bulbHandler.setColorSpace(BulbHandler::ColorSpace::HSV);
@@ -99,9 +99,12 @@ int main(int argc, char* argv[])
 
 		// Updates
 		windowHandler.update();
+	std::cout << "\n9832572984398274238947239873298472938479237398471" << std::endl;
 		
 		// Rendering
 		windowHandler.render();
+	std::cout << "\n9832572984398274238947239873298472938479237398472" << std::endl;
+
 	}
 	
 		

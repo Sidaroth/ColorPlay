@@ -4,8 +4,8 @@
 	
 	Last edited: 20. Feb. 2014
 
-	Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun, Harry Nystad
-			 Gj�vik University College.
+	Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun
+		 Gj�vik University College.
 */
 
 #pragma once // Include guard

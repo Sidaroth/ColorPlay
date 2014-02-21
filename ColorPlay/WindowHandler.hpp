@@ -1,12 +1,10 @@
-
 /*
 * Purpose: Handle the swapping, loading and unloading of windows / scenes. 
 *
-* Last edited: 20. Feb. 2014
+* Last edited: 21. Feb. 2014
 *
-* Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun, Harry Nystad
+* Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun
 *		   Gjøvik University College
-* 
 */
 
 #pragma once
@@ -14,7 +12,7 @@
 #include <SFML/Graphics.hpp>
 #include "LogModule.hpp"
 #include "BulbHandler.hpp"
-
+#include "Timer.hpp"
 
 class WindowHandler
 {
@@ -55,8 +53,10 @@ private:
 	int textSize;
 	unsigned int edgeOffset = 5;
 
+	Timer timer;
 	bool* finished;
 
+	int currentInstruction;
 	std::vector<std::wstring> instructions;
 
 	BulbHandler* bulbHandler;

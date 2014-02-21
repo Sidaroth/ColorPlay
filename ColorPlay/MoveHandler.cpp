@@ -1,3 +1,11 @@
+/*
+	Purpose: This class is responsible for handling the communication to and from the PlayStation Move Controller.
+
+	Last edited: 21. Feb. 2014
+
+	Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun
+			 Gj�vik University College.
+*/
 #include "MoveHandler.hpp"
 
 //PUBLIC###########################################################################################
@@ -44,11 +52,12 @@ void MoveHandler::run()
 		this->timer.start();
 		while(*this->running && (cvWaitKey(1) & 0xFF) != 27)
 		{	
-			this->updateControllers();			
+			this->updateControllers();
+			this->processInputControllers();
+						
 			this->updateTracker();
-
-			this->processInput();
-
+			this->processInputTracker();
+			
 			std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		}
 
@@ -154,7 +163,8 @@ bool MoveHandler::connectTracker()
 
 	for(int i = 0; i < this->connections; i++)
 	{	
-		while (*this->running)
+		this->timer.start();
+		while (*this->running && this->timer.secondsElapsed() < 60)
 		{
 			string.str("");
 			string << "Calibrating connection #" << i;
@@ -219,22 +229,27 @@ void MoveHandler::updateTracker()
 	this->radius = ledRadius;
 }
 
-void MoveHandler::processInput()
+void MoveHandler::processInputControllers()
 {
 	ActionEvent event(0, 1);
-	
+		
 	for(int i = 0; i < connections; i++)
 	{	
 		if(this->buttons[i] & Btn_MOVE)
 		{
 			event.setAction(ActionEvent::Action::Finish);
 			this->eventQueue->push(event);
+			return;
 		}
 	}
+}
 
+void MoveHandler::processInputTracker()
+{
+	ActionEvent event(0, 1);
+	
 	if(this->timer.secondsElapsed() >= 1)
 	{	
-		
 		if(this->x <213)
 		{
 			event.setBulbID(1);

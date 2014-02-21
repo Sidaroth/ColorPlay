@@ -1,7 +1,7 @@
 /*
 	Purpose: This class is responsible for handling the communication to and from the PlayStation Move Controller.
 
-	Last edited: 19. Feb. 2014
+	Last edited: 21. Feb. 2014
 
 	Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun
 			 Gj�vik University College.
@@ -66,6 +66,7 @@ private:
 	bool connectTracker();
 	void updateControllers();			//Updates the button input from the controller.
 	void updateTracker();				//Update the controller posistion tracking.
-	void processInput();				//Process the input form the buttons and the tracker.
+	void processInputControllers();
+	void processInputTracker();
 	void disconnect();					//Disconnects from the tracker and Move controller.
 };

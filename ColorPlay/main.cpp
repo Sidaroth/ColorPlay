@@ -76,12 +76,12 @@ int main(int argc, char* argv[])
 	///////////////// START WORK IN THE MAIN THREAD //////////////////
 	std::cout << "Main thread: " << std::this_thread::get_id() << std::endl;
 	running = true;
-	
+	/*
 	bulbHandler.setVariables(1);
 	bulbHandler.setVariables(2);
 	bulbHandler.setVariables(3);
 	bulbHandler.setVariables(4);
-	
+	*/
 	//This timer has to be started when the user starts a new game.
 	Timer timer;
 	timer.start();

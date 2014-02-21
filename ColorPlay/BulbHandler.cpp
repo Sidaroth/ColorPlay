@@ -447,23 +447,47 @@ void BulbHandler::XYZColorAdjustment(unsigned short bulbId, short inc)
 		values = mathSuite.hsv2xyz(BulbHandler::Bulb3HSV.x, BulbHandler::Bulb3HSV.y, BulbHandler::Bulb3HSV.z);
 		values.z = values.z + inc;
 	}
+
+	message  << "\"hue\": " << BulbHandler::Bulb3HSV.x << ", \"sat\": " << BulbHandler::Bulb3HSV.y << ", \"bri\": " << BulbHandler::Bulb3HSV.z << "}";
+
 }
 
 
 /// Depending on the event received, change the corresponding bulb (L, a, or b value)
+//NOT TESTED
 void BulbHandler::LabColorAdjustment(unsigned short bulbId, short inc)
 {
+	message.str("");
+
 	if(bulbId == 1) // L
 	{
-
+		values = mathSuite.hsv2lab(BulbHandler::Bulb1HSV.x, BulbHandler::Bulb1HSV.y, BulbHandler::Bulb1HSV.z);
+		values.x = values.x  + inc;
+		BulbHandler::Bulb1HSV = mathSuite.lab2hsv(values.x, values.y, values.z);
 	}
 	else if(bulbId == 2) // a
 	{
-
+		values = mathSuite.hsv2lab(BulbHandler::Bulb2HSV.x, BulbHandler::Bulb2HSV.y, BulbHandler::Bulb2HSV.z);
+		values.y = values.y  + inc;
+		BulbHandler::Bulb2HSV = mathSuite.lab2hsv(values.x, values.y, values.z);
 	}
 	else if(bulbId == 3) // b
 	{
+		values = mathSuite.hsv2lab(BulbHandler::Bulb3HSV.x, BulbHandler::Bulb3HSV.y, BulbHandler::Bulb3HSV.z);
+		values.z = values.z  + inc;
+		BulbHandler::Bulb3HSV = mathSuite.lab2hsv(values.x, values.y, values.z);
+	}
+	else
+	{
+		std::cout << "\nERROR in LabColorAdjustment: No valid Bulb ID" << std::endl;
+	}
 
+	values = mathSuite.lab2hsv(values.x, values.y, values.z);
+	message << "{\"on\":true, " << "\"hue\": " << values.x << ", \"sat\": " << values.y << ", \"bri\": " <<  values.z << "}";
+
+	for (int i = 0; i <= 4; i++)
+	{
+		command(message.str(), i);
 	}
 }
 

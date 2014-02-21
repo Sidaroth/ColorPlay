@@ -13,6 +13,7 @@
 #include "MoveHandler.hpp"
 #include "WindowHandler.hpp"
 #include "EventQueue.hpp"
+#include "Timer.hpp"
 
 #define DEBUG 1
 
@@ -55,7 +56,7 @@ int main(int argc, char* argv[])
 	{
 		std::cout << "Window initialization successful!\n";
 	}
-
+/*
 	bulbHandler.setHue(0, 1);
 	bulbHandler.setHue(0, 2);
 	bulbHandler.setHue(0, 3);
@@ -65,7 +66,7 @@ int main(int argc, char* argv[])
 	bulbHandler.setBrightness(255, 1);
 	bulbHandler.setBrightness(255, 2);
 	bulbHandler.setBrightness(255, 3);
-
+*/
 
 	///////////////// START THREADS /////////////////
 	std::thread loggerThread(&LogModule::run, &logger);	// Run the logger module in a background thread.
@@ -74,18 +75,17 @@ int main(int argc, char* argv[])
 	///////////////// START WORK IN THE MAIN THREAD //////////////////
 	std::cout << "Main thread: " << std::this_thread::get_id() << std::endl;
 	running = true;
+	
 	bulbHandler.setVariables(1);
 	bulbHandler.setVariables(2);
 	bulbHandler.setVariables(3);
 	bulbHandler.setVariables(4);
-/*
-	bulbHandler.writeScore(150.0f);
-	bulbHandler.writeScore(200.0f);
-	bulbHandler.writeScore(300.0f);
-	bulbHandler.writeScore(450.0f);
-	bulbHandler.writeScore(500.0f);
-*/
-	//bulbHandler.calculateScore();
+	
+	//This timer has to be started when the user starts a new game.
+	Timer timer;
+	timer.start();
+
+	bulbHandler.calculateScore(timer);
 	
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	bulbHandler.setColorSpace(BulbHandler::ColorSpace::HSV);

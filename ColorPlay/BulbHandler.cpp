@@ -533,7 +533,7 @@ void BulbHandler::processEvents()
 }
 
 //this needs more testing to check date change logging
-void BulbHandler::writeScore(float score)
+void BulbHandler::writeScoreAndTime(float score, int timeUsed)
 {
 	std::chrono::time_point<std::chrono::system_clock> now;
 	std::stringstream date;
@@ -548,13 +548,8 @@ void BulbHandler::writeScore(float score)
 	timeinfo = localtime(&logTime);
 	strftime(buffer, BUFFERSIZE, "%F",timeinfo);
 
-	if (!std::strcmp(buffer, this -> scoreDate))
+	if (std::strcmp(buffer, this -> scoreDate))
 	{
-		//std::cout << "\n JAAAAAAAAAAAAAA" << std::endl;
-	}
-	else
-	{
-		//std::cout << "\n NOOOOOOOOOOOOO" << std::endl;
 		std::strcpy(this -> scoreDate, buffer);
 		scoreVector.clear();
 	}
@@ -576,14 +571,22 @@ void BulbHandler::writeScore(float score)
 	{
 		scoreFile << scoreVector[i] << std::endl;
 	}
-
 	scoreFile.close();
+
+	//reuse date stringstream to get score time filename. scoreTime records the time players used
+	date.str("");
+	date << "Score Time - " << buffer << ".txt";
+
+	std::ofstream scoreTimeFile(date.str(), std::ios::app);
+	scoreTimeFile << timeUsed << std::endl;
+
 }
 
 //Calculates the score based on how far from the goal color the current color in bulb 4 is. All scoring is done in RGB colorSpace for simplicity
 //calculateScore should be called when the player signals that they are done mixing a color
-float BulbHandler::calculateScore()
+float BulbHandler::calculateScore(Timer &timer)
 {
+	int timeUsed;
 	float score;
 	sf::Vector3f scoreVector;
 	sf::Color goalColor = getGoalColor();
@@ -620,7 +623,14 @@ float BulbHandler::calculateScore()
 	scoreVector.y = (scoreVector.y >= goalColor.g) ? (scoreVector.y - goalColor.g) : (goalColor.g - scoreVector.y);
 	scoreVector.z = (scoreVector.z >= goalColor.b) ? (scoreVector.z - goalColor.b) : (goalColor.b - scoreVector.z);
 
-	score = 1000.0f - (scoreVector.x + scoreVector.y + scoreVector.z);
+	timeUsed = timer.secondsElapsed();
+
+	score = 1000.0f - (scoreVector.x + scoreVector.y + scoreVector.z) - (timeUsed * 5);
+
+	std::cout << "\n TID BRUKT ----------->" << timeUsed << std::endl;
+	std::cout << "\n SCORE------------->" << score << std::endl;
+
+	writeScoreAndTime(score, timeUsed);
 
 	currentScore = &score;
 	return score;

@@ -26,7 +26,16 @@ public:
 	};
 
 	WindowHandler();
-	WindowHandler(std::string windowName, LogModule* logger, bool* running, BulbHandler* bulbHandler,int width=1280, int height=720, bool verticalSync=true, int frameRateLimit=60 );
+	WindowHandler(	std::string windowName,
+					LogModule* logger,
+					bool* running,
+					BulbHandler* bulbHandler,
+					bool* finished,
+					int width=1280,
+					int height=720,
+					bool verticalSync=true,
+					int frameRateLimit=60
+				);
 	bool init(); 
 	void processEvents();
 	void update();
@@ -43,6 +52,10 @@ private:
 	WindowType windowType;
 	sf::Font font;
 	sf::Text text;
+	int textSize;
+	unsigned int edgeOffset = 5;
+
+	bool* finished;
 
 	std::vector<std::wstring> instructions;
 
@@ -57,6 +70,7 @@ private:
 	void gameRender();
 	void renderGoalColor();
 	void renderInstructions();
+	void renderScore();
 	sf::String wrapText(sf::String string, unsigned width, const sf::Font &font, unsigned charicterSize, bool bold = false);
 
 	void configProcessEvents();

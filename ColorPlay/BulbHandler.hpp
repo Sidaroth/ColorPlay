@@ -51,7 +51,7 @@ class BulbHandler
 {
 public:
 	BulbHandler();
-	BulbHandler(EventQueue *eventQueue, LogModule* logger);
+	BulbHandler(EventQueue *eventQueue, LogModule* logger, bool* finished);
 
 	// All bulbs use HSV color space, SFML works with RGB.
 	// The system will use one of the following. 
@@ -90,10 +90,13 @@ public:
 	void writeScore(float score);
 
 	ColorSpace currentColorSpace;
+	float* currentScore;
 private:
 
 	int inc = RGBINC;				//Increment used to calculate random start colors.
 	int maxStartIncFromGoal = 10;	//Max number of increments between start and goal color.
+
+	bool* finished;
 
 	std::stringstream message;
 	sf::Color goalColor;
@@ -110,7 +113,6 @@ private:
 
 	std::vector<float> scoreVector;
 	char scoreDate[BUFFERSIZE];
-	float* currentScore;
 
 	std::mt19937 gen;
 	std::uniform_int_distribution<> rgbDistribution;

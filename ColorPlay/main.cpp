@@ -29,13 +29,14 @@
 int main(int argc, char* argv[])
 {
 	bool running = false;
+	bool finished = false;
 	LogModule logger;
 	EventQueue eventQueue;
 	BulbMath bulbMath;
 
-	BulbHandler bulbHandler(&eventQueue, &logger);
+	BulbHandler bulbHandler(&eventQueue, &logger, &finished);
 	MoveHandler moveHandler(&logger, &bulbHandler, &eventQueue, &running);
-	WindowHandler windowHandler("Color Play Game v.0.1", &logger, &running, &bulbHandler);
+	WindowHandler windowHandler("Color Play Game v.0.1", &logger, &running, &bulbHandler, &finished);
 
 	////////////////////// INIT //////////////////////
 	std::string url = "http://192.168.37.114/api/newdeveloper/lights/";

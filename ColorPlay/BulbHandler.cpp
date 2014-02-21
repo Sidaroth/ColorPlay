@@ -447,23 +447,47 @@ void BulbHandler::XYZColorAdjustment(unsigned short bulbId, short inc)
 		values = mathSuite.hsv2xyz(BulbHandler::Bulb3HSV.x, BulbHandler::Bulb3HSV.y, BulbHandler::Bulb3HSV.z);
 		values.z = values.z + inc;
 	}
+
+	message  << "\"hue\": " << BulbHandler::Bulb3HSV.x << ", \"sat\": " << BulbHandler::Bulb3HSV.y << ", \"bri\": " << BulbHandler::Bulb3HSV.z << "}";
+
 }
 
 
 /// Depending on the event received, change the corresponding bulb (L, a, or b value)
+//NOT TESTED
 void BulbHandler::LabColorAdjustment(unsigned short bulbId, short inc)
 {
+	message.str("");
+
 	if(bulbId == 1) // L
 	{
-
+		values = mathSuite.hsv2lab(BulbHandler::Bulb1HSV.x, BulbHandler::Bulb1HSV.y, BulbHandler::Bulb1HSV.z);
+		values.x = values.x  + inc;
+		BulbHandler::Bulb1HSV = mathSuite.lab2hsv(values.x, values.y, values.z);
 	}
 	else if(bulbId == 2) // a
 	{
-
+		values = mathSuite.hsv2lab(BulbHandler::Bulb2HSV.x, BulbHandler::Bulb2HSV.y, BulbHandler::Bulb2HSV.z);
+		values.y = values.y  + inc;
+		BulbHandler::Bulb2HSV = mathSuite.lab2hsv(values.x, values.y, values.z);
 	}
 	else if(bulbId == 3) // b
 	{
+		values = mathSuite.hsv2lab(BulbHandler::Bulb3HSV.x, BulbHandler::Bulb3HSV.y, BulbHandler::Bulb3HSV.z);
+		values.z = values.z  + inc;
+		BulbHandler::Bulb3HSV = mathSuite.lab2hsv(values.x, values.y, values.z);
+	}
+	else
+	{
+		std::cout << "\nERROR in LabColorAdjustment: No valid Bulb ID" << std::endl;
+	}
 
+	values = mathSuite.lab2hsv(values.x, values.y, values.z);
+	message << "{\"on\":true, " << "\"hue\": " << values.x << ", \"sat\": " << values.y << ", \"bri\": " <<  values.z << "}";
+
+	for (int i = 0; i <= 4; i++)
+	{
+		command(message.str(), i);
 	}
 }
 
@@ -534,7 +558,7 @@ void BulbHandler::processEvents()
 }
 
 //this needs more testing to check date change logging
-void BulbHandler::writeScore(float score)
+void BulbHandler::writeScoreAndTime(float score, int timeUsed)
 {
 	std::chrono::time_point<std::chrono::system_clock> now;
 	std::stringstream date;
@@ -549,13 +573,8 @@ void BulbHandler::writeScore(float score)
 	timeinfo = localtime(&logTime);
 	strftime(buffer, BUFFERSIZE, "%F",timeinfo);
 
-	if (!std::strcmp(buffer, this -> scoreDate))
+	if (std::strcmp(buffer, this -> scoreDate))
 	{
-		//std::cout << "\n JAAAAAAAAAAAAAA" << std::endl;
-	}
-	else
-	{
-		//std::cout << "\n NOOOOOOOOOOOOO" << std::endl;
 		std::strcpy(this -> scoreDate, buffer);
 		scoreVector.clear();
 	}
@@ -577,14 +596,22 @@ void BulbHandler::writeScore(float score)
 	{
 		scoreFile << scoreVector[i] << std::endl;
 	}
-
 	scoreFile.close();
+
+	//reuse date stringstream to get score time filename. scoreTime records the time players used
+	date.str("");
+	date << "Score Time - " << buffer << ".txt";
+
+	std::ofstream scoreTimeFile(date.str(), std::ios::app);
+	scoreTimeFile << timeUsed << std::endl;
+
 }
 
 //Calculates the score based on how far from the goal color the current color in bulb 4 is. All scoring is done in RGB colorSpace for simplicity
 //calculateScore should be called when the player signals that they are done mixing a color
-float BulbHandler::calculateScore()
+float BulbHandler::calculateScore(Timer &timer)
 {
+	int timeUsed;
 	float score;
 	sf::Vector3f scoreVector;
 	sf::Color goalColor = getGoalColor();
@@ -621,7 +648,14 @@ float BulbHandler::calculateScore()
 	scoreVector.y = (scoreVector.y >= goalColor.g) ? (scoreVector.y - goalColor.g) : (goalColor.g - scoreVector.y);
 	scoreVector.z = (scoreVector.z >= goalColor.b) ? (scoreVector.z - goalColor.b) : (goalColor.b - scoreVector.z);
 
-	score = 1000.0f - (scoreVector.x + scoreVector.y + scoreVector.z);
+	timeUsed = timer.secondsElapsed();
+
+	score = 1000.0f - (scoreVector.x + scoreVector.y + scoreVector.z) - (timeUsed * 5);
+
+	std::cout << "\n TID BRUKT ----------->" << timeUsed << std::endl;
+	std::cout << "\n SCORE------------->" << score << std::endl;
+
+	writeScoreAndTime(score, timeUsed);
 
 	currentScore = &score;
 	return score;

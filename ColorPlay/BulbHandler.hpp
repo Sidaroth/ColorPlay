@@ -27,6 +27,7 @@
 #include "ActionEvent.hpp"
 #include "LogModule.hpp"
 #include "BulbMath.hpp"
+#include "Timer.hpp"
 
 // Seed for the mersenne twister (random number generator)
 #define SEED 31415926535897932
@@ -71,7 +72,7 @@ public:
 
 	void setColorSpace(ColorSpace colorSpace);
 
-	float calculateScore();
+	float calculateScore(Timer &timer);
 	
 	sf::Color getGoalColor();
 	void generateNewGoalColor();
@@ -87,7 +88,7 @@ public:
 
 	static size_t callback_func(void *getInfo, size_t size, size_t count, void *stream);
 	
-	void writeScore(float score);
+	void writeScoreAndTime(float score, int timeUsed);
 
 	ColorSpace currentColorSpace;
 	float* currentScore;

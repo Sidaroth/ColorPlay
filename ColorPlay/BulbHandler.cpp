@@ -2,9 +2,9 @@
 	Purpose: This class is responsible for handling the communication to and from the Philips Hue lightbulbs. 
 			 as well as controlling the system concerned with distuinguishing the colorspaces and lightbulb cooperation. 
 	
-	Last edited: 20. Feb. 2014
+	Last edited: 21. Feb. 2014
 
-	Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun, Harry Nystad
+	Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun
 			 Gj�vik University College.
 */
 
@@ -509,28 +509,25 @@ void BulbHandler::processEvents()
 		switch(currentAction.action)
 		{
 			case ActionEvent::Action::Up:
-				std::cout << "UP!\n";
 				bulb = currentAction.getBulbID();
 				updateBulb(bulb, increaseInterval);
 				break;
 
 			case ActionEvent::Action::Down:
-				std::cout << "Down!\n";
 				bulb = currentAction.getBulbID();
 				updateBulb(bulb, increaseInterval * -1);
 				break;
 
-			case ActionEvent::Action::Finish:	
+			case ActionEvent::Action::Finish:
 				*this->finished = true;
 				break;
 
 			case ActionEvent::Action::None:
-				std::cout << "None! - Should not be called unless an event has been mistakingly created!\n";
 				break;
 
-			default: break;
+			default: 
+				break;
 		}
-
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 	}

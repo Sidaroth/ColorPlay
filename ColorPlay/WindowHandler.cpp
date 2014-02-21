@@ -1,3 +1,12 @@
+/*
+* Purpose: Handle the swapping, loading and unloading of windows / scenes. 
+*
+* Last edited: 21. Feb. 2014
+*
+* Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun
+*		   Gjøvik University College
+*/
+
 #include "WindowHandler.hpp"
 
 // Probably shouldn't be called... 
@@ -39,6 +48,9 @@ WindowHandler::WindowHandler(std::string windowName,
 
 	this -> width = width;
 	this -> height = height;
+
+	this->currentInstruction = 0;
+	this->textSize = 30;
 
 	logger -> LogEvent("Window created");
 }
@@ -184,22 +196,27 @@ void WindowHandler::gameProcessEvents()
 
 					case sf::Keyboard::A:
 						this -> bulbHandler -> setColorSpace(BulbHandler::ColorSpace::RGB);
+						this->currentInstruction = 0;
 						break;
 
 					case sf::Keyboard::S:
 						this -> bulbHandler -> setColorSpace(BulbHandler::ColorSpace::HSV);
+						this->currentInstruction = 1;
 						break;
 
 					case sf::Keyboard::D:
 						this -> bulbHandler -> setColorSpace(BulbHandler::ColorSpace::CMY);
+						this->currentInstruction = 2;
 						break;
 
 					case sf::Keyboard::F:
 						this -> bulbHandler -> setColorSpace(BulbHandler::ColorSpace::XYZ);
+						this->currentInstruction = 3;
 						break;
 
 					case sf::Keyboard::G:
 						this -> bulbHandler -> setColorSpace(BulbHandler::ColorSpace::Lab);
+						this->currentInstruction = 4;
 						break;
 
 					case sf::Keyboard::Return:
@@ -217,7 +234,14 @@ void WindowHandler::gameProcessEvents()
 
 void WindowHandler::gameUpdate()
 {
-
+	if(*this->finished && !this->timer.isRunning())
+	{	
+		this->timer.start();
+	}
+	else if(!(*this->finished) && this->timer.isRunning())
+	{
+		this->timer.stop();
+	}
 }
 
 void WindowHandler::gameRender()
@@ -225,7 +249,7 @@ void WindowHandler::gameRender()
 	window.clear(sf::Color::Black);
 	renderGoalColor();
 	renderInstructions();
-	
+
 	if(*this->finished)
 	{
 		renderScore();
@@ -253,30 +277,8 @@ void WindowHandler::renderInstructions()
 	std::wstring tempWString;
 	sf::String string;
 
-	if(this->bulbHandler->currentColorSpace == BulbHandler::ColorSpace::RGB)
-	{
-		tempWString = this->instructions[0];
-	}
-	else if(this->bulbHandler->currentColorSpace == BulbHandler::ColorSpace::HSV)
-	{
-		tempWString = this->instructions[1];
-	}
-	else if(this->bulbHandler->currentColorSpace == BulbHandler::ColorSpace::CMY)
-	{
-		tempWString = this->instructions[2];
-	}
-	else if(this->bulbHandler->currentColorSpace == BulbHandler::ColorSpace::XYZ)
-	{
-		tempWString = this->instructions[3];
-	}
-	else if(this->bulbHandler->currentColorSpace == BulbHandler::ColorSpace::Lab)
-	{
-		tempWString = this->instructions[4];
-	}
-	else
-	{
-		tempWString = L"Gjenkjenner ikke fargerommet.";
-	}
+	tempWString = this->instructions[currentInstruction];
+
 	string = wrapText(tempWString, (this->width / 2) - this->edgeOffset, this->font, this->textSize);
 	
 	this->text.setString(string);
@@ -299,6 +301,19 @@ void WindowHandler::renderScore()
 
 	window.clear(sf::Color::Black);
 	this->window.draw(text);
+
+	if(this->timer.secondsElapsed() > 3)
+	{
+		tempWStringStream.str(L"");
+		tempWStringStream << L"Trykk MOVE knappen for å state et nytt spill";
+		string = tempWStringStream.str();
+
+		this->text.setString(string);
+		this->text.setPosition((this->width / 2) - (text.getLocalBounds().width / 2), ((this->height / 4) * 3)  - (text.getLocalBounds().height / 2));
+		text.setColor(sf::Color::White);
+
+		this->window.draw(text);
+	}
 }
 
 sf::String WindowHandler::wrapText(sf::String string, unsigned width, const sf::Font &font, unsigned charicterSize, bool bold /*Default: false*/)

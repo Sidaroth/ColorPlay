@@ -30,7 +30,7 @@ BulbHandler::BulbHandler()
 	rgbDistribution = std::uniform_int_distribution<>(0, 255);
 }
 
-BulbHandler::BulbHandler(EventQueue *eventQueue, LogModule* logger)
+BulbHandler::BulbHandler(EventQueue *eventQueue, LogModule* logger, bool* finished)
 {
 	curl = curl_easy_init();
 	currentColorSpace = ColorSpace::HSV;
@@ -40,6 +40,10 @@ BulbHandler::BulbHandler(EventQueue *eventQueue, LogModule* logger)
 	increaseInterval = HSVINC;
 	rgbDistribution = std::uniform_int_distribution<>(0, 255);
 	this -> logger = logger;
+
+	float temp = 0.0f;
+	this->currentScore = &temp;
+	this->finished = finished;
 }
 
 void BulbHandler::setBulbAdress(std::string bulbAdress)
@@ -516,8 +520,8 @@ void BulbHandler::processEvents()
 				updateBulb(bulb, increaseInterval * -1);
 				break;
 
-			case ActionEvent::Action::Finish:
-				std::cout << "Finish!\n";
+			case ActionEvent::Action::Finish:	
+				*this->finished = true;
 				break;
 
 			case ActionEvent::Action::None:

@@ -16,6 +16,7 @@ WindowHandler::WindowHandler(std::string windowName,
 							 LogModule* logger,
 							 bool* running,
 							 BulbHandler* bulbHandler,
+							 bool* finished,
 							 int width,          /* 1280  */ 
 							 int height, 		 /* 720  */
 							 bool verticalSync , /* true */ 
@@ -27,6 +28,7 @@ WindowHandler::WindowHandler(std::string windowName,
 	this -> logger = logger;
 	this -> running = running;
 	this -> bulbHandler = bulbHandler;
+	this -> finished = finished;
 
 	if(verticalSync != true)			// VSync and forced framerate should not be used at the same time. It can make the screen do weird things... - SFML Docs.
 	{
@@ -223,6 +225,12 @@ void WindowHandler::gameRender()
 	window.clear(sf::Color::Black);
 	renderGoalColor();
 	renderInstructions();
+	
+	if(*this->finished)
+	{
+		renderScore();
+	}
+
 	window.display();
 }
 
@@ -242,7 +250,6 @@ void WindowHandler::renderGoalColor()
 
 void WindowHandler::renderInstructions()
 {
-	unsigned int edgeOffset = 5;
 	std::wstring tempWString;
 	sf::String string;
 
@@ -270,11 +277,27 @@ void WindowHandler::renderInstructions()
 	{
 		tempWString = L"Gjenkjenner ikke fargerommet.";
 	}
-	string = wrapText(tempWString, (this->width / 2) - edgeOffset, this->font, 30);
+	string = wrapText(tempWString, (this->width / 2) - this->edgeOffset, this->font, this->textSize);
 	
 	this->text.setString(string);
-	this->text.setPosition(edgeOffset, edgeOffset);
+	this->text.setPosition(this->edgeOffset, this->edgeOffset);
 	text.setColor(sf::Color::White);
+	this->window.draw(text);
+}
+
+void WindowHandler::renderScore()
+{
+	std::wstringstream tempWStringStream;
+	sf::String string;
+
+	tempWStringStream << L"Poeng: " << (int)*this->bulbHandler->currentScore;
+	string = tempWStringStream.str();
+
+	this->text.setString(string);
+	this->text.setPosition((this->width / 2) - (text.getLocalBounds().width / 2), (this->height / 2)  - (text.getLocalBounds().height / 2));
+	text.setColor(sf::Color::White);
+
+	window.clear(sf::Color::Black);
 	this->window.draw(text);
 }
 

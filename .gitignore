@@ -12,8 +12,9 @@
 # Library path
 lib/
 
-# CSV files
+# TXT & CSV files
 *.csv
+*.txt
 
 # Compiled Dynamic libraries
 *.so

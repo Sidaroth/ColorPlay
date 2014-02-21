@@ -11,10 +11,11 @@ MoveHandler::MoveHandler()
 MoveHandler::MoveHandler(	LogModule *logger,
 							BulbHandler* bulbHandler,
 							EventQueue * eventQueue,
-							bool *running)
+							bool *running
+						)
 {
 	this->running = running;
-	
+
 	this->logger = logger;
 
 	this->connections = 0;
@@ -41,7 +42,7 @@ void MoveHandler::run()
 	if(this->connect())
 	{	
 		this->timer.start();
-		while(this->running && (cvWaitKey(1) & 0xFF) != 27)
+		while(*this->running && (cvWaitKey(1) & 0xFF) != 27)
 		{	
 			this->updateControllers();			
 			this->updateTracker();
@@ -153,7 +154,7 @@ bool MoveHandler::connectTracker()
 
 	for(int i = 0; i < this->connections; i++)
 	{	
-		while (this->running)
+		while (*this->running)
 		{
 			string.str("");
 			string << "Calibrating connection #" << i;
@@ -223,10 +224,11 @@ void MoveHandler::processInput()
 	ActionEvent event(0, 1);
 	
 	for(int i = 0; i < connections; i++)
-	{
+	{	
 		if(this->buttons[i] & Btn_MOVE)
 		{
 			event.setAction(ActionEvent::Action::Finish);
+			this->eventQueue->push(event);
 		}
 	}
 

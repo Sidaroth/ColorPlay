@@ -1,9 +1,9 @@
 /*
 	Purpose: This class is responsible for handling the communication to and from the PlayStation Move Controller.
 
-	Last edited: 18. Feb. 2014
+	Last edited: 19. Feb. 2014
 
-	Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun, Harry Nystad
+	Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun
 			 Gj�vik University College.
 */
 #pragma once
@@ -31,14 +31,14 @@ public:
 	MoveHandler(LogModule *logger,
 				BulbHandler *bulbHandler,
 				EventQueue * eventQueue,
-				bool *running);
+				bool *running
+				);
 	~MoveHandler();
 	
 	void run();							//Called when the thread is started. Contains main loop. 
 
 private:
-	bool *running;
-
+	bool *running;						//Program running?
 	//Logger
 	LogModule *logger;
 	

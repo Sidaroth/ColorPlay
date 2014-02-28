@@ -129,6 +129,8 @@ private:
 	void updateBulb(unsigned short bulbId, short inc);
 	void command(std::string body, int bulbId);
 
+	bool doesFileExist(std::string name);
+
 	void startNewGame();
 
 	static sf::Vector3f Bulb1HSV;

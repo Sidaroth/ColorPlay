@@ -575,6 +575,22 @@ void BulbHandler::processEvents()
 	}
 }
 
+bool BulbHandler::doesFileExist(std::string name)
+{
+	std::ifstream f(name.c_str());
+
+	if (f.good())
+	{
+		f.close();
+		return true;
+	}
+	else
+	{
+		f.close();
+		return false;
+	}
+}
+
 //this needs more testing to check date change logging
 //writes score in a separate file "Score - <date>" and score data (time, goal color and achived color) in a file. "Score Data/Time <date>"
 //The score data file is in the format <time>, <achived color X>, <Y>, <Z>, <goal color X>, <Y>, <Z>
@@ -593,14 +609,19 @@ void BulbHandler::writeScoreAndTime(float score, int timeUsed)
 	time(&logTime);
 	timeinfo = localtime(&logTime);
 	strftime(buffer, BUFFERSIZE, "%F",timeinfo);
-
+/*
 	if (std::strcmp(buffer, this -> scoreDate))
 	{
 		std::strcpy(this -> scoreDate, buffer);
 		scoreVector.clear();
 	}
-
+*/
 	date << "Score - " << buffer << ".txt";
+
+	if (!doesFileExist(date.str()))
+	{
+		scoreVector.clear();
+	}
 
 	scoreVector.push_back(score);
 	std::sort(scoreVector.begin(), scoreVector.end());
@@ -615,38 +636,46 @@ void BulbHandler::writeScoreAndTime(float score, int timeUsed)
 
 	for (int i = 0; i < scoreVector.size(); i++)
 	{
-		scoreFile << scoreVector[i] << std::endl;
+		scoreFile << i+1 << ". \t" << scoreVector[i] << std::endl;
 	}
 	scoreFile.close();
 
 	//reuse date stringstream to get score time filename. scoreTime records the time players used
 	date.str("");
-	date << "Score Data and Time - " << buffer << ".txt";
+	date << "Score Data and Time - " << buffer;
 
-	std::ofstream scoreTimeFile(date.str(), std::ios::app);
-	scoreTimeFile << timeUsed << ", " << BulbHandler::Bulb4HSV.x << ", " << BulbHandler::Bulb4HSV.y << ", " << BulbHandler::Bulb4HSV.z << ", " << (float*)goalColor.r << ", " << (float*)goalColor.g << ", " << (float*)goalColor.b << ", ";
-
-	//if (this -> currentColorSpace == ColorSpace::RGB)
 	if (this -> currentColorSpace == ColorSpace::RGB)	
 	{
-		scoreTimeFile << "RGB" << std::endl;
+		date << " - RGB.txt";
 	}
 	else if (this -> currentColorSpace == ColorSpace::HSV)
 	{
-		scoreTimeFile << "HSV" << std::endl;
+		date << " - HSV.txt";
 	}	
 	else if (this -> currentColorSpace == ColorSpace::XYZ)
 	{
-		scoreTimeFile << "XYZ" << std::endl;
+		date << " - XYZ.txt";
 	}
 	else if (this -> currentColorSpace == ColorSpace::Lab)
 	{
-		scoreTimeFile << "Lab" << std::endl;
+		date << " - LAB.txt";
 	}
 	else if (this -> currentColorSpace == ColorSpace::CMY)
 	{
-		scoreTimeFile << "CMY" << std::endl;
+		date << " - CMY.txt";
 	}
+
+	if (!doesFileExist(date.str()))
+	{
+		std::ofstream stfInit(date.str());
+		stfInit << "Time" << "\tMC1" << "\tMC2" << "\tMC3" << "\tTC1" << "\tTC2" << "\tTC3" << std::endl;
+		stfInit.close();
+	}
+
+	std::ofstream scoreTimeFile(date.str(), std::ios::app);
+	scoreTimeFile << timeUsed << ",\t" << BulbHandler::Bulb4HSV.x << ",\t" << BulbHandler::Bulb4HSV.y << ",\t" << BulbHandler::Bulb4HSV.z << ",\t" << (float*)goalColor.r << ",\t" << (float*)goalColor.g << ",\t" << (float*)goalColor.b << std::endl;
+
+
 	scoreTimeFile.close();
 
 }
@@ -696,8 +725,8 @@ float BulbHandler::calculateScore(Timer &timer)
 
 	score = 1000.0f - (scoreVector.x + scoreVector.y + scoreVector.z);// - (timeUsed * 5);
 
-	//std::cout << "\n TID BRUKT ----------->" << timeUsed << std::endl;
-	//std::cout << "\n SCORE------------->" << score << std::endl;
+//	std::cout << "\n TID BRUKT ----------->" << timeUsed << std::endl;
+//	std::cout << "\n SCORE------------->" << score << std::endl;
 
 	writeScoreAndTime(score, timeUsed);
 

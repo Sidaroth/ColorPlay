@@ -457,6 +457,7 @@ void BulbHandler::XYZColorAdjustment(unsigned short bulbId, short inc)
 //NOT TESTED
 void BulbHandler::LabColorAdjustment(unsigned short bulbId, short inc)
 {
+	/*
 	message.str("");
 
 	if(bulbId == 1) // L
@@ -489,6 +490,7 @@ void BulbHandler::LabColorAdjustment(unsigned short bulbId, short inc)
 	{
 		command(message.str(), i);
 	}
+	*/
 }
 
 /// Checks colorspace, and calls the corresponding function. Update the Target bulb after. 
@@ -566,6 +568,8 @@ void BulbHandler::processEvents()
 }
 
 //this needs more testing to check date change logging
+//writes score in a separate file "Score - <date>" and score data (time, goal color and achived color) in a file. "Score Data/Time <date>"
+//The score data file is in the format <time>, <achived color X>, <Y>, <Z>, <goal color X>, <Y>, <Z>
 void BulbHandler::writeScoreAndTime(float score, int timeUsed)
 {
 	std::chrono::time_point<std::chrono::system_clock> now;
@@ -573,6 +577,7 @@ void BulbHandler::writeScoreAndTime(float score, int timeUsed)
 	char buffer[BUFFERSIZE];
 	struct tm * timeinfo;
 	std::time_t logTime;
+	sf::Color goalColor = getGoalColor();
 
 	now = std::chrono::system_clock::now();
 	logTime = std::chrono::system_clock::to_time_t(now);
@@ -608,10 +613,33 @@ void BulbHandler::writeScoreAndTime(float score, int timeUsed)
 
 	//reuse date stringstream to get score time filename. scoreTime records the time players used
 	date.str("");
-	date << "Score Time - " << buffer << ".txt";
+	date << "Score Data and Time - " << buffer << ".txt";
 
 	std::ofstream scoreTimeFile(date.str(), std::ios::app);
-	scoreTimeFile << timeUsed << std::endl;
+	scoreTimeFile << timeUsed << ", " << BulbHandler::Bulb4HSV.x << ", " << BulbHandler::Bulb4HSV.y << ", " << BulbHandler::Bulb4HSV.z << ", " << (float*)goalColor.r << ", " << (float*)goalColor.g << ", " << (float*)goalColor.b << ", ";
+
+	//if (this -> currentColorSpace == ColorSpace::RGB)
+	if (this -> currentColorSpace == ColorSpace::RGB)	
+	{
+		scoreTimeFile << "RGB" << std::endl;
+	}
+	else if (this -> currentColorSpace == ColorSpace::HSV)
+	{
+		scoreTimeFile << "HSV" << std::endl;
+	}	
+	else if (this -> currentColorSpace == ColorSpace::XYZ)
+	{
+		scoreTimeFile << "XYZ" << std::endl;
+	}
+	else if (this -> currentColorSpace == ColorSpace::Lab)
+	{
+		scoreTimeFile << "Lab" << std::endl;
+	}
+	else if (this -> currentColorSpace == ColorSpace::CMY)
+	{
+		scoreTimeFile << "CMY" << std::endl;
+	}
+	scoreTimeFile.close();
 
 }
 
@@ -660,8 +688,8 @@ float BulbHandler::calculateScore(Timer &timer)
 
 	score = 1000.0f - (scoreVector.x + scoreVector.y + scoreVector.z) - (timeUsed * 5);
 
-	std::cout << "\n TID BRUKT ----------->" << timeUsed << std::endl;
-	std::cout << "\n SCORE------------->" << score << std::endl;
+	//std::cout << "\n TID BRUKT ----------->" << timeUsed << std::endl;
+	//std::cout << "\n SCORE------------->" << score << std::endl;
 
 	writeScoreAndTime(score, timeUsed);
 

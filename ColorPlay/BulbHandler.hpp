@@ -35,10 +35,12 @@
 #define CMYINC 0.05
 #define LABINC 1
 #define XYZINC 1
-#define RGBINC 5
+#define RGBINC 20
 			
 // HSV Space related defines 
-#define HSVINC 182
+#define HSVINC 3000
+#define SATINC 20
+#define BRIINC 20
 #define MAXSAT 255
 #define MAXBRI 255
 #define MAXHUE 65535

@@ -285,7 +285,11 @@ void BulbHandler::HSVColorAdjustment(unsigned short bulbId, short inc)
 	}
 	else if(bulbId == 2)		// S
 	{
-		val = BulbHandler::Bulb2HSV.y + inc;
+		if (inc < 0)
+			val = BulbHandler::Bulb2HSV.y - SATINC;
+		else
+			val = BulbHandler::Bulb2HSV.y + SATINC;
+
 		if(val > MAXSAT)
 		{
 			val = MAXSAT;
@@ -307,7 +311,11 @@ void BulbHandler::HSVColorAdjustment(unsigned short bulbId, short inc)
 	}
 	else if(bulbId == 3)   // V
 	{
-		val = BulbHandler::Bulb3HSV.z + inc;
+		if (inc > 0)
+			val = BulbHandler::Bulb3HSV.z + BRIINC;
+		else
+			val = BulbHandler::Bulb3HSV.z - BRIINC;
+
 		if(val > MAXBRI)
 		{
 			val = MAXBRI;
@@ -678,7 +686,7 @@ float BulbHandler::calculateScore(Timer &timer)
 
 	timeUsed = timer.secondsElapsed();
 
-	score = 1000.0f - (scoreVector.x + scoreVector.y + scoreVector.z) - (timeUsed * 5);
+	score = 1000.0f - (scoreVector.x + scoreVector.y + scoreVector.z);// - (timeUsed * 5);
 
 	//std::cout << "\n TID BRUKT ----------->" << timeUsed << std::endl;
 	//std::cout << "\n SCORE------------->" << score << std::endl;

@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 	WindowHandler windowHandler("Color Play Game v.0.1", &logger, &running, &bulbHandler, &finished);
 
 	////////////////////// INIT //////////////////////
-	std::string url = "http://192.168.37.114/api/newdeveloper/lights/";
+	std::string url = "http://192.168.1.172/api/newdeveloper/lights/";
 
 	bulbHandler.setBulbAdress(url);
 
@@ -57,17 +57,17 @@ int main(int argc, char* argv[])
 	{
 		std::cout << "Window initialization successful!\n";
 	}
-/*
+
 	bulbHandler.setHue(0, 1);
 	bulbHandler.setHue(0, 2);
 	bulbHandler.setHue(0, 3);
 	bulbHandler.setSaturation(255, 1);
 	bulbHandler.setSaturation(255, 2);
 	bulbHandler.setSaturation(255, 3);
-	bulbHandler.setBrightness(255, 1);
-	bulbHandler.setBrightness(255, 2);
-	bulbHandler.setBrightness(255, 3);
-*/
+	bulbHandler.setBrightness(100, 1);
+	bulbHandler.setBrightness(100, 2);
+	bulbHandler.setBrightness(100, 3);
+
 
 	///////////////// START THREADS /////////////////
 	std::thread loggerThread(&LogModule::run, &logger);	// Run the logger module in a background thread.
@@ -76,12 +76,12 @@ int main(int argc, char* argv[])
 	///////////////// START WORK IN THE MAIN THREAD //////////////////
 	std::cout << "Main thread: " << std::this_thread::get_id() << std::endl;
 	running = true;
-	/*
+	
 	bulbHandler.setVariables(1);
 	bulbHandler.setVariables(2);
 	bulbHandler.setVariables(3);
 	bulbHandler.setVariables(4);
-	*/
+	
 	//This timer has to be started when the user starts a new game.
 	Timer timer;
 	timer.start();

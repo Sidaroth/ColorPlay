@@ -112,6 +112,7 @@ private:
 
 	BulbMath mathSuite; 
 
+	Timer scoreTimer;
 	std::vector<float> scoreVector;
 	char scoreDate[BUFFERSIZE];
 
@@ -125,6 +126,8 @@ private:
 	void LabColorAdjustment(unsigned short bulbId, short inc);
 	void updateBulb(unsigned short bulbId, short inc);
 	void command(std::string body, int bulbId);
+
+	void startNewGame();
 
 	static sf::Vector3f Bulb1HSV;
 	static sf::Vector3f Bulb2HSV;

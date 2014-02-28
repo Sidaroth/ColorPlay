@@ -543,7 +543,15 @@ void BulbHandler::processEvents()
 				break;
 
 			case ActionEvent::Action::Finish:
-				*this->finished = true;
+				if(!this->finished)
+				{
+					*this->finished = true;
+					calculateScore(this->scoreTimer);
+				}
+				else
+				{
+					startNewGame();
+				}
 				break;
 
 			case ActionEvent::Action::None:
@@ -796,3 +804,9 @@ void BulbHandler::setVariables(int bulbId)
 	 curl_global_cleanup();
 }
 
+void BulbHandler::startNewGame()
+{
+	setColorSpace(this->currentColorSpace);
+	this->scoreTimer.start();
+	*this->finished = false;
+}

@@ -19,6 +19,7 @@
 #include <random>
 #include <fstream>
 #include <cstring>
+#include <future>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Vector3.hpp>

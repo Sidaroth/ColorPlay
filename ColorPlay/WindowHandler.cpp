@@ -26,6 +26,7 @@ WindowHandler::WindowHandler(std::string windowName,
 							 bool* running,
 							 BulbHandler* bulbHandler,
 							 bool* finished,
+							 bool* newGame,
 							 int width,          /* 1280  */ 
 							 int height, 		 /* 720  */
 							 bool verticalSync , /* true */ 
@@ -38,6 +39,7 @@ WindowHandler::WindowHandler(std::string windowName,
 	this -> running = running;
 	this -> bulbHandler = bulbHandler;
 	this -> finished = finished;
+	this -> newGame = newGame;
 
 	if(verticalSync != true)			// VSync and forced framerate should not be used at the same time. It can make the screen do weird things... - SFML Docs.
 	{
@@ -297,7 +299,7 @@ void WindowHandler::renderScore()
 	std::wstringstream tempWStringStream;
 	sf::String string;
 
-	tempWStringStream << L"Poeng: " << (int)*this->bulbHandler->currentScore;
+	tempWStringStream << L"Poeng: " << *this->bulbHandler->currentScore;
 	string = tempWStringStream.str();
 
 	this->text.setString(string);
@@ -319,6 +321,7 @@ void WindowHandler::renderScore()
 
 		this->window.draw(text);
 		*this->finished = false;
+		*this->newGame = true;
 	}
 }
 

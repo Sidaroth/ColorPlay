@@ -31,13 +31,14 @@ int main(int argc, char* argv[])
 {
 	bool running = false;
 	bool finished = false;
+	bool newGame = false;
 	LogModule logger;
 	EventQueue eventQueue;
 	BulbMath bulbMath;
 
-	BulbHandler bulbHandler(&eventQueue, &logger, &finished);
+	BulbHandler bulbHandler(&eventQueue, &logger, &finished, &newGame);
 	MoveHandler moveHandler(&logger, &bulbHandler, &eventQueue, &running);
-	WindowHandler windowHandler("Color Play Game v.0.1", &logger, &running, &bulbHandler, &finished);
+	WindowHandler windowHandler("Color Play Game v.0.1", &logger, &running, &bulbHandler, &finished, &newGame);
 
 	////////////////////// INIT //////////////////////
 	std::string url = "http://192.168.1.172/api/newdeveloper/lights/";
@@ -76,7 +77,7 @@ int main(int argc, char* argv[])
 	///////////////// START WORK IN THE MAIN THREAD //////////////////
 	std::cout << "Main thread: " << std::this_thread::get_id() << std::endl;
 	running = true;
-	
+
 	bulbHandler.setVariables(1);
 	bulbHandler.setVariables(2);
 	bulbHandler.setVariables(3);

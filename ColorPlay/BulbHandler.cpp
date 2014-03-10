@@ -30,7 +30,7 @@ BulbHandler::BulbHandler()
 	rgbDistribution = std::uniform_int_distribution<>(0, 255);
 }
 
-BulbHandler::BulbHandler(EventQueue *eventQueue, LogModule* logger, bool* finished)
+BulbHandler::BulbHandler(EventQueue *eventQueue, LogModule* logger, bool* finished, bool* newGame)
 {
 	curl = curl_easy_init();
 	currentColorSpace = ColorSpace::HSV;
@@ -44,6 +44,8 @@ BulbHandler::BulbHandler(EventQueue *eventQueue, LogModule* logger, bool* finish
 	float temp = 0.0f;
 	this->currentScore = &temp;
 	this->finished = finished;
+	this->newGame = newGame;
+	this->scoreTimer.start();
 }
 
 void BulbHandler::setBulbAdress(std::string bulbAdress)
@@ -276,6 +278,8 @@ void BulbHandler::HSVColorAdjustment(unsigned short bulbId, short inc)
 		BulbHandler::Bulb3HSV.x = BulbHandler::Bulb1HSV.x;
 		message << "\"hue\": " << BulbHandler::Bulb1HSV.x << "}";
 
+		BulbHandler::Bulb4HSV.x = BulbHandler::Bulb1HSV.x;
+
 		// Update the other lightbulbs
 
 		helper = message.str();
@@ -304,6 +308,8 @@ void BulbHandler::HSVColorAdjustment(unsigned short bulbId, short inc)
 		BulbHandler::Bulb3HSV.y = BulbHandler::Bulb2HSV.y;
 		message << "\"sat\": " << BulbHandler::Bulb2HSV.y << "}";
 
+		BulbHandler::Bulb4HSV.y = BulbHandler::Bulb2HSV.y;
+
 		helper = message.str();
 		std::async(std::launch::async, &BulbHandler::command, this, helper, 1);
 		command(helper, 3);	
@@ -329,6 +335,8 @@ void BulbHandler::HSVColorAdjustment(unsigned short bulbId, short inc)
 		BulbHandler::Bulb1HSV.z = BulbHandler::Bulb3HSV.z;
 		BulbHandler::Bulb2HSV.z = BulbHandler::Bulb3HSV.z;
 		message << "\"bri\": " << Bulb3HSV.z << "}";
+
+		BulbHandler::Bulb4HSV.z = BulbHandler::Bulb3HSV.z;
 
 		helper = message.str();
 		std::async(std::launch::async, &BulbHandler::command, this, helper, 1);
@@ -553,14 +561,18 @@ void BulbHandler::processEvents()
 				break;
 
 			case ActionEvent::Action::Finish:
-				if(!this->finished)
+				if(!(*this->finished))
 				{
+					int temp = this->scoreTimer.secondsElapsed();
+					this->scoreTimer.stop();
+					calculateScore(temp);
+					std::cout << "\n FINISHED -----------------" << std::endl;
 					*this->finished = true;
-					calculateScore(this->scoreTimer);
 				}
-				else
+				else if (*this->newGame)
 				{
 					startNewGame();
+					*this -> newGame = false;
 				}
 				break;
 
@@ -602,6 +614,8 @@ void BulbHandler::writeScoreAndTime(float score, int timeUsed)
 	struct tm * timeinfo;
 	std::time_t logTime;
 	sf::Color goalColor = getGoalColor();
+	sf::Vector3f tempGoalColor;
+	float * cmykPointer;
 
 	now = std::chrono::system_clock::now();
 	logTime = std::chrono::system_clock::to_time_t(now);
@@ -651,18 +665,24 @@ void BulbHandler::writeScoreAndTime(float score, int timeUsed)
 	else if (this -> currentColorSpace == ColorSpace::HSV)
 	{
 		date << " - HSV.txt";
+		tempGoalColor = mathSuite.rgb2hsv((float)goalColor.r, (float)goalColor.g, (float)goalColor.b); 
 	}	
 	else if (this -> currentColorSpace == ColorSpace::XYZ)
 	{
 		date << " - XYZ.txt";
+		tempGoalColor = mathSuite.rgb2xyz((float)goalColor.r, (float)goalColor.g, (float)goalColor.b); 
 	}
 	else if (this -> currentColorSpace == ColorSpace::Lab)
 	{
 		date << " - LAB.txt";
+		tempGoalColor = mathSuite.rgb2xyz((float)goalColor.r, (float)goalColor.g, (float)goalColor.b); 
+		tempGoalColor = mathSuite.xyz2lab(tempGoalColor.x, tempGoalColor.y, tempGoalColor.z); 
 	}
 	else if (this -> currentColorSpace == ColorSpace::CMY)
 	{
 		date << " - CMY.txt";
+		cmykPointer = mathSuite.rgb2cmyk((float)goalColor.r, (float)goalColor.g, (float)goalColor.b);
+		//Todo, fix cmyk write to file
 	}
 
 	if (!doesFileExist(date.str()))
@@ -673,18 +693,15 @@ void BulbHandler::writeScoreAndTime(float score, int timeUsed)
 	}
 
 	std::ofstream scoreTimeFile(date.str(), std::ios::app);
-	scoreTimeFile << timeUsed << ",\t" << BulbHandler::Bulb4HSV.x << ",\t" << BulbHandler::Bulb4HSV.y << ",\t" << BulbHandler::Bulb4HSV.z << ",\t" << (float*)goalColor.r << ",\t" << (float*)goalColor.g << ",\t" << (float*)goalColor.b << std::endl;
-
+	scoreTimeFile << timeUsed << ",\t" << BulbHandler::Bulb4HSV.x << ",\t" << BulbHandler::Bulb4HSV.y << ",\t" << BulbHandler::Bulb4HSV.z << ",\t" << tempGoalColor.x << ",\t" << tempGoalColor.y << ",\t" << tempGoalColor.z << std::endl;
 
 	scoreTimeFile.close();
-
 }
 
 //Calculates the score based on how far from the goal color the current color in bulb 4 is. All scoring is done in RGB colorSpace for simplicity
 //calculateScore should be called when the player signals that they are done mixing a color
-float BulbHandler::calculateScore(Timer &timer)
+float BulbHandler::calculateScore(int timeUsed)
 {
-	int timeUsed;
 	float score;
 	sf::Vector3f scoreVector;
 	sf::Color goalColor = getGoalColor();
@@ -697,7 +714,7 @@ float BulbHandler::calculateScore(Timer &timer)
 	}
 	else if (this -> currentColorSpace == ColorSpace::HSV)
 	{
-		scoreVector = mathSuite.hsv2rgb(BulbHandler::Bulb4HSV.x, BulbHandler::Bulb4HSV.y, BulbHandler::Bulb4HSV.z);
+		scoreVector  = mathSuite.hsv2rgb(BulbHandler::Bulb4HSV.x, BulbHandler::Bulb4HSV.y, BulbHandler::Bulb4HSV.z);
 	}
 	else if (this -> currentColorSpace == ColorSpace::XYZ)
 	{
@@ -721,16 +738,15 @@ float BulbHandler::calculateScore(Timer &timer)
 	scoreVector.y = (scoreVector.y >= goalColor.g) ? (scoreVector.y - goalColor.g) : (goalColor.g - scoreVector.y);
 	scoreVector.z = (scoreVector.z >= goalColor.b) ? (scoreVector.z - goalColor.b) : (goalColor.b - scoreVector.z);
 
-	timeUsed = timer.secondsElapsed();
-
-	score = 1000.0f - (scoreVector.x + scoreVector.y + scoreVector.z);// - (timeUsed * 5);
+	score = 1000.0f - ((scoreVector.x + scoreVector.y + scoreVector.z)*2);// - (timeUsed * 5);
 
 //	std::cout << "\n TID BRUKT ----------->" << timeUsed << std::endl;
 //	std::cout << "\n SCORE------------->" << score << std::endl;
 
 	writeScoreAndTime(score, timeUsed);
+	tempScore = score;
 
-	currentScore = &score;
+	currentScore = &tempScore;
 	return score;
 }
 
@@ -817,8 +833,8 @@ size_t BulbHandler::callback_func(void *getInfo, size_t size, size_t count, void
 		else if (bulbIdInt == 4)
 		{
 			BulbHandler::Bulb4HSV.x = hueInt;
-			BulbHandler::Bulb4HSV.y = hueInt;
-			BulbHandler::Bulb4HSV.z = hueInt;
+			BulbHandler::Bulb4HSV.y = satInt;
+			BulbHandler::Bulb4HSV.z = briInt;
 			BulbHandler::isSetVariablesUpdated = true;
 			//std::cout << "\n44444444444444444444" << std::endl;
 		}
@@ -871,6 +887,7 @@ void BulbHandler::setVariables(int bulbId)
 
 void BulbHandler::startNewGame()
 {
+	std::cout << "\nHERE???????????????????+" << std::endl;
 	setColorSpace(this->currentColorSpace);
 	this->scoreTimer.start();
 	*this->finished = false;

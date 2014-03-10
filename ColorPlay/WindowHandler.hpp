@@ -29,6 +29,7 @@ public:
 					bool* running,
 					BulbHandler* bulbHandler,
 					bool* finished,
+					bool* newGame,
 					int width=1280,
 					int height=720,
 					bool verticalSync=true,
@@ -55,6 +56,7 @@ private:
 
 	Timer timer;
 	bool* finished;
+	bool* newGame;
 
 	int currentInstruction;
 	std::vector<std::wstring> instructions;

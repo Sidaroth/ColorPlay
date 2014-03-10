@@ -7,6 +7,7 @@
 			 Gj�vik University College.
 */
 #include "Timer.hpp"
+#include <iostream>
 
 Timer::Timer()
 {

@@ -69,6 +69,8 @@ int main(int argc, char* argv[])
 	bulbHandler.setBrightness(100, 2);
 	bulbHandler.setBrightness(100, 3);
 
+	bulbHandler.calculateScore(5);
+
 
 	///////////////// START THREADS /////////////////
 	std::thread loggerThread(&LogModule::run, &logger);	// Run the logger module in a background thread.

@@ -688,12 +688,13 @@ void BulbHandler::writeScoreAndTime(float score, int timeUsed)
 	if (!doesFileExist(date.str()))
 	{
 		std::ofstream stfInit(date.str());
-		stfInit << "Time" << "\tMC1" << "\tMC2" << "\tMC3" << "\tTC1" << "\tTC2" << "\tTC3" << std::endl;
+		stfInit << "Time" << "\tTC1" << "\tTC2" << "\tTC3" << "\tPC1" << "\tPC2" << "\tPC3" << std::endl;
 		stfInit.close();
 	}
 
 	std::ofstream scoreTimeFile(date.str(), std::ios::app);
-	scoreTimeFile << timeUsed << ",\t" << BulbHandler::Bulb4HSV.x << ",\t" << BulbHandler::Bulb4HSV.y << ",\t" << BulbHandler::Bulb4HSV.z << ",\t" << tempGoalColor.x << ",\t" << tempGoalColor.y << ",\t" << tempGoalColor.z << std::endl;
+	//scoreTimeFile << timeUsed << ",\t" << BulbHandler::Bulb4HSV.x << ",\t" << BulbHandler::Bulb4HSV.y << ",\t" << BulbHandler::Bulb4HSV.z << ",\t" << tempGoalColor.x << ",\t" << tempGoalColor.y << ",\t" << tempGoalColor.z << std::endl;
+	scoreTimeFile << timeUsed << ",\t" << tempGoalColor.x << ",\t" << tempGoalColor.y << ",\t" << tempGoalColor.z << ",\t" << BulbHandler::Bulb4HSV.x << ",\t" << BulbHandler::Bulb4HSV.y << ",\t" << BulbHandler::Bulb4HSV.z << std::endl;
 
 	scoreTimeFile.close();
 }

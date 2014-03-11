@@ -482,7 +482,18 @@ sf::Vector3f BulbMath::rgb2hsv(float r, float g, float b)
 	hsv.x = round(hsv.x);
 	hsv.y = round(hsv.y);
 	hsv.z = round(hsv.z);
-
+	if (hsv.x > 65535)
+		hsv.x = 65535;
+	else if (hsv.x < 0)
+		hsv.x = 0;
+	if (hsv.y > 255)
+		hsv.y = 255;
+	else if (hsv.y < 0)
+		hsv.y = 0;
+	if (hsv.z > 255)
+		hsv.z = 255;
+	else if (hsv.z < 0)
+		hsv.z = 0;
 	//std::cout << "\n RGB2HSV out------->> H: " << hsv.x << " s: " << hsv.y << " v: " << hsv.z << std::endl;
 
 	return hsv;
@@ -604,7 +615,7 @@ sf::Vector3f BulbMath::cmyk2rgb(float c, float m, float y, float k)
 //input rgb in rage 0 - 255,output cymk in range 0 - 1
 //note that functions returning cmyk values return a pointer to a float array with cmyk values in order
 //math from http://www.rapidtables.com/convert/color/cmyk-to-rgb.htm, verified using calculator from same site
-float * BulbMath::rgb2cmyk(float r, float g, float b)
+sf::Vector3f BulbMath::rgb2cmyk(float r, float g, float b)
 {
 
 	float rr, gg, bb, K;
@@ -623,7 +634,7 @@ float * BulbMath::rgb2cmyk(float r, float g, float b)
 	CMY.y = (1 - gg - K) / (1 - K);
 	CMY.z = (1 - bb - K) / (1 - K);
 
-//	std::cout << "\nC: " << CMY.x << " M: " << CMY.y << " Y: " << CMY.z << " K: " << K << std::endl;
+	std::cout << "\nC: " << CMY.x << " M: " << CMY.y << " Y: " << CMY.z << " K: " << K << std::endl;
 
 	CMY = cmyThresholdCheck(CMY);
 
@@ -636,13 +647,7 @@ float * BulbMath::rgb2cmyk(float r, float g, float b)
 		K = 1.0f;
 	}
 
-	static float CMYarray[4];
-	CMYarray[0] = CMY.x;
-	CMYarray[1] = CMY.y;
-	CMYarray[2] = CMY.z;
-	CMYarray[3] = K;
-
-	return CMYarray;
+	return CMY;
 }
 
 //works according to http://colormine.org/convert/lab-to-hsv
@@ -673,16 +678,15 @@ sf::Vector3f BulbMath::lab2hsv(float L, float a, float b)
 
 //Works http://www.rapidtables.com/convert/color/rgb-to-cmyk.htm
 //note that functions returning cmyk values return a pointer to a float array with cmyk values in order
-float * BulbMath::hsv2cmyk(float h, float s, float v)
+sf::Vector3f BulbMath::hsv2cmyk(float h, float s, float v)
 {
-	float *CMYarray;
 	sf::Vector3f CMY;
 	CMY = hsv2rgb(h, s, v);
-	CMYarray = rgb2cmyk(CMY.x, CMY.y, CMY.z);
+	CMY = rgb2cmyk(CMY.x, CMY.y, CMY.z);
 
 //	std::cout << "\nC: " << CMY.x << " M: " << CMY.y << " Y: " << CMY.z << std::endl;
 
-	return CMYarray;
+	return CMY;
 }
 
 //A little off compaired to http://www.rapidtables.com/convert/color/rgb-to-hsv.htm, might be the calculator doing rounding, look for another one to compair

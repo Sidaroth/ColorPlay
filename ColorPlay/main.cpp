@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 	WindowHandler windowHandler("Color Play Game v.0.1", &logger, &running, &bulbHandler, &finished, &newGame);
 
 	////////////////////// INIT //////////////////////
-	std::string url = "http://192.168.1.172/api/newdeveloper/lights/";
+	std::string url = "http://192.168.1.57/api/newdeveloper/lights/";
 
 	bulbHandler.setBulbAdress(url);
 
@@ -63,13 +63,9 @@ int main(int argc, char* argv[])
 	bulbHandler.setHue(0, 2);
 	bulbHandler.setHue(0, 3);
 	bulbHandler.setSaturation(255, 1);
-	bulbHandler.setSaturation(255, 2);
-	bulbHandler.setSaturation(255, 3);
 	bulbHandler.setBrightness(100, 1);
 	bulbHandler.setBrightness(100, 2);
 	bulbHandler.setBrightness(100, 3);
-
-	bulbHandler.calculateScore(5);
 
 
 	///////////////// START THREADS /////////////////

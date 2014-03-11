@@ -33,8 +33,8 @@
 // Seed for the mersenne twister (random number generator)
 #define SEED 31415926535897932
 
-#define CMYINC 0.05
-#define LABINC 1
+#define CMYINC 10	//CMYINC is divided by 100
+#define LABINC 20
 #define XYZINC 1
 #define RGBINC 20
 			
@@ -93,6 +93,8 @@ public:
 	
 	void writeScoreAndTime(float score, int timeUsed);
 
+	void startTimer();
+
 	ColorSpace currentColorSpace;
 	float* currentScore;
 private:
@@ -102,6 +104,8 @@ private:
 
 	bool* finished;
 	bool*newGame;
+
+	short playNr;
 
 	float tempScore;
 
@@ -116,7 +120,7 @@ private:
 	LogModule* logger;
 	short increaseInterval;
 
-	BulbMath mathSuite; 
+	BulbMath mathSuite;
 
 	Timer scoreTimer;
 	std::vector<float> scoreVector;

@@ -60,6 +60,7 @@ private:
 	BulbHandler *bulbHandler;			//Class used to communicate with the Phillips Hue light bulbs.
 	EventQueue *eventQueue;				//Queue used to organize events to the bulbHandler.
 	Timer timer;						//Timer used to slowdown events to the bulbHandler.
+	Timer finishedTimer;
 
 	bool connect();						//Runs connectControllers and connectTracker.
 	bool connectControllers();

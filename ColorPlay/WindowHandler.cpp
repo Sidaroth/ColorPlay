@@ -320,8 +320,9 @@ void WindowHandler::renderScore()
 		text.setColor(sf::Color::White);
 
 		this->window.draw(text);
-		*this->finished = false;
+
 		*this->newGame = true;
+
 	}
 }
 

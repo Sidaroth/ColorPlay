@@ -34,6 +34,8 @@ ActionEvent EventQueue::pop()
 
 	ActionEvent event = events.front();
 	events.pop();
+	if (event.action == ActionEvent::Action::Finish)
+		std::cout << "\n EVENT POPED" << std::endl;	
 
 	return event;
 }

@@ -1,3 +1,4 @@
+
 /*
 	Purpose: This class is responsible for handling the communication to and from the PlayStation Move Controller.
 
@@ -187,6 +188,7 @@ bool MoveHandler::connectTracker()
         }
 
 		logger->LogEvent("Calibration finished.");
+		this->bulbHandler->startTimer();
 	}
 
 	logger->LogEvent("Enable tracker mirroring");
@@ -237,9 +239,13 @@ void MoveHandler::processInputControllers()
 	{	
 		if(this->buttons[i] & Btn_MOVE)
 		{
-			event.setAction(ActionEvent::Action::Finish);
-			this->eventQueue->push(event);
-			return;
+			if (finishedTimer.secondsElapsed() > 3)
+			{
+				event.setAction(ActionEvent::Action::Finish);
+				finishedTimer.start();
+				this->eventQueue->push(event);
+				return;
+			}
 		}
 	}
 }

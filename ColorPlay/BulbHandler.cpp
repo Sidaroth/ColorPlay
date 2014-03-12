@@ -50,6 +50,7 @@ BulbHandler::BulbHandler(EventQueue *eventQueue, LogModule* logger, bool* finish
 	this->finished = finished;
 	this->newGame = newGame;
 	this->scoreTimer.start();
+	firstGame = true;
 }
 
 void BulbHandler::startTimer()
@@ -570,7 +571,12 @@ void BulbHandler::processEvents()
 	{
 	 	currentAction = eventQueue -> pop();
 
-	 	if(currentAction != lastAction)
+	 	if (firstGame == true)
+	 	{
+	 		firstGame = false;
+	 		actionTimer.start();
+	 	}
+	 	if(currentAction != lastAction || currentAction.getBulbID() != lastAction.getBulbID())
 	 	{
 	 		lastAction = currentAction;
 	 		int timeElapsed = actionTimer.secondsElapsed();
@@ -597,7 +603,6 @@ void BulbHandler::processEvents()
 					int temp = this->scoreTimer.secondsElapsed();
 					this->scoreTimer.stop();
 					calculateScore(temp);
-					std::cout << "\n FINISHED -----------------" << std::endl;
 					*this->finished = true;
 				}
 				else if (*this->newGame)
@@ -678,7 +683,7 @@ void BulbHandler::writeAction(ActionEvent action, int timeUsed)
 		case ActionEvent::Action::None:
 			actionFile << "None,\t";
 			break;
-		default
+		default:
 			std::cout << "\nError in Write Action, invalid action" << std::endl;
 			break;
 	}
@@ -698,7 +703,7 @@ void BulbHandler::writeAction(ActionEvent action, int timeUsed)
 			actionFile << "CMY" << std::endl;
 			break;
 		default:
-			std::cout << "\nError in write action, invalid colorspace" std::endl;
+			std::cout << "\nError in write action, invalid colorspace" << std::endl;
 			break;
 	}
 	actionFile.close();
@@ -806,33 +811,29 @@ float BulbHandler::calculateScore(int timeUsed)
 
 	if (this -> currentColorSpace == ColorSpace::RGB)
 	{
-		scoreVector = mathSuite.rgb2hsv(BulbHandler::Bulb4HSV.x, BulbHandler::Bulb4HSV.y, BulbHandler::Bulb4HSV.z);
-	}
-	else if (this -> currentColorSpace == ColorSpace::HSV)
-	{
-	}
-	else if (this -> currentColorSpace == ColorSpace::XYZ)
-	{
-		scoreVector = mathSuite.xyz2hsv(BulbHandler::Bulb4HSV.x, BulbHandler::Bulb4HSV.y, BulbHandler::Bulb4HSV.z);
+		scoreVector = mathSuite.rgb2hsv((float)goalColor.r, (float)goalColor.g, (float)goalColor.b);
 	}
 	else if (this -> currentColorSpace == ColorSpace::Lab)
 	{
-		scoreVector = mathSuite.lab2hsv(BulbHandler::Bulb4HSV.x, BulbHandler::Bulb4HSV.y, BulbHandler::Bulb4HSV.z);
+		scoreVector = mathSuite.lab2hsv((float)goalColor.r, (float)goalColor.g, (float)goalColor.b);
 	}
 	else if (this -> currentColorSpace == ColorSpace::CMY)
 	{
-		scoreVector = mathSuite.cmyk2hsv(1.0f, BulbHandler::Bulb4HSV.x, BulbHandler::Bulb4HSV.y, BulbHandler::Bulb4HSV.z);
+		scoreVector = mathSuite.cmyk2hsv((float)goalColor.r, (float)goalColor.g, (float)goalColor.b, 0);
 	}
 	else
 	{
 		std::cout << "\nERROR from calculate score: No Colorspace defined in currentColorSpace" << std::endl;
 	}
 
-	scoreVector.x = (scoreVector.x >= goalColor.r) ? (scoreVector.x - goalColor.r) : (goalColor.r - scoreVector.x);
-	scoreVector.y = (scoreVector.y >= goalColor.g) ? (scoreVector.y - goalColor.g) : (goalColor.g - scoreVector.y);
-	scoreVector.z = (scoreVector.z >= goalColor.b) ? (scoreVector.z - goalColor.b) : (goalColor.b - scoreVector.z);
+	// Euclidean_distance 3d calculations
+	float tempr = pow(scoreVector.x - BulbHandler::Bulb4HSV.x, 2);
+	float tempg = pow(scoreVector.y - BulbHandler::Bulb4HSV.y, 2);
+	float tempb = pow(scoreVector.z - BulbHandler::Bulb4HSV.z, 2);
+	score = sqrt(tempr + tempg + tempb);
 
-	score = 1000.0f - ((scoreVector.x + scoreVector.y + scoreVector.z)*2);// - (timeUsed * 5);
+//	score = 1000.0f - ((scoreVector.x + scoreVector.y + scoreVector.z)*2);// - (timeUsed * 5);
+
 
 //	std::cout << "\n TID BRUKT ----------->" << timeUsed << std::endl;
 //	std::cout << "\n SCORE------------->" << score << std::endl;
@@ -981,7 +982,6 @@ void BulbHandler::setVariables(int bulbId)
 
 void BulbHandler::startNewGame()
 {
-	std::cout << "\nHERE???????????????????+" << std::endl;
 	setColorSpace(this->currentColorSpace);
 	playNr++;
 	this->scoreTimer.start();

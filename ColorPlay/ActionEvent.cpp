@@ -40,5 +40,5 @@ unsigned short ActionEvent::getBulbID() const
 
 bool ActionEvent::operator!=(const ActionEvent& other) const
 {
-	return this -> action == other.action;
+	return this -> action != other.action;
 }

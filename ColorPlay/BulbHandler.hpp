@@ -20,6 +20,7 @@
 #include <fstream>
 #include <cstring>
 #include <future>
+#include <cmath>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Vector3.hpp>
@@ -106,6 +107,7 @@ private:
 
 	bool* finished;
 	bool*newGame;
+	bool firstGame;
 
 	short playNr;
 

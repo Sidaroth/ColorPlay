@@ -659,7 +659,6 @@ sf::Vector3f BulbMath::hsv2lab(float h, float s, float v)
 	Lab = xyz2lab(Lab.x, Lab.y, Lab.z);
 
 //	std::cout << "\nL: " << Lab.x << " a: " << Lab.y << " b: " << Lab.z << std::endl;
-
 	return Lab;
 }
 

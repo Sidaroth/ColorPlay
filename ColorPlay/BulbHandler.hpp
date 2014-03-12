@@ -111,6 +111,9 @@ private:
 
 	short playNr;
 
+	float labAlphaA;
+	float labAlphaB;
+
 	float tempScore;
 
 	std::stringstream message;

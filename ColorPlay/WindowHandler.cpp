@@ -63,6 +63,7 @@ bool WindowHandler::init()
 
 	//RGB
 	tempWStringStream	<< L"Velkommen til Color Play!\n\n"
+						<< L"Du er nå i fargerommet RGB.\n"
 						<< L"Beveg kontrolleren opp og ned forran pærene for å stille på fargene.\n"
 						<< L"Prøv å blande fargen vist til høyre.\n"
 						<< L"Avslutt med MOVE knappen.";
@@ -71,15 +72,19 @@ bool WindowHandler::init()
 	//HSV
 	tempWStringStream.str(L"");
 	tempWStringStream	<< L"Velkommen til Color Play!\n\n"
-						<< L"Dette fargerommet mangler instruksjoner.\n"
-						<< L"Vennligst legg til instruksjoner i WindowHandler::init().\n";
+						<< L"Du er nå i fargerommet HSV\n"
+						<< L"Beveg kontrolleren opp og ned forran pærene for å stille på fargene.\n"
+						<< L"Prøv å blande fargen vist til høyre.\n"
+						<< L"Avslutt med MOVE knappen.";
 	this->instructions.push_back(tempWStringStream.str());
 
 	//CMYK
 	tempWStringStream.str(L"");
 	tempWStringStream	<< L"Velkommen til Color Play!\n\n"
-						<< L"Dette fargerommet mangler instruksjoner.\n"
-						<< L"Vennligst legg til instruksjoner i WindowHandler::init().\n";
+						<< L"Du er nå i fargerommet CMYK\n"
+						<< L"Beveg kontrolleren opp og ned forran pærene for å stille på fargene.\n"
+						<< L"Prøv å blande fargen vist til høyre.\n"
+						<< L"Avslutt med MOVE knappen.";
 	this->instructions.push_back(tempWStringStream.str());
 
 	//XYZ
@@ -92,8 +97,10 @@ bool WindowHandler::init()
 	//Lab
 	tempWStringStream.str(L"");
 	tempWStringStream	<< L"Velkommen til Color Play!\n\n"
-						<< L"Dette fargerommet mangler instruksjoner.\n"
-						<< L"Vennligst legg til instruksjoner i WindowHandler::init().\n";
+						<< L"Du er nå i fargerommet Lab\n"
+						<< L"Beveg kontrolleren opp og ned forran pærene for å stille på fargene.\n"
+						<< L"Prøv å blande fargen vist til høyre.\n"
+						<< L"Avslutt med MOVE knappen.";
 	this->instructions.push_back(tempWStringStream.str());
 
 
@@ -214,11 +221,6 @@ void WindowHandler::gameProcessEvents()
 						break;
 
 					case sf::Keyboard::F:
-						this -> bulbHandler -> setColorSpace(BulbHandler::ColorSpace::XYZ);
-						this->currentInstruction = 3;
-						break;
-
-					case sf::Keyboard::G:
 						this -> bulbHandler -> setColorSpace(BulbHandler::ColorSpace::Lab);
 						this->currentInstruction = 4;
 						break;

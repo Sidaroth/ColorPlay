@@ -44,6 +44,9 @@ BulbHandler::BulbHandler(EventQueue *eventQueue, LogModule* logger, bool* finish
 	rgbDistribution = std::uniform_int_distribution<>(0, 255);
 	this -> logger = logger;
 
+	labAlphaA = 0.5f;
+	labAlphaB = 0.5f;
+
 	float temp = 0.0f;
 	playNr = 0;
 	this->currentScore = &temp;
@@ -231,16 +234,19 @@ void BulbHandler::setColorSpace(ColorSpace colorSpace)
 		case ColorSpace::CMY:
 			increaseInterval = CMYINC;
 			generateNewGoalColor();
-			BulbHandler::Bulb1HSV = mathSuite.rgb2hsv(0,255,255);
-			BulbHandler::Bulb2HSV = mathSuite.rgb2hsv(255,0,255);
-			BulbHandler::Bulb3HSV = mathSuite.rgb2hsv(255,255,0);
-
+			BulbHandler::Bulb1HSV = sf::Vector3f(44500, 255, 128);
+			BulbHandler::Bulb2HSV = sf::Vector3f(56100, 255, 128);
+			BulbHandler::Bulb3HSV = sf::Vector3f(21000, 255, 128);;
 			message << "CMY.";
 			break;
 
 		case ColorSpace::Lab:
 			increaseInterval = LABINC;
 			generateNewGoalColor();
+			BulbHandler::Bulb1HSV = sf::Vector3f(38800,0,100);
+			BulbHandler::Bulb2HSV = mathSuite.lab2hsv(50,0,0);
+			BulbHandler::Bulb3HSV = mathSuite.lab2hsv(50,0,0);
+			BulbHandler::Bulb4HSV = mathSuite.lab2hsv(50,0,0);
 			message << "Lab.";
 			break;
 
@@ -258,7 +264,7 @@ void BulbHandler::setColorSpace(ColorSpace colorSpace)
 	tempString << "{\"on\":true,\"hue\": " << BulbHandler::Bulb3HSV.x << ", \"sat\": " << BulbHandler::Bulb3HSV.y << ", \"bri\": " <<  BulbHandler::Bulb3HSV.z << "}";
 	command(tempString.str(), 3);
 	tempString.str(std::string());
-	tempString << "{\"on\":true,\"hue\": " << BulbHandler::Bulb1HSV.x << ", \"sat\": " << "0" << ", \"bri\": " <<  "128" << "}";
+	tempString << "{\"on\":true,\"hue\": " << "21000" << ", \"sat\": " << "0" << ", \"bri\": " <<  "128" << "}";
 	command(tempString.str(), 4);
 				
 
@@ -437,8 +443,7 @@ void BulbHandler::RGBColorAdjustment(unsigned short bulbId, short inc)
 /// Depending on the event received, change the corresponding bulb (C, M, or Y value)
 void BulbHandler::CMYColorAdjustment(unsigned short bulbId, short inc)
 {
-
-	
+	/*
 	if(bulbId == 1)		// C
 	{
 		values = mathSuite.hsv2cmyk(BulbHandler::Bulb1HSV.x, BulbHandler::Bulb1HSV.y, BulbHandler::Bulb1HSV.z);
@@ -470,7 +475,35 @@ void BulbHandler::CMYColorAdjustment(unsigned short bulbId, short inc)
 
 	// Update target light bulb in the background, asynchronously. 
 	std::async(std::launch::async, &BulbHandler::command, this, message.str(), 4);
+	*/
+	if(bulbId == 1)
+	{
+		values = mathSuite.hsv2cmyk(BulbHandler::Bulb4HSV.x, BulbHandler::Bulb4HSV.y, BulbHandler::Bulb4HSV.z);
+		values.x = values.x + ((float)inc/100);
 
+		BulbHandler::Bulb4HSV = mathSuite.cmyk2hsv(values.x, values.y, values.z, 0);
+	}
+	else if(bulbId == 2)
+	{
+		values = mathSuite.hsv2cmyk(BulbHandler::Bulb4HSV.x, BulbHandler::Bulb4HSV.y, BulbHandler::Bulb4HSV.z);
+		values.y = values.y + ((float)inc/100);
+
+		BulbHandler::Bulb4HSV = mathSuite.cmyk2hsv(values.x, values.y, values.z, 0);
+	}
+	else if(bulbId == 3)
+	{
+		values = mathSuite.hsv2cmyk(BulbHandler::Bulb4HSV.x, BulbHandler::Bulb4HSV.y, BulbHandler::Bulb4HSV.z);
+		values.z = values.z + ((float)inc/100);
+
+		BulbHandler::Bulb4HSV = mathSuite.cmyk2hsv(values.x, values.y, values.z, 0);
+	}
+	else
+	{
+		std::cout << "\nError in CMY Color Adjustment, no valid bulbID" << std::endl;
+	}
+
+	message << "\"hue\": " << BulbHandler::Bulb4HSV.x << ", \"sat\": " << BulbHandler::Bulb4HSV.y << ", \"bri\": " <<  BulbHandler::Bulb4HSV.z << "}";
+	command(message.str(), 4);
 }
 
 
@@ -478,6 +511,7 @@ void BulbHandler::CMYColorAdjustment(unsigned short bulbId, short inc)
 /// Depending on the event received, change the corresponding bulb (L, a, or b value)
 void BulbHandler::LabColorAdjustment(unsigned short bulbId, short inc)
 {
+	/*
 	if(bulbId == 1) // L
 	{
 		values = mathSuite.hsv2lab(BulbHandler::Bulb1HSV.x, BulbHandler::Bulb1HSV.y, BulbHandler::Bulb1HSV.z);
@@ -487,7 +521,10 @@ void BulbHandler::LabColorAdjustment(unsigned short bulbId, short inc)
 	else if(bulbId == 2) // a
 	{
 		values = mathSuite.hsv2lab(BulbHandler::Bulb2HSV.x, BulbHandler::Bulb2HSV.y, BulbHandler::Bulb2HSV.z);
+		std::cout << "\n-------------->" << values.y << " " << inc << std::endl;
 		values.y = values.y  + inc;
+		std::cout << "\n................>" << values.y << " " << inc << std::endl;
+
 		BulbHandler::Bulb2HSV = mathSuite.lab2hsv(values.x, values.y, values.z);
 	}
 	else if(bulbId == 3) // b
@@ -507,6 +544,47 @@ void BulbHandler::LabColorAdjustment(unsigned short bulbId, short inc)
 	{
 		command(helper, i);
 	}
+	*/
+	if (bulbId == 1)
+	{
+		BulbHandler::Bulb1HSV.z = BulbHandler::Bulb1HSV.z + inc;
+
+		if (BulbHandler::Bulb1HSV.z < MINBRI)
+			BulbHandler::Bulb1HSV.z = MINBRI;
+		else if(BulbHandler::Bulb1HSV.z > MAXBRI)
+			BulbHandler::Bulb1HSV.z = MAXBRI;
+
+
+		values = BulbHandler::Bulb1HSV;
+
+	}
+	else if(bulbId == 2)
+	{
+		labAlphaA = labAlphaA + ((float)inc / 100);
+		values = mathSuite.hsv2rgb(BulbHandler::Bulb4HSV.x, BulbHandler::Bulb4HSV.y, BulbHandler::Bulb4HSV.z);
+		values.x = 255*labAlphaA;
+		values.y = 255*(1 - labAlphaA);		
+		values.z = 0;
+		BulbHandler::Bulb4HSV = mathSuite.rgb2hsv(values.x, values.y, values.z);
+	
+		values = BulbHandler::Bulb4HSV;
+	}
+	else if(bulbId == 3)
+	{
+		labAlphaB = labAlphaB + ((float)inc/100);
+		values = mathSuite.hsv2rgb(BulbHandler::Bulb4HSV.x, BulbHandler::Bulb4HSV.y, BulbHandler::Bulb4HSV.z);
+		values.x = 255*labAlphaB;
+		values.y = 255*labAlphaB;
+		values.z = 255*(1 - labAlphaB);
+		BulbHandler::Bulb4HSV = mathSuite.rgb2hsv(values.x, values.y, values.z);
+
+		values = BulbHandler::Bulb4HSV;
+	}
+
+
+	message << "\"hue\": " << values.x << ", \"sat\": " << values.y << ", \"bri\": " <<  values.z << "}";
+
+	command(message.str(), bulbId);
 }
 
 /// Depending on the event received, change the corresponding bulb (X, Y, or Z value)
@@ -645,7 +723,7 @@ void BulbHandler::writeAction(ActionEvent action, int timeUsed)
 	std::stringstream date;
 	char buffer[BUFFERSIZE];
 	struct tm * timeinfo;
-	std:time_t logTime;
+	std::time_t logTime;
 
 	now = std::chrono::system_clock::now();
 	logTime = std::chrono::system_clock::to_time_t(now);
@@ -807,33 +885,13 @@ float BulbHandler::calculateScore(int timeUsed)
 	sf::Vector3f scoreVector;
 	sf::Color goalColor = getGoalColor();
 
-//	values = mathSuite.hsv2rgb(BulbHandler::Bulb3HSV.x, BulbHandler::Bulb3HSV.y, BulbHandler::Bulb3HSV.z);
-
-	if (this -> currentColorSpace == ColorSpace::RGB)
-	{
-		scoreVector = mathSuite.rgb2hsv((float)goalColor.r, (float)goalColor.g, (float)goalColor.b);
-	}
-	else if (this -> currentColorSpace == ColorSpace::Lab)
-	{
-		scoreVector = mathSuite.lab2hsv((float)goalColor.r, (float)goalColor.g, (float)goalColor.b);
-	}
-	else if (this -> currentColorSpace == ColorSpace::CMY)
-	{
-		scoreVector = mathSuite.cmyk2hsv((float)goalColor.r, (float)goalColor.g, (float)goalColor.b, 0);
-	}
-	else
-	{
-		std::cout << "\nERROR from calculate score: No Colorspace defined in currentColorSpace" << std::endl;
-	}
+	scoreVector = mathSuite.rgb2hsv((float)goalColor.r, (float)goalColor.g, (float)goalColor.b);
 
 	// Euclidean_distance 3d calculations
-	float tempr = pow(scoreVector.x - BulbHandler::Bulb4HSV.x, 2);
+	float tempr = pow((scoreVector.x/MAXHUE*MAXSAT) - (BulbHandler::Bulb4HSV.x/MAXHUE*MAXSAT), 2);
 	float tempg = pow(scoreVector.y - BulbHandler::Bulb4HSV.y, 2);
 	float tempb = pow(scoreVector.z - BulbHandler::Bulb4HSV.z, 2);
-	score = sqrt(tempr + tempg + tempb);
-
-//	score = 1000.0f - ((scoreVector.x + scoreVector.y + scoreVector.z)*2);// - (timeUsed * 5);
-
+	score = 10000 - ((sqrt(tempr + tempg + tempb))/(255*sqrt(3))*10000);
 
 //	std::cout << "\n TID BRUKT ----------->" << timeUsed << std::endl;
 //	std::cout << "\n SCORE------------->" << score << std::endl;

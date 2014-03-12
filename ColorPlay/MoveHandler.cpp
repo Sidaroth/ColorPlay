@@ -1,4 +1,3 @@
-
 /*
 	Purpose: This class is responsible for handling the communication to and from the PlayStation Move Controller.
 
@@ -250,23 +249,34 @@ void MoveHandler::processInputControllers()
 	}
 }
 
+// Camera tracking width = 640px, 3x196px zones for bulbs, gives 52px for deadzones. 
+//   0-196 -> bulb 1   - 196
+// 196-222 -> deadzone - 26
+// 222-418 -> bulb 2   - 196
+// 418-444 -> deadzone - 26
+// 444-640 -> bulb 3   - 196
 void MoveHandler::processInputTracker()
 {
 	ActionEvent event(0, 1);
 	
 	if(this->timer.secondsElapsed() >= 1)
 	{	
-		if(this->x <213)
+		if(this->x < 196)
 		{
 			event.setBulbID(1);
 		}
-		else if (this->x > 427)
+		else if(this -> x > 222 && this -> x < 418)
+		{
+			event.setBulbID(2);
+		}
+		else if (this->x > 444)
 		{
 			event.setBulbID(3);
 		}
 		else
 		{
-			event.setBulbID(2);
+			// Deadzone
+			event.setAction(ActionEvent::Action::None); // Constructor actually sets this, but might be good for clarity?
 		}
 
 		if(this->y < 160)
@@ -276,6 +286,11 @@ void MoveHandler::processInputTracker()
 		else if (this->y > 320)
 		{
 			event.setAction(ActionEvent::Action::Down);
+		}
+		else
+		{
+			// deadzone
+			event.setAction(ActionEvent::Action::None); // Constructor actually sets this, but might be good for clarity?
 		}
 
 		this->eventQueue->push(event);

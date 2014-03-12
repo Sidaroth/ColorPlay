@@ -37,3 +37,8 @@ unsigned short ActionEvent::getBulbID() const
 {
 	return this -> bulbID;
 }
+
+bool ActionEvent::operator!=(const ActionEvent& other) const
+{
+	return this -> action == other.action;
+}

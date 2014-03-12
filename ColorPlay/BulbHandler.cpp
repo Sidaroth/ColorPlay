@@ -1,11 +1,14 @@
 /*
 	Purpose: This class is responsible for handling the communication to and from the Philips Hue lightbulbs. 
 			 as well as controlling the system concerned with distuinguishing the colorspaces and lightbulb cooperation. 
-	
+
 	Last edited: 21. Feb. 2014
 
 	Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun
 			 Gj�vik University College.
+
+
+	Warning: This has become quite the "Blob" class. Should be refactored when there is time for it. 
 */
 
 #include "BulbHandler.hpp"
@@ -567,6 +570,14 @@ void BulbHandler::processEvents()
 	{
 	 	currentAction = eventQueue -> pop();
 
+	 	if(currentAction != lastAction)
+	 	{
+	 		lastAction = currentAction;
+	 		int timeElapsed = actionTimer.secondsElapsed();
+	 		actionTimer.start();
+	 		writeAction(lastAction, timeElapsed);
+	 	}
+
 		switch(currentAction.action)
 		{
 			case ActionEvent::Action::Up:
@@ -623,6 +634,77 @@ bool BulbHandler::doesFileExist(std::string name)
 	}
 }
 
+void BulbHandler::writeAction(ActionEvent action, int timeUsed)
+{
+	std::chrono::time_point<std::chrono::system_clock> now;
+	std::stringstream date;
+	char buffer[BUFFERSIZE];
+	struct tm * timeinfo;
+	std:time_t logTime;
+
+	now = std::chrono::system_clock::now();
+	logTime = std::chrono::system_clock::to_time_t(now);
+
+	time(&logTime);
+	timeinfo = localtime(&logTime);
+	strftime(buffer, BUFFERSIZE, "%F", timeinfo);
+	date << "Actions - " << buffer << ".csv";
+
+
+	if (!doesFileExist(date.str()))
+	{
+		std::ofstream stfInit(date.str());
+		stfInit << "PlayNr" << "\tTime Stamp," << "\tTime Used" << "\tBulb ID," << "\tAction," << "\tColor Space" << std::endl;
+		stfInit.close();
+	}
+
+	std::ofstream actionFile(date.str(), std::ios::app);
+	
+	strftime(buffer, BUFFERSIZE, "%T", timeinfo);
+
+	actionFile << playNr << ",\t" << buffer << ",\t" << timeUsed << ",\t" << action.getBulbID() << ",\t";
+
+	switch (action.action)
+	{
+		case ActionEvent::Action::Up:
+			actionFile << "Up,\t";
+			break;
+		case ActionEvent::Action::Down:
+			actionFile << "Down,\t";
+			break;
+		case ActionEvent::Action::Finish:
+			actionFile << "Finish,\t";
+			break;
+		case ActionEvent::Action::None:
+			actionFile << "None,\t";
+			break;
+		default
+			std::cout << "\nError in Write Action, invalid action" << std::endl;
+			break;
+	}
+
+	switch (this->currentColorSpace)
+	{
+		case ColorSpace::RGB:
+			actionFile << "RGB" << std::endl;
+			break;
+		case ColorSpace::HSV:
+			actionFile << "HSV" << std::endl;
+			break;
+		case ColorSpace::Lab:
+			actionFile << "Lab" << std::endl;
+			break;
+		case ColorSpace::CMY:
+			actionFile << "CMY" << std::endl;
+			break;
+		default:
+			std::cout << "\nError in write action, invalid colorspace" std::endl;
+			break;
+	}
+	actionFile.close();
+
+}
+
 //this needs more testing to check date change logging
 //writes score in a separate file "Score - <date>" and score data (time, goal color and achived color) in a file. "Score Data/Time <date>"
 //The score data file is in the format <time>, <achived color X>, <Y>, <Z>, <goal color X>, <Y>, <Z>
@@ -642,13 +724,7 @@ void BulbHandler::writeScoreAndTime(float score, int timeUsed)
 	time(&logTime);
 	timeinfo = localtime(&logTime);
 	strftime(buffer, BUFFERSIZE, "%F",timeinfo);
-/*
-	if (std::strcmp(buffer, this -> scoreDate))
-	{
-		std::strcpy(this -> scoreDate, buffer);
-		scoreVector.clear();
-	}
-*/
+
 	date << "Score - " << buffer << ".txt";
 
 	if (!doesFileExist(date.str()))

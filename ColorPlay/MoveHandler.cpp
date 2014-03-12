@@ -273,9 +273,8 @@ void MoveHandler::processInputTracker()
 		{
 			event.setBulbID(3);
 		}
-		else
+		else // Deadzone
 		{
-			// Deadzone
 			event.setAction(ActionEvent::Action::None); // Constructor actually sets this, but might be good for clarity?
 		}
 
@@ -287,9 +286,8 @@ void MoveHandler::processInputTracker()
 		{
 			event.setAction(ActionEvent::Action::Down);
 		}
-		else
+		else // Deadzone
 		{
-			// deadzone
 			event.setAction(ActionEvent::Action::None); // Constructor actually sets this, but might be good for clarity?
 		}
 

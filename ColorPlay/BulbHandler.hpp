@@ -97,6 +97,8 @@ public:
 
 	ColorSpace currentColorSpace;
 	float* currentScore;
+	std::vector<float> scoreVector;
+
 private:
 
 	int inc = RGBINC;				//Increment used to calculate random start colors.
@@ -115,6 +117,7 @@ private:
 	CURL* curl;
 	std::string bulbAdress;
 	ActionEvent currentAction;
+	ActionEvent lastAction;
 	EventQueue *eventQueue;
 
 	LogModule* logger;
@@ -123,7 +126,7 @@ private:
 	BulbMath mathSuite;
 
 	Timer scoreTimer;
-	std::vector<float> scoreVector;
+	Timer actionTimer;
 	char scoreDate[BUFFERSIZE];
 
 	std::mt19937 gen;
@@ -136,6 +139,7 @@ private:
 	void LabColorAdjustment(unsigned short bulbId, short inc);
 	void updateBulb(unsigned short bulbId, short inc);
 	void command(std::string body, int bulbId);
+	void writeAction(ActionEvent action, int timeUsed);
 
 	bool doesFileExist(std::string name);
 

@@ -28,6 +28,7 @@ public:
 	void setValue(unsigned short value);
 	void setAction(Action action);
 	void setBulbID(unsigned short bulbID);
+	bool operator!= (const ActionEvent& other) const;
 	
 	unsigned short getValue() const;
 	unsigned short getBulbID() const;

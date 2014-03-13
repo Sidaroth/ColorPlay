@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 	{
 		std::cout << "Window initialization successful!\n";
 	}
-/*
+
 	bulbHandler.setHue(0, 1);
 	bulbHandler.setHue(0, 2);
 	bulbHandler.setHue(0, 3);
@@ -67,7 +67,6 @@ int main(int argc, char* argv[])
 	bulbHandler.setBrightness(100, 1);
 	bulbHandler.setBrightness(100, 2);
 	bulbHandler.setBrightness(100, 3);
-*/
 
 	///////////////// START THREADS /////////////////
 	std::thread loggerThread(&LogModule::run, &logger);	// Run the logger module in a background thread.
@@ -76,28 +75,11 @@ int main(int argc, char* argv[])
 	///////////////// START WORK IN THE MAIN THREAD //////////////////
 	std::cout << "Main thread: " << std::this_thread::get_id() << std::endl;
 	running = true;
-/*
+
 	bulbHandler.setVariables(1);
 	bulbHandler.setVariables(2);
 	bulbHandler.setVariables(3);
 	bulbHandler.setVariables(4);
-*/
-	sf::Vector3f test;
-	test = bulbMath.lab2hsv(89.4633, -65.3609, 18.1289);
-
-	for(int i = 0; i < 5; i++)
-	{
-	test = bulbMath.hsv2lab(test.x, test.y,test.z);
-	test.y = test.y + 30;
-	
-	std::cout << "\n-------------->>>>>>" << test.x << " " << test.y << " " << test.z << std::endl;
-
-	test = bulbMath.lab2hsv(test.x, test.y,test.z);
-
-	}
-	assert(test.x == 10000);
-	assert(test.y == 50);
-	assert(test.z == 100);
 
 /*
 	//This timer has to be started when the user starts a new game.

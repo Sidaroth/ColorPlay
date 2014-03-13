@@ -56,6 +56,44 @@ BulbHandler::BulbHandler(EventQueue *eventQueue, LogModule* logger, bool* finish
 	firstGame = true;
 }
 
+void BulbHandler::init()
+{
+	// setHue(0, 1);
+	// setHue(0, 2);
+	// setHue(0, 3);
+	// setHue(57000, 4);
+	// setSaturation(255, 1);
+	// setSaturation(255, 2);
+	// setSaturation(255, 3);
+	// setSaturation(255, 4);
+	// setBrightness(100, 1);
+	// setBrightness(100, 2);
+	// setBrightness(100, 3);
+	// setBrightness(100, 4);
+
+	// setVariables(1);
+	// setVariables(2);
+	// setVariables(3);
+	// setVariables(4);
+
+	loadGoalColorsFromFile();
+}
+
+void BulbHandler::loadGoalColorsFromFile()
+{
+	std::ifstream file;
+	file.open("colors.csv", std::ios::in);
+	std::string line;
+
+	if(file.is_open())
+	{
+		while(getline(file, line))
+		{
+			std::cout << line << "\n";
+		}
+	}
+}
+
 void BulbHandler::startTimer()
 {
 	scoreTimer.start();

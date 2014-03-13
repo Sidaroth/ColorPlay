@@ -234,9 +234,15 @@ void BulbHandler::setColorSpace(ColorSpace colorSpace)
 		case ColorSpace::CMY:
 			increaseInterval = CMYINC;
 			generateNewGoalColor();
+			/*
 			BulbHandler::Bulb1HSV = sf::Vector3f(44500, 255, 128);
 			BulbHandler::Bulb2HSV = sf::Vector3f(56100, 255, 128);
-			BulbHandler::Bulb3HSV = sf::Vector3f(21000, 255, 128);;
+			BulbHandler::Bulb3HSV = sf::Vector3f(21000, 255, 128);
+			*/
+			BulbHandler::Bulb1HSV = mathSuite.cmyk2hsv(1,0,0,0);
+			BulbHandler::Bulb2HSV = mathSuite.cmyk2hsv(0,1,0,0);
+			BulbHandler::Bulb3HSV = mathSuite.cmyk2hsv(0,0,1,0);
+			
 			message << "CMY.";
 			break;
 
@@ -443,7 +449,6 @@ void BulbHandler::RGBColorAdjustment(unsigned short bulbId, short inc)
 /// Depending on the event received, change the corresponding bulb (C, M, or Y value)
 void BulbHandler::CMYColorAdjustment(unsigned short bulbId, short inc)
 {
-	/*
 	if(bulbId == 1)		// C
 	{
 		values = mathSuite.hsv2cmyk(BulbHandler::Bulb1HSV.x, BulbHandler::Bulb1HSV.y, BulbHandler::Bulb1HSV.z);
@@ -469,13 +474,23 @@ void BulbHandler::CMYColorAdjustment(unsigned short bulbId, short inc)
 
 	command(message.str(), bulbId);
 
+	sf::Vector3f CMYKtemp1 = mathSuite.hsv2cmyk(BulbHandler::Bulb1HSV.x, BulbHandler::Bulb1HSV.y, BulbHandler::Bulb1HSV.z);
+	sf::Vector3f CMYKtemp2 = mathSuite.hsv2cmyk(BulbHandler::Bulb2HSV.x, BulbHandler::Bulb2HSV.y, BulbHandler::Bulb2HSV.z);
+	sf::Vector3f CMYKtemp3 = mathSuite.hsv2cmyk(BulbHandler::Bulb3HSV.x, BulbHandler::Bulb3HSV.y, BulbHandler::Bulb3HSV.z);
+
+	values.x = CMYKtemp1.x + CMYKtemp2.x + CMYKtemp3.x;
+	values.y = CMYKtemp1.y + CMYKtemp2.y + CMYKtemp3.y;
+	values.z = CMYKtemp1.z + CMYKtemp2.z + CMYKtemp3.z;
+
 	values = mathSuite.cmyk2hsv(values.x, values.y, values.z, 0);
+
 	message.str(std::string());
 	message << "{\"on\":true, \"hue\": " << values.x << ", \"sat\": " << values.y << ", \"bri\": " <<  values.z << "}";
 
 	// Update target light bulb in the background, asynchronously. 
 	std::async(std::launch::async, &BulbHandler::command, this, message.str(), 4);
-	*/
+	
+	/*
 	if(bulbId == 1)
 	{
 		values = mathSuite.hsv2cmyk(BulbHandler::Bulb4HSV.x, BulbHandler::Bulb4HSV.y, BulbHandler::Bulb4HSV.z);
@@ -504,6 +519,7 @@ void BulbHandler::CMYColorAdjustment(unsigned short bulbId, short inc)
 
 	message << "\"hue\": " << BulbHandler::Bulb4HSV.x << ", \"sat\": " << BulbHandler::Bulb4HSV.y << ", \"bri\": " <<  BulbHandler::Bulb4HSV.z << "}";
 	command(message.str(), 4);
+	*/
 }
 
 
@@ -511,19 +527,20 @@ void BulbHandler::CMYColorAdjustment(unsigned short bulbId, short inc)
 /// Depending on the event received, change the corresponding bulb (L, a, or b value)
 void BulbHandler::LabColorAdjustment(unsigned short bulbId, short inc)
 {
-	/*
+	
 	if(bulbId == 1) // L
 	{
+		//inc is divided by 3.6 because the L values is in 0 - 100 while a and b are in -180 to 180
 		values = mathSuite.hsv2lab(BulbHandler::Bulb1HSV.x, BulbHandler::Bulb1HSV.y, BulbHandler::Bulb1HSV.z);
-		values.x = values.x  + inc;
+		values.x = values.x  + inc / 3.6;
 		BulbHandler::Bulb1HSV = mathSuite.lab2hsv(values.x, values.y, values.z);
 	}
 	else if(bulbId == 2) // a
 	{
 		values = mathSuite.hsv2lab(BulbHandler::Bulb2HSV.x, BulbHandler::Bulb2HSV.y, BulbHandler::Bulb2HSV.z);
-		std::cout << "\n-------------->" << values.y << " " << inc << std::endl;
-		values.y = values.y  + inc;
-		std::cout << "\n................>" << values.y << " " << inc << std::endl;
+		std::cout << "\n-------------->" << values.x << " " << values.y << " " << values.z << " " << inc << std::endl;
+		values.y = values.y + inc;
+		std::cout << "\n-------------->" << values.x << " " << values.y << " " << values.z << " " << inc << std::endl;
 
 		BulbHandler::Bulb2HSV = mathSuite.lab2hsv(values.x, values.y, values.z);
 	}
@@ -537,54 +554,116 @@ void BulbHandler::LabColorAdjustment(unsigned short bulbId, short inc)
 	values = mathSuite.lab2hsv(values.x, values.y, values.z);
 	message << "\"hue\": " << values.x << ", \"sat\": " << values.y << ", \"bri\": " <<  values.z << "}";
 
-	std::string helper = message.str();
+	std::cout << (mathSuite.lab2hsv(BulbHandler::Bulb2HSV.x, BulbHandler::Bulb2HSV.y, BulbHandler::Bulb2HSV.z)).y;
+
+	command(message.str(), bulbId);
+
+	sf::Vector3f Labtemp1 = mathSuite.hsv2lab(BulbHandler::Bulb1HSV.x, BulbHandler::Bulb1HSV.y, BulbHandler::Bulb1HSV.z);
+	sf::Vector3f Labtemp2 = mathSuite.hsv2lab(BulbHandler::Bulb2HSV.x, BulbHandler::Bulb2HSV.y, BulbHandler::Bulb2HSV.z);
+	sf::Vector3f Labtemp3 = mathSuite.hsv2lab(BulbHandler::Bulb3HSV.x, BulbHandler::Bulb3HSV.y, BulbHandler::Bulb3HSV.z);
+
+	values.x = Labtemp1.x + Labtemp2.x + Labtemp3.x;
+	values.y = Labtemp1.y + Labtemp2.y + Labtemp3.y;
+	values.z = Labtemp1.z + Labtemp2.z + Labtemp3.z;
+
+	values = mathSuite.lab2hsv(values.x, values.y, values.z);
+
+	message.str(std::string());
+	message << "{\"on\":true, \"hue\": " << values.x << ", \"sat\": " << values.y << ", \"bri\": " <<  values.z << "}";
+
+	// Update target light bulb in the background, asynchronously. 
 	std::async(std::launch::async, &BulbHandler::command, this, message.str(), 4);
 
+	std::cout << (mathSuite.lab2hsv(BulbHandler::Bulb2HSV.x, BulbHandler::Bulb2HSV.y, BulbHandler::Bulb2HSV.z)).y;
+
+
+
+	//std::string helper = message.str();
+	//std::async(std::launch::async, &BulbHandler::command, this, message.str(), 4);
+
+/*
 	for(int i = 1; i < 4; ++i)
 	{
 		command(helper, i);
 	}
-	*/
+*/	
+
+	/*
 	if (bulbId == 1)
-	{
-		BulbHandler::Bulb1HSV.z = BulbHandler::Bulb1HSV.z + inc;
+	{	
+		if (inc > 0)
+		{
+			BulbHandler::Bulb1HSV.z = BulbHandler::Bulb1HSV.z + 10;
+			BulbHandler::Bulb4HSV.x = BulbHandler::Bulb4HSV.x + 10;
+		}
+		else
+		{ 
+			BulbHandler::Bulb1HSV.z = BulbHandler::Bulb1HSV.z - 10;
+			BulbHandler::Bulb4HSV.x = BulbHandler::Bulb4HSV.x - 10;
+		}
 
 		if (BulbHandler::Bulb1HSV.z < MINBRI)
 			BulbHandler::Bulb1HSV.z = MINBRI;
 		else if(BulbHandler::Bulb1HSV.z > MAXBRI)
 			BulbHandler::Bulb1HSV.z = MAXBRI;
 
-
 		values = BulbHandler::Bulb1HSV;
+
 
 	}
 	else if(bulbId == 2)
-	{
-		labAlphaA = labAlphaA + ((float)inc / 100);
+	{	//The increment is divided by 360 for get 0.1 which is 10 steps in the alpha value
+		//labAlphaA = labAlphaA + (((float)inc / 100) / 2);
+		values = mathSuite.hsv2lab(BulbHandler::Bulb4HSV.x, BulbHandler::Bulb4HSV.y, BulbHandler::Bulb4HSV.z);
+		values.y = values.y + inc;
+		BulbHandler::Bulb4HSV = mathSuite.lab2hsv(values.x, values.y, values.z);
+
+		if (inc > 0)
+			labAlphaA = labAlphaA + 0.1f;
+		else
+			labAlphaA = labAlphaA - 0.1f;
+
+		if (labAlphaA < 0)
+			labAlphaA = 0.0f;
+		else if (labAlphaA > 1)
+			labAlphaA = 1.0f;
 		values = mathSuite.hsv2rgb(BulbHandler::Bulb4HSV.x, BulbHandler::Bulb4HSV.y, BulbHandler::Bulb4HSV.z);
 		values.x = 255*labAlphaA;
 		values.y = 255*(1 - labAlphaA);		
 		values.z = 0;
-		BulbHandler::Bulb4HSV = mathSuite.rgb2hsv(values.x, values.y, values.z);
-	
-		values = BulbHandler::Bulb4HSV;
+		values = mathSuite.rgb2hsv(values.x, values.y, values.z);
 	}
 	else if(bulbId == 3)
 	{
-		labAlphaB = labAlphaB + ((float)inc/100);
+		values = mathSuite.hsv2lab(BulbHandler::Bulb4HSV.x, BulbHandler::Bulb4HSV.y, BulbHandler::Bulb4HSV.z);
+		values.z = values.z + inc;
+		BulbHandler::Bulb4HSV = mathSuite.lab2hsv(values.x, values.y, values.z);
+
+         //labAlphaB = labAlphaB + (((float)inc/100) / 2);
+		if (inc > 0)
+			labAlphaB = labAlphaB + 0.1f;
+		else
+			labAlphaB = labAlphaB - 0.1f;
+
+		if (labAlphaB < 0)
+			labAlphaB = 0.0f;
+		else if (labAlphaB > 1)
+			labAlphaB = 1.0f;
 		values = mathSuite.hsv2rgb(BulbHandler::Bulb4HSV.x, BulbHandler::Bulb4HSV.y, BulbHandler::Bulb4HSV.z);
 		values.x = 255*labAlphaB;
 		values.y = 255*labAlphaB;
 		values.z = 255*(1 - labAlphaB);
-		BulbHandler::Bulb4HSV = mathSuite.rgb2hsv(values.x, values.y, values.z);
-
-		values = BulbHandler::Bulb4HSV;
+		values = mathSuite.rgb2hsv(values.x, values.y, values.z);
 	}
 
 
 	message << "\"hue\": " << values.x << ", \"sat\": " << values.y << ", \"bri\": " <<  values.z << "}";
-
 	command(message.str(), bulbId);
+
+	message.str(std::string());
+	message << "{\"on\":true,\"hue\": " << BulbHandler::Bulb4HSV.x << ", \"sat\": " << BulbHandler::Bulb4HSV.y << ", \"bri\": " << BulbHandler::Bulb4HSV.z << "}";
+	command(message.str(), 4);
+	*/
 }
 
 /// Depending on the event received, change the corresponding bulb (X, Y, or Z value)

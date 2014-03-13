@@ -35,7 +35,7 @@
 #define SEED 31415926535897932
 
 #define CMYINC 10	//CMYINC is divided by 100
-#define LABINC 20
+#define LABINC 36
 #define XYZINC 1
 #define RGBINC 20
 			

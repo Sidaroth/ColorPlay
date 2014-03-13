@@ -2,10 +2,12 @@
 	Purpose: This class is responsible for handling the communication to and from the Philips Hue lightbulbs. 
 			 as well as controlling the system concerned with distuinguishing the colorspaces and lightbulb cooperation. 
 	
-	Last edited: 20. Feb. 2014
+	Last edited: 13. Mar. 2014
 
 	Authors: Christian Holt, Johannes Hovland, Henrik Lee Jotun
 		 Gj�vik University College.
+
+	Warning: This has become quite the "Blob" class. Should be refactored when there is time for it. 
 */
 
 #pragma once // Include guard
@@ -69,32 +71,26 @@ public:
 		HSV
 	};
 
+	float calculateScore(int timeUsed);
+	int* generateStartColors();
 	void setBulbAdress(std::string bulbAdress);
 	void setBrightness(int brightness, int bulbId);
 	void setHue(int hue, int bulbId);
 	void setSaturation(int saturation, int bulbId);
-
 	void setColorSpace(ColorSpace colorSpace);
-
-	float calculateScore(int timeUsed);
-	
-	sf::Color getGoalColor();
 	void generateNewGoalColor();
-	int* generateStartColors();
 	void setGoalColor(sf::Color color);
 	void setGoalColor(unsigned int r, unsigned int g, unsigned int b, unsigned int a=255);
-
 	void setKValue(float k);
-
 	void setVariables(int bulbId);
 	void processEvents();
 	void updateTargetBulb();
-
-	static size_t callback_func(void *getInfo, size_t size, size_t count, void *stream);
-	
 	void writeScoreAndTime(float score, int timeUsed);
-
 	void startTimer();
+	void init();
+	void loadGoalColorsFromFile();
+	sf::Color getGoalColor();
+	static size_t callback_func(void *getInfo, size_t size, size_t count, void *stream);
 
 	ColorSpace currentColorSpace;
 	float* currentScore;
@@ -102,41 +98,35 @@ public:
 
 private:
 
-	int inc = RGBINC;				//Increment used to calculate random start colors.
-	int maxStartIncFromGoal = 10;	//Max number of increments between start and goal color.
-
 	bool* finished;
-	bool*newGame;
+	bool* newGame;
 	bool firstGame;
-
-	short playNr;
-
+	char scoreDate[BUFFERSIZE];
 	float labAlphaA;
 	float labAlphaB;
-
 	float tempScore;
+	int inc = RGBINC;				//Increment used to calculate random start colors.
+	int maxStartIncFromGoal = 10;	//Max number of increments between start and goal color.
+	short increaseInterval;
+	short playNr;
 
 	std::stringstream message;
+	std::string bulbAdress;
 	sf::Color goalColor;
 	sf::Vector3f values;
 	CURL* curl;
-	std::string bulbAdress;
 	ActionEvent currentAction;
 	ActionEvent lastAction;
 	EventQueue *eventQueue;
-
 	LogModule* logger;
-	short increaseInterval;
-
 	BulbMath mathSuite;
-
 	Timer scoreTimer;
 	Timer actionTimer;
-	char scoreDate[BUFFERSIZE];
-
 	std::mt19937 gen;
 	std::uniform_int_distribution<> rgbDistribution;
+	std::vector<sf::Color> colors;
 
+	bool doesFileExist(std::string name);
 	void RGBColorAdjustment(unsigned short bulbId, short inc);
 	void HSVColorAdjustment(unsigned short bulbId, short inc);
 	void CMYColorAdjustment(unsigned short bulbId, short inc);
@@ -145,9 +135,6 @@ private:
 	void updateBulb(unsigned short bulbId, short inc);
 	void command(std::string body, int bulbId);
 	void writeAction(ActionEvent action, int timeUsed);
-
-	bool doesFileExist(std::string name);
-
 	void startNewGame();
 
 	static sf::Vector3f Bulb1HSV;

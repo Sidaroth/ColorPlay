@@ -81,15 +81,20 @@ void BulbHandler::init()
 
 void BulbHandler::loadGoalColorsFromFile()
 {
-	std::ifstream file;
-	file.open("colors.csv", std::ios::in);
-	std::string line;
+	FILE *ifp;
+	sf::Color color;
+	
+	ifp = fopen("colors.csv", "r");
 
-	if(file.is_open())
+	if (ifp == NULL) {
+  		logger->LogEvent("Could not open colors.csv");
+		return;
+	}
+	else
 	{
-		while(getline(file, line))
+		while(fscanf(ifp, "%d, %d, %d", color.r, color.g, color.b) == 3)
 		{
-			std::cout << line << "\n";
+			this->colors.push_back(color);
 		}
 	}
 }

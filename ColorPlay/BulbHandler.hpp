@@ -23,6 +23,7 @@
 #include <cstring>
 #include <future>
 #include <cmath>
+#include <stdio.h>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Vector3.hpp>

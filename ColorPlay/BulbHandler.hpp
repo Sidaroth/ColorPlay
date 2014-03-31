@@ -125,6 +125,7 @@ private:
 	Timer actionTimer;
 	std::mt19937 gen;
 	std::uniform_int_distribution<> rgbDistribution;
+	int currentGoalColor;
 	std::vector<sf::Color> colors;
 
 	bool doesFileExist(std::string name);

@@ -76,7 +76,17 @@ void BulbHandler::init()
 	// setVariables(3);
 	// setVariables(4);
 
+	setHue(0, 1);
+	setHue(0, 2);
+	setHue(0, 3);
+	setSaturation(255, 1);
+	setBrightness(100, 2);
+	setBrightness(100, 3);
+	setBrightness(100, 1);
+
 	loadGoalColorsFromFile();
+	currentGoalColor = 0;
+	setGoalColor(colors[currentGoalColor]);
 }
 
 void BulbHandler::loadGoalColorsFromFile()
@@ -92,8 +102,9 @@ void BulbHandler::loadGoalColorsFromFile()
 	}
 	else
 	{
-		while(fscanf(ifp, "%d, %d, %d", color.r, color.g, color.b) == 3)
+		while(fscanf(ifp, "%d, %d, %d", &color.r, &color.g, &color.b) == 3)
 		{
+			color.a = 255;
 			this->colors.push_back(color);
 		}
 	}
@@ -150,7 +161,7 @@ void BulbHandler::setSaturation(int saturation, int bulbId)
 }
 
 void BulbHandler::generateNewGoalColor()
-{
+{/*
 	unsigned int r, g, b;
 
 	r = rgbDistribution(gen);
@@ -162,6 +173,19 @@ void BulbHandler::generateNewGoalColor()
 	this -> logger -> LogEvent(message.str());
 	setGoalColor(r, g, b);
 	message.str(std::string());
+	*/
+
+	for (int i = 0; i < colors.size(); i++)
+	{
+		std::cout << " " << (int)colors[i].r << " " << (int)colors[i].g << " " << (int)colors[i].b << std::endl;
+	}
+	
+	currentGoalColor++;
+	if (currentGoalColor > colors.size()-1)
+	{
+		currentGoalColor = 0;
+	}
+	setGoalColor(colors[currentGoalColor]);
 }
 
 int* BulbHandler::generateStartColors()

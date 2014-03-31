@@ -60,14 +60,8 @@ int main(int argc, char* argv[])
 		std::cout << "Window initialization successful!\n";
 	}
 
-	bulbHandler.setHue(0, 1);
-	bulbHandler.setHue(0, 2);
-	bulbHandler.setHue(0, 3);
-	bulbHandler.setSaturation(255, 1);
-	bulbHandler.setBrightness(100, 1);
-	bulbHandler.setBrightness(100, 2);
-	bulbHandler.setBrightness(100, 3);
-
+	bulbHandler.init();
+	
 	///////////////// START THREADS /////////////////
 	std::thread loggerThread(&LogModule::run, &logger);	// Run the logger module in a background thread.
 	std::thread moveHandlerThread(&MoveHandler::run, &moveHandler);

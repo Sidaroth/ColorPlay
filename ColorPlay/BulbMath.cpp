@@ -318,10 +318,19 @@ sf::Vector3f BulbMath::xyz2rgb(float x, float y, float z)
 	var_Y = RGB.y / 100;        //Y from 0 to 100.000
 	var_Z = RGB.z / 100;        //Z from 0 to 108.883
 
-	var_R = var_X *  3.2406 + var_Y * -1.5372 + var_Z * -0.4986;
+	/*var_R = var_X *  3.2406 + var_Y * -1.5372 + var_Z * -0.4986;
 	var_G = var_X * -0.9689 + var_Y *  1.8758 + var_Z *  0.0415;
-	var_B = var_X *  0.0557 + var_Y * -0.2040 + var_Z *  1.0570;
+	var_B = var_X *  0.0557 + var_Y * -0.2040 + var_Z *  1.0570;*/
+	var_R = var_X *  3.2404542 + var_Y * -1.5371385 + var_Z * -0.4985314;
+	var_G = var_X * -0.9692660 + var_Y *  1.8760108 + var_Z *  0.0415560;
+	var_B = var_X *  0.0556434 + var_Y * -0.2040259 + var_Z *  1.0572252;
+	/*
+	3.2404542	 -1.5371385	 -0.4985314
+	-0.9692660	  1.8760108	  0.0415560
+	0.0556434	 -0.2040259	  1.0572252
+	*/
 
+	
 	if ( var_R > 0.0031308 ) 
 		var_R = 1.055 * ( pow(var_R, (1/2.4)) ) - 0.055;
 	else                     
@@ -397,9 +406,13 @@ sf::Vector3f BulbMath::rgb2xyz(float r, float g, float b)
 	var_B = var_B * 100.0f;
 
 	//Observer. = 2°, Illuminant = D65
-	XYZ.x = var_R * 0.4124 + var_G * 0.3576 + var_B * 0.1805;
-	XYZ.y = var_R * 0.2126 + var_G * 0.7152 + var_B * 0.0722;
-	XYZ.z = var_R * 0.0193 + var_G * 0.1192 + var_B * 0.9505;
+	XYZ.x = var_R * 0.4124564 + var_G * 0.3575761 + var_B * 0.1804375;
+	XYZ.y = var_R * 0.2126729 + var_G * 0.7151522 + var_B * 0.0721750;
+	XYZ.z = var_R * 0.0193339 + var_G * 0.1191920 + var_B * 0.9503041;
+
+	//XYZ.x = var_R * 0.4124 + var_G * 0.3576 + var_B * 0.1805;
+	//XYZ.y = var_R * 0.2126 + var_G * 0.7152 + var_B * 0.0722;
+	//XYZ.z = var_R * 0.0193 + var_G * 0.1192 + var_B * 0.9505;
 
 	XYZ = xyzThresholdCheck(XYZ);
 

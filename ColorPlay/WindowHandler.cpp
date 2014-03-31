@@ -51,7 +51,7 @@ WindowHandler::WindowHandler(std::string windowName,
 	this -> width = width;
 	this -> height = height;
 
-	this->currentInstruction = 0;
+	this->currentInstruction = 1;
 	this->textSize = 30;
 
 	logger -> LogEvent("Window created");
